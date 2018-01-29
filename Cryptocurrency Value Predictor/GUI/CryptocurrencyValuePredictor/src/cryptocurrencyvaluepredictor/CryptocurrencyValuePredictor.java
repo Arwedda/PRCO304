@@ -5,7 +5,7 @@
  */
 package cryptocurrencyvaluepredictor;
 
-import controllers.PriceCollector;
+import utilities.PriceCollector;
 import model.Currency;
 
 /**

@@ -3,11 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controllers;
+package utilities;
 
-import java.net.URL;
+import controllers.APIController;
 import model.Currency;
-import com.google.gson.*;
 import model.Trade;
 
 /**
@@ -15,9 +14,13 @@ import model.Trade;
  * @author jkell
  */
 public class PriceCollector {
+    private APIController apiController = new APIController();
     private static String GDAX_ENDPOINT = "https://api.gdax.com/";
     private static String API_ENDPOINT = "http://xserve.uopnet.plymouth.ac.uk/modules/intproj/PRCS251A/api/";
-    private Gson gson = new Gson();
+    private static String BCH_TRADES = "products/BCH-USD/trades/";
+    private static String BTC_TRADES = "products/BTC-USD/trades/";
+    private static String ETH_TRADES = "products/ETH-USD/trades/";
+    private static String LTC_TRADES = "products/LTC-USD/trades/";
     private Currency[] currencies = new Currency[3];
     public Currency[] currentPrices;
 
@@ -55,17 +58,47 @@ public class PriceCollector {
         Trade[] ethTrades = new Trade[0];
         Trade[] ltcTrades = new Trade[0];
         Double avgPrice = 0.0;
+        String json;
         try {
-            bchTrades = gson.fromJson(new URL(GDAX_ENDPOINT + "products/BCH-USD/trades/").getContent().toString(), Trade[].class);
+            json = apiController.getJSONString(GDAX_ENDPOINT + BCH_TRADES);
+            //PARSE JSON INTO TRADES
             
             for (Trade trade : bchTrades){
                 avgPrice += Double.parseDouble(trade.getPrice());
             }
             avgPrice /= bchTrades.length;
 
-            /*btcTrades = gson.fromJson(new URL(GDAX_ENDPOINT + "products/BTC-USD/trades/").getContent().toString(), Trade[].class);
-            ethTrades = gson.fromJson(new URL(GDAX_ENDPOINT + "products/ETH-USD/trades/").getContent().toString(), Trade[].class);
-            ltcTrades = gson.fromJson(new URL(GDAX_ENDPOINT + "products/LTC-USD/trades/").getContent().toString(), Trade[].class);*/
+            
+            
+            json = apiController.getJSONString(GDAX_ENDPOINT + BTC_TRADES);
+            //PARSE JSON INTO TRADES
+            
+            for (Trade trade : btcTrades){
+                avgPrice += Double.parseDouble(trade.getPrice());
+            }
+            avgPrice /= btcTrades.length;
+            
+            
+            
+            json = apiController.getJSONString(GDAX_ENDPOINT + ETH_TRADES);
+            //PARSE JSON INTO TRADES
+            
+            for (Trade trade : ethTrades){
+                avgPrice += Double.parseDouble(trade.getPrice());
+            }
+            avgPrice /= ethTrades.length;
+            
+            
+            
+            json = apiController.getJSONString(GDAX_ENDPOINT + LTC_TRADES);
+            //PARSE JSON INTO TRADES
+            
+            for (Trade trade : ltcTrades){
+                avgPrice += Double.parseDouble(trade.getPrice());
+            }
+            avgPrice /= ltcTrades.length;
+            
+            
             
         }catch (Exception e) {
             System.out.println(e.getMessage());
