@@ -15,14 +15,14 @@ import model.Trade;
  */
 public class PriceCollector {
     private APIController apiController = new APIController();
-    private static String GDAX_ENDPOINT = "https://api.gdax.com/";
-    private static String API_ENDPOINT = "http://xserve.uopnet.plymouth.ac.uk/modules/intproj/PRCS251A/api/";
-    private static String BCH_TRADES = "products/BCH-USD/trades/";
-    private static String BTC_TRADES = "products/BTC-USD/trades/";
-    private static String ETH_TRADES = "products/ETH-USD/trades/";
-    private static String LTC_TRADES = "products/LTC-USD/trades/";
+    private static final String GDAX_ENDPOINT = "https://api.gdax.com/";
+    private static final String API_ENDPOINT = "http://xserve.uopnet.plymouth.ac.uk/modules/intproj/PRCS251A/api/";
+    private static final String BCH_TRADES = "products/BCH-USD/trades/";
+    private static final String BTC_TRADES = "products/BTC-USD/trades/";
+    private static final String ETH_TRADES = "products/ETH-USD/trades/";
+    private static final String LTC_TRADES = "products/LTC-USD/trades/";
     private Currency[] currencies = new Currency[3];
-    public Currency[] currentPrices;
+    private JsonParser parser = new JsonParser();
 
     public PriceCollector() {
         System.out.println("[INFO] Fetching resource from: " + API_ENDPOINT + "currencies/");
@@ -52,57 +52,40 @@ public class PriceCollector {
     }
     
     public Currency[] Get(){
-        System.out.println("[INFO] Fetching resource from: " + GDAX_ENDPOINT + "products/BTC-USD/trades/");
-        Trade[] bchTrades = new Trade[0];
-        Trade[] btcTrades = new Trade[0];
-        Trade[] ethTrades = new Trade[0];
-        Trade[] ltcTrades = new Trade[0];
-        Double avgPrice = 0.0;
-        String json;
+        System.out.println("[INFO] Fetching resource from: " + GDAX_ENDPOINT + "products/.../trades");
         try {
-            json = apiController.getJSONString(GDAX_ENDPOINT + BCH_TRADES);
-            //PARSE JSON INTO TRADES
-            
-            for (Trade trade : bchTrades){
-                avgPrice += Double.parseDouble(trade.getPrice());
-            }
-            avgPrice /= bchTrades.length;
-
-            
+            String json = apiController.getJSONString(GDAX_ENDPOINT + BCH_TRADES);
+            Double avgPrice = calculateAveragePrice(json);
+            currencies[0].setValue(avgPrice.toString());
             
             json = apiController.getJSONString(GDAX_ENDPOINT + BTC_TRADES);
-            //PARSE JSON INTO TRADES
-            
-            for (Trade trade : btcTrades){
-                avgPrice += Double.parseDouble(trade.getPrice());
-            }
-            avgPrice /= btcTrades.length;
-            
-            
+            avgPrice = calculateAveragePrice(json);
+            currencies[1].setValue(avgPrice.toString());
             
             json = apiController.getJSONString(GDAX_ENDPOINT + ETH_TRADES);
-            //PARSE JSON INTO TRADES
-            
-            for (Trade trade : ethTrades){
-                avgPrice += Double.parseDouble(trade.getPrice());
-            }
-            avgPrice /= ethTrades.length;
-            
-            
-            
+            avgPrice = calculateAveragePrice(json);
+            currencies[2].setValue(avgPrice.toString());
+
             json = apiController.getJSONString(GDAX_ENDPOINT + LTC_TRADES);
-            //PARSE JSON INTO TRADES
-            
-            for (Trade trade : ltcTrades){
-                avgPrice += Double.parseDouble(trade.getPrice());
-            }
-            avgPrice /= ltcTrades.length;
-            
-            
-            
-        }catch (Exception e) {
+            avgPrice = calculateAveragePrice(json);
+            currencies[3].setValue(avgPrice.toString());
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return currentPrices;
+        return currencies;
+    }
+    
+    private Double calculateAveragePrice(String json) {
+            Trade[] trades = (Trade[]) parser.fromJSON(json);
+            Double avgPrice = 0.0;
+            
+            for (Trade trade : trades){
+                avgPrice += Double.parseDouble(trade.getPrice());
+            }
+            return (avgPrice /= trades.length);
+    }
+    
+    public void Post() {
+        System.out.println();
     }
 }
