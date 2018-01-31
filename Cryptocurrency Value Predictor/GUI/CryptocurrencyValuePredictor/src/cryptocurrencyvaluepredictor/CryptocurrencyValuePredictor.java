@@ -5,6 +5,10 @@
  */
 package cryptocurrencyvaluepredictor;
 
+import java.time.LocalDateTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import utilities.PriceCollector;
 import model.Currency;
 
@@ -13,19 +17,51 @@ import model.Currency;
  * @author jkell
  */
 public class CryptocurrencyValuePredictor extends javax.swing.JFrame {
-
     PriceCollector pc = new PriceCollector();
+    ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
     
     /**
      * Creates new form CryptocurrencyValuePredictor
      */
     public CryptocurrencyValuePredictor() {
         initComponents();
-        PriceCollection();
+        CollectionSynchroniser();
+
+        Runnable automatedCollection = new Runnable() {
+            public void run() {
+                PriceCollection();
+            }
+        };
+
+        exec.scheduleAtFixedRate(automatedCollection, (60 - LocalDateTime.now().getSecond()), 60, TimeUnit.SECONDS);
     }
 
+    private void CollectionSynchroniser() {
+        Currency[] currencies = pc.Get();
+        System.out.println(currencies[0].getId() + " " + currencies[0].getName() + " " + currencies[0].getValue());
+        System.out.println(currencies[1].getId() + " " + currencies[1].getName() + " " + currencies[1].getValue());
+        System.out.println(currencies[2].getId() + " " + currencies[2].getName() + " " + currencies[2].getValue());
+        System.out.println(currencies[3].getId() + " " + currencies[3].getName() + " " + currencies[3].getValue());
+        
+        /*
+        
+        POST TO API
+        
+        */
+    }
+    
     private void PriceCollection() {
-        Currency[] currencyList = pc.Get();
+        Currency[] currencies = pc.Get();
+        System.out.println(currencies[0].getId() + " " + currencies[0].getName() + " " + currencies[0].getValue());
+        System.out.println(currencies[1].getId() + " " + currencies[1].getName() + " " + currencies[1].getValue());
+        System.out.println(currencies[2].getId() + " " + currencies[2].getName() + " " + currencies[2].getValue());
+        System.out.println(currencies[3].getId() + " " + currencies[3].getName() + " " + currencies[3].getValue());
+        
+        /*
+        
+        POST TO API
+        
+        */
     }
     
     /**

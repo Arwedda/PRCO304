@@ -21,19 +21,16 @@ public class PriceCollector {
     private static final String BTC_TRADES = "products/BTC-USD/trades/";
     private static final String ETH_TRADES = "products/ETH-USD/trades/";
     private static final String LTC_TRADES = "products/LTC-USD/trades/";
-    private Currency[] currencies = new Currency[3];
+    private Currency[] currencies = new Currency[4];
     private JsonParser parser = new JsonParser();
 
     public PriceCollector() {
         System.out.println("[INFO] Fetching resource from: " + API_ENDPOINT + "currencies/");
         try {
-            /*  Commented out because endpoint not up yet.
-                It will cycle through each currency in the database and create
-                an array to get prices for.
+            /*
             
-            URL url = new URL(API_ENDPOINT + "currencies/");
-            String json = url.openStream().toString();
-            Currency currencies = gson.fromJson(json, Currency.class);
+            GET FROM API
+            
             */
             
             Currency bch = new Currency("BCH", "Bitcoin Cash");
@@ -47,7 +44,7 @@ public class PriceCollector {
             currencies[3] = ltc;
             
         } catch (Exception e){
-            System.out.println("[INFO] Error: " + e.getMessage());
+            System.out.println("[INFO] Error: " + e);
         }
     }
     
@@ -70,17 +67,17 @@ public class PriceCollector {
             avgPrice = calculateAveragePrice(json);
             currencies[3].setValue(avgPrice.toString());
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("[INFO] Error: " + e);
         }
         return currencies;
     }
     
     private Double calculateAveragePrice(String json) {
-            Trade[] trades = (Trade[]) parser.fromJSON(json);
+            Object[] trades = parser.fromJSON(json);
             Double avgPrice = 0.0;
             
-            for (Trade trade : trades){
-                avgPrice += Double.parseDouble(trade.getPrice());
+            for (Object trade : trades){
+                avgPrice += Double.parseDouble(((Trade)trade).getPrice());
             }
             return (avgPrice /= trades.length);
     }

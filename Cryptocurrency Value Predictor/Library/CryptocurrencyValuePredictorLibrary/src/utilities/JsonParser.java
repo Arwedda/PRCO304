@@ -18,25 +18,22 @@ public class JsonParser {
     }
     
     public Object[] fromJSON(String json){
-        Object[] array = new Object[0];
+        Object[] array;
         
         //Trade parser
-        Trade trade = new Trade();
+        Trade trade;
         //String full = "time\\\":\\\"[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,3}Z\\\",\\\"trade_id\\\":[0-9]+,\\\"price\\\":\\\"[0-9]+.[0-9]+\\\",\\\"size\\\":\\\"[0-9]+.[0-9]+\\\",\\\"side\\\":\\\"(sell|buy)";
-        String datetime = "[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,3}Z";
-        String price = "price\\\":\\\"[0-9]+.[0-9]+";
-        ArrayList<String> arlTimestamps = getMatches(json, datetime);
-        ArrayList<String> arlPrices = getMatches(json, price);
+        String datetimeRegex = "[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,3}Z";
+        String priceRegex = "price\\\":\\\"[0-9]+.[0-9]+";
+        ArrayList<String> arlTimestamps = getMatches(json, datetimeRegex);
+        ArrayList<String> arlPrices = getMatches(json, priceRegex);
         ArrayList<Trade> trades = new ArrayList<>();
-        
-        System.out.println(arlTimestamps.get(0) + " " + arlPrices.get(0));
-        
+
         for (String timestamp : arlTimestamps){
-            trade = new Trade(timestamp, arlPrices.get(0));
+            String price = arlPrices.get(0).substring(8);
+            trade = new Trade(timestamp, price);
             arlPrices.remove(0);
             trades.add(trade);
-            
-            System.out.println(trade.getTime() + " " + trade.getPrice());
         }
         
         array = trades.toArray();
