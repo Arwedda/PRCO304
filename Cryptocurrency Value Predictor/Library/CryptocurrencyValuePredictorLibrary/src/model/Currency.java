@@ -5,6 +5,8 @@
  */
 package model;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author jkell
@@ -12,24 +14,25 @@ package model;
 public class Currency {
     private String id;
     private String name;
-    private String value;
+    private ArrayList<ExchangeRate> arlValues;
 
     public Currency() {
         this.id = "unknown";
         this.name = "unknown";
-        this.value = "unknown";
+        this.arlValues = new ArrayList<>();
     }
     
     public Currency(String id, String name) {
         this.id = id;
         this.name = name;
-        this.value = "unknown";
+        this.arlValues = new ArrayList<>();
     }
-
-    public Currency(String id, String name, String value) {
+    
+    public Currency(String id, String name, ExchangeRate rate) {
         this.id = id;
         this.name = name;
-        this.value = value;
+        this.arlValues = new ArrayList<>();
+        this.arlValues.add(rate);
     }
     
     public String getId() {
@@ -47,17 +50,21 @@ public class Currency {
     public void setName(String name) {
         this.name = name;
     }
-
-    public String getValue() {
-        return value;
+    
+    public ExchangeRate getValue(){
+        return arlValues.get(arlValues.size() - 1);
     }
-
-    public void setValue(String value) {
-        this.value = value;
+    
+    public void setValue(ExchangeRate rate){
+        this.arlValues.add(rate);
+    }
+    
+    public ArrayList<ExchangeRate> getRates() {
+        return this.arlValues;
     }
     
     @Override
     public String toString(){
-        return "id="+id+"name="+name+"value="+value;
+        return "id=" + id + " name=" + name + " value=" + arlValues.get(arlValues.size() - 1).toString();
     }
 }

@@ -34,4 +34,16 @@ public class APIController {
         }
         return json;
     }
+    
+    public void Post(String url){
+        
+    }
+    
+    public void Put(String url){
+        
+    }
+    
+    public void Delete(String url){
+        
+    }
 }
