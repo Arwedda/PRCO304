@@ -9,18 +9,21 @@ package model;
  *
  * @author jkell
  */
-public class Trade {
+public class GDAXTrade {
     private String time;
     private String price;
+    private int trade_id; 
 
-    public Trade() {
+    public GDAXTrade() {
         this.time = "unknown";
         this.price = "unknown";
+        this.trade_id = 0;
     }
     
-    public Trade(String time, String price) {
+    public GDAXTrade(String time, String price, int trade_id) {
         this.time = time;
         this.price = price;
+        this.trade_id = trade_id;
     }
 
     public String getTime() {
@@ -37,5 +40,13 @@ public class Trade {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public int getTrade_id() {
+        return trade_id;
+    }
+
+    public void setTrade_id(int trade_id) {
+        this.trade_id = trade_id;
     }
 }

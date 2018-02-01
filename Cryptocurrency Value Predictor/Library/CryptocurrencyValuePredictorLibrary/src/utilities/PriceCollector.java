@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import model.Currency;
-import model.Trade;
+import model.GDAXTrade;
 
 
 /**
@@ -77,7 +77,7 @@ public class PriceCollector {
     }
     
     private int calculateRecentAverages(Object[] trades, int maxReadings) {
-        String oldest = ((Trade)trades[99]).getTime();
+        String oldest = ((GDAXTrade)trades[99]).getTime();
         oldest = oldest.substring(0, Math.min(oldest.length(), 16));
         Double avgPrice = 0.0;
         int tradeNo = 0;
@@ -93,8 +93,8 @@ public class PriceCollector {
         System.out.println(tradeTime);
         
         for (Object trade : trades){
-            if (helper.stringsMatch(((Trade)trade).getTime(), tradeTime.minusMinutes(1).toString(), 16)) {
-            avgPrice += Double.parseDouble(((Trade)trade).getPrice());
+            if (helper.stringsMatch(((GDAXTrade)trade).getTime(), tradeTime.minusMinutes(1).toString(), 16)) {
+            avgPrice += Double.parseDouble(((GDAXTrade)trade).getPrice());
             tradeNo += 1;
             }
         }
@@ -152,8 +152,8 @@ public class PriceCollector {
         int tradeNo = 0;
 
         for (Object trade : trades){
-            if (helper.stringsMatch(((Trade)trade).getTime(), postTime.minusMinutes(1).toString(), 16)) {
-            avgPrice += Double.parseDouble(((Trade)trade).getPrice());
+            if (helper.stringsMatch(((GDAXTrade)trade).getTime(), postTime.minusMinutes(1).toString(), 16)) {
+            avgPrice += Double.parseDouble(((GDAXTrade)trade).getPrice());
             tradeNo += 1;
             }
         }
