@@ -6,6 +6,7 @@
 package utilities;
 
 import controllers.APIController;
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -32,15 +33,38 @@ public class PriceCollector {
     private JsonParser parser = new JsonParser();
     private Helpers helper = new Helpers();
     private ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
-
+    private WebsocketListener wsListener;
 
     public PriceCollector() {
         System.out.println("[INFO] Fetching resource from: " + API_ENDPOINT + "currencies/");
         try {
+            initWebsocketListener();
             setUpCurrencies();
             getRecentPrices(100);
             initCollector();
         } catch (Exception e){
+            System.out.println("[INFO] Error: " + e);
+        }
+    }
+    
+    private void initWebsocketListener(){
+        try {
+            wsListener = new WebsocketListener(new URI("wss://ws-feed.gdax.com"));
+        
+            wsListener.addMessageHandler(new WebsocketListener.MessageHandler() {
+                @Override
+                public void handleMessage(String message) {
+                    System.out.println(message);
+                }
+            });
+
+            // send message to websocket
+            wsListener.sendMessage("{\"type\": \"subscribe\", \"product_ids\": [\"BCH-USD\", \"BTC-USD\", \"ETH-USD\", \"LTC-USD\"], \"channels\": [\"level2\", \"heartbeat\"] }");
+
+            // wait 5 seconds for messages from websocket
+            Thread.sleep(5000);
+
+        } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
         }
     }
@@ -73,7 +97,7 @@ public class PriceCollector {
     }
     
     private int calculateRecentAverages(String json, int readings) {
-        Double avgPrice = 0.0;
+        /*Double avgPrice = 0.0;
         int tradeNo = 0;
         Object[] trades = parser.fromJSON(json);
         ArrayList<ExchangeRate> avgPrices = new ArrayList<>();
@@ -102,7 +126,7 @@ public class PriceCollector {
             }
 
             //create averages for each minute, pass back # of minutes, 
-        }
+        }*/
         return 1;
     }
     
