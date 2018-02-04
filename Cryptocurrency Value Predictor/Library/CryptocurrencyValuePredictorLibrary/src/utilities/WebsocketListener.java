@@ -30,7 +30,7 @@ public class WebsocketListener {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, endpointURI);
         } catch (Exception e) {
-            System.out.println("[Info] Error: " + e.getMessage());
+            System.out.println("[Info] Error: " + e);
         }
     }
     
