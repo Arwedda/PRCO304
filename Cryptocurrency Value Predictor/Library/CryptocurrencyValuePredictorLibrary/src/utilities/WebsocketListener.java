@@ -27,6 +27,12 @@ public class WebsocketListener {
     
     public WebsocketListener(URI endpointURI) {
         try {
+            ContainerProvider provider = new ContainerProvider() {
+                @Override
+                protected WebSocketContainer getContainer() {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            };
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             container.connectToServer(this, endpointURI);
         } catch (Exception e) {
