@@ -17,7 +17,34 @@ import java.util.stream.Collectors;
  * @author jkell
  */
 public class APIController {
+    private final String GDAX_ENDPOINT = "https://api.gdax.com/";
+    private final String BCH_TRADES = "products/BCH-USD/trades/";
+    private final String BTC_TRADES = "products/BTC-USD/trades/";
+    private final String ETH_TRADES = "products/ETH-USD/trades/";
+    private final String LTC_TRADES = "products/LTC-USD/trades/";
+//    private static final String API_ENDPOINT = "http://xserve.uopnet.plymouth.ac.uk/modules/intproj/PRCS251A/api/";
+    
     public APIController() {
+    }
+
+    public String getGDAX_ENDPOINT() {
+        return GDAX_ENDPOINT;
+    }
+
+    public String getBCH_TRADES() {
+        return GDAX_ENDPOINT + BCH_TRADES;
+    }
+
+    public String getBTC_TRADES() {
+        return GDAX_ENDPOINT + BTC_TRADES;
+    }
+
+    public String getETH_TRADES() {
+        return GDAX_ENDPOINT + ETH_TRADES;
+    }
+
+    public String getLTC_TRADES() {
+        return GDAX_ENDPOINT + LTC_TRADES;
     }
     
     public String getJSONString(String url){
