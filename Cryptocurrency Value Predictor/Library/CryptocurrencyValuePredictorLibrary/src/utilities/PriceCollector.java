@@ -16,7 +16,6 @@ import model.Currency;
 import model.ExchangeRate;
 import model.GDAXTrade;
 
-
 /**
  *
  * @author jkell
@@ -25,7 +24,6 @@ public class PriceCollector {
     private APIController apiController = new APIController();
     private Currency[] currencies = new Currency[4];
     private JsonParser parser = new JsonParser();
-    private Helpers helper = new Helpers();
     private ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
     private final int readings = 100;
     
@@ -125,45 +123,44 @@ public class PriceCollector {
     
     private ArrayList<ExchangeRate> calculateRecentAverages(String json) {
         ArrayList<ExchangeRate> avgPrices = new ArrayList<>();
-        Double avgPrice = 0.0;
-        int tradeNo = 0;
+        ExchangeRate rate;
+        Double avgPrice;
+        boolean foundStart = false;
         Object[] trades = parser.fromJSON(json);
-        GDAXTrade oldestTrade;
-        String oldestTime;
-        int oldestMins;
-        int oldestHours;
-        LocalDateTime tradeTime;
+        ArrayList<Object> currentTrades = new ArrayList<>();
+        Object[] currTrades;
+        String oldestID;
+        LocalDateTime tradeTime = Helpers.startOfMinute(LocalDateTime.now());
         
         while (avgPrices.size() < readings){
             //The oldest trade will probably be spread from this page to the next,
             //so taking its time allows the prices to be merged
-            oldestTrade = ((GDAXTrade)trades[trades.length - 1]);
-            oldestTime = oldestTrade.getTime().substring(0, Math.min(oldestTrade.getTime().length(), 16));
-            oldestMins = Integer.parseInt(oldestTime.substring(oldestTime.length() - 2, oldestTime.length()));
-            oldestHours = Integer.parseInt(oldestTime.substring(oldestTime.length() - 5, oldestTime.length() - 3));
-            System.out.println(oldestMins);
-            System.out.println(oldestHours);
-
-            tradeTime = LocalDateTime.now().minusMinutes(1);
+            oldestID = String.valueOf(((GDAXTrade)trades[trades.length - 1]).getTrade_id());
             
-            //Should work to here
-            while (oldestMins < tradeTime.getMinute() || oldestHours < tradeTime.getHour()){
-                
-                for (Object trade : trades){
-                    if (helper.stringsMatch(((GDAXTrade)trade).getTime(), tradeTime.toString(), 16)) {
-                    avgPrice += Double.parseDouble(((GDAXTrade)trade).getPrice());
-                    tradeNo += 1;
-                    }
-                    avgPrice /= tradeNo;
+            for (Object trade : trades){
+                if (Helpers.stringsMatch(((GDAXTrade)trade).getTime(), String.valueOf(tradeTime.minusMinutes(1)), 16)) {
+                    currentTrades.add(trade);
+                    foundStart = true;
+                } else if (foundStart) {
+                    currTrades = currentTrades.toArray();
+                    currentTrades.clear();
+                    avgPrice = calculateAveragePrice(currTrades, tradeTime);
+                    rate = new ExchangeRate(Helpers.startOfMinute(tradeTime), String.valueOf(avgPrice));
+                    avgPrices.add(rate);
+                    tradeTime = tradeTime.minusMinutes(1);
                 }
-                tradeTime = tradeTime.minusMinutes(1);
             }
-
-            //add to arrayslist + make new endpoint request
+            for (ExchangeRate rt : avgPrices){
+                System.out.println(rt.getTimestamp() + " " + rt.getValue());
+            }
             
-            trades = parser.fromJSON(json);
+            trades = parser.fromJSON(json + "?after=" + oldestID);
         }
         return avgPrices;
+    }
+    
+    private boolean tradeBeforeTime(GDAXTrade trade, LocalDateTime time){
+        return Helpers.localDateTimeParser(trade.getTime()).isBefore(time);
     }
     
     private void initCollector(){
@@ -174,7 +171,7 @@ public class PriceCollector {
             }
 
             private void priceCollection() {
-                Currency[] currencies = get(LocalDateTime.now().minusSeconds(LocalDateTime.now().getSecond()).minusNanos(LocalDateTime.now().getNano()));
+                Currency[] currencies = get(Helpers.startOfMinute(LocalDateTime.now()));
                 System.out.println(currencies[0].getId() + " " + currencies[0].getName() + " " + currencies[0].getValue());
                 System.out.println(currencies[1].getId() + " " + currencies[1].getName() + " " + currencies[1].getValue());
                 System.out.println(currencies[2].getId() + " " + currencies[2].getName() + " " + currencies[2].getValue());
@@ -190,23 +187,23 @@ public class PriceCollector {
         try {
             ExchangeRate rate;
             String json = apiController.getJSONString(apiController.getBCH_TRADES());
-            Double avgPrice = calculateAveragePrice(json, postTime);
-            rate = new ExchangeRate(postTime, avgPrice.toString());
+            Double avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
+            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
             currencies[0].setValue(rate);
             
             json = apiController.getJSONString(apiController.getBTC_TRADES());
-            avgPrice = calculateAveragePrice(json, postTime);
-            rate = new ExchangeRate(postTime, avgPrice.toString());
+            avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
+            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
             currencies[1].setValue(rate);
             
             json = apiController.getJSONString(apiController.getETH_TRADES());
-            avgPrice = calculateAveragePrice(json, postTime);
-            rate = new ExchangeRate(postTime, avgPrice.toString());
+            avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
+            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
             currencies[2].setValue(rate);
             
             json = apiController.getJSONString(apiController.getLTC_TRADES());
-            avgPrice = calculateAveragePrice(json, postTime);
-            rate = new ExchangeRate(postTime, avgPrice.toString());
+            avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
+            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
             currencies[3].setValue(rate);
         } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
@@ -214,19 +211,19 @@ public class PriceCollector {
         return currencies;
     }
     
-    private Double calculateAveragePrice(String json, LocalDateTime postTime) {
-        Object[] trades = parser.fromJSON(json);
+    private Double calculateAveragePrice(Object[] trades, LocalDateTime postTime) {
         Double avgPrice = 0.0;
         int tradeNo = 0;
+        boolean foundStart = false;
 
         for (Object trade : trades){
-            if (helper.stringsMatch(((GDAXTrade)trade).getTime(), postTime.minusMinutes(1).toString(), 16)) {
+            if (Helpers.stringsMatch(((GDAXTrade)trade).getTime(), String.valueOf(postTime.minusMinutes(1)), 16)) {
             avgPrice += Double.parseDouble(((GDAXTrade)trade).getPrice());
             tradeNo += 1;
-            }
+            foundStart = true;
+            } else if (foundStart) break;
         }
-        System.out.println(avgPrice);
-        System.out.println(tradeNo);
+
         /*
             POST TO API
         */

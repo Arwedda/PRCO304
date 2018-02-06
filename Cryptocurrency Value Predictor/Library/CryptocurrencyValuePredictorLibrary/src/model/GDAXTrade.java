@@ -12,15 +12,15 @@ package model;
 public class GDAXTrade {
     private String time;
     private String price;
-    private int trade_id; 
+    private String trade_id; 
 
     public GDAXTrade() {
         this.time = "unknown";
         this.price = "unknown";
-        this.trade_id = 0;
+        this.trade_id = "0";
     }
     
-    public GDAXTrade(String time, String price, int trade_id) {
+    public GDAXTrade(String time, String price, String trade_id) {
         this.time = time;
         this.price = price;
         this.trade_id = trade_id;
@@ -42,11 +42,11 @@ public class GDAXTrade {
         this.price = price;
     }
 
-    public int getTrade_id() {
+    public String getTrade_id() {
         return trade_id;
     }
 
-    public void setTrade_id(int trade_id) {
+    public void setTrade_id(String trade_id) {
         this.trade_id = trade_id;
     }
 }
