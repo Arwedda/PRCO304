@@ -6,7 +6,6 @@
 package utilities;
 
 import controllers.APIController;
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
@@ -24,13 +23,20 @@ public class PriceCollector {
     private APIController apiController = new APIController();
     private Currency[] currencies = new Currency[4];
     private JsonParser parser = new JsonParser();
-    private ScheduledExecutorService exec = Executors.newScheduledThreadPool(1);
+    private ScheduledExecutorService current = Executors.newSingleThreadScheduledExecutor();
+    private ScheduledExecutorService historic = Executors.newSingleThreadScheduledExecutor();
     private final int readings = 100;
     private int currentSecond;
-    private ArrayList<ExchangeRate> bch;
-    private ArrayList<ExchangeRate> btc;
-    private ArrayList<ExchangeRate> eth;
-    private ArrayList<ExchangeRate> ltc;
+    private ArrayList<ExchangeRate> bch = new ArrayList<>();
+    private ArrayList<ExchangeRate> btc = new ArrayList<>();
+    private ArrayList<ExchangeRate> eth = new ArrayList<>();
+    private ArrayList<ExchangeRate> ltc = new ArrayList<>();
+    private ArrayList<Object> bchTrades = new ArrayList<>();
+    private ArrayList<Object> btcTrades = new ArrayList<>();
+    private ArrayList<Object> ethTrades = new ArrayList<>();
+    private ArrayList<Object> ltcTrades = new ArrayList<>();
+
+    
     
     public PriceCollector() {
         //System.out.println("[INFO] Fetching resource from: " + apiController.API_ENDPOINT + "currencies/");
@@ -95,27 +101,22 @@ public class PriceCollector {
 
             private void priceCollection() {
                 if (currentSecond != 0) {
-                    String json;
                     int bchSize = bch.size() + currencies[0].getRates().size();
                     int btcSize = btc.size() + currencies[1].getRates().size();
                     int ethSize = eth.size() + currencies[2].getRates().size();
                     int ltcSize = ltc.size() + currencies[3].getRates().size();
                     
                     if (bchSize < readings) {
-                        json = apiController.getJSONString(apiController.getBCH_TRADES());
-                        calculateRecentAverages(json);
+                        calculateRecentAverages(bch, apiController.getBCH_TRADES(), bchTrades);
                     }
                     if (btcSize < readings) {
-                        json = apiController.getJSONString(apiController.getBTC_TRADES());
-                        calculateRecentAverages(json);
+                        calculateRecentAverages(btc, apiController.getBTC_TRADES(), btcTrades);
                     }
                     if (ethSize < readings) {
-                        json = apiController.getJSONString(apiController.getETH_TRADES());
-                        calculateRecentAverages(json);
+                        calculateRecentAverages(eth, apiController.getETH_TRADES(), ethTrades);
                     }
                     if (ltcSize < readings) {
-                        json = apiController.getJSONString(apiController.getLTC_TRADES());
-                        calculateRecentAverages(json);
+                        calculateRecentAverages(ltc, apiController.getLTC_TRADES(), ltcTrades);
                     }
                     
                     if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
@@ -133,61 +134,49 @@ public class PriceCollector {
             }
         };
 
-        exec.scheduleAtFixedRate(recentPriceCollection, 0, 1, TimeUnit.SECONDS);
-        /*
-        String json;
-        
-        json = apiController.getJSONString(apiController.getBCH_TRADES());
-        ArrayList<ExchangeRate> bch = calculateRecentAverages(json);
-
-        json = apiController.getJSONString(apiController.getBTC_TRADES());
-        ArrayList<ExchangeRate> btc = calculateRecentAverages(json);
-
-        json = apiController.getJSONString(apiController.getETH_TRADES());
-        ArrayList<ExchangeRate> eth = calculateRecentAverages(json);
-
-        json = apiController.getJSONString(apiController.getLTC_TRADES());
-        ArrayList<ExchangeRate> ltc = calculateRecentAverages(json);
-
-        */
+        historic.scheduleAtFixedRate(recentPriceCollection, 0, 1, TimeUnit.SECONDS);
     }
     
-    private ArrayList<ExchangeRate> calculateRecentAverages(String json) {
-        ArrayList<ExchangeRate> avgPrices = new ArrayList<>();
+    private void calculateRecentAverages(ArrayList<ExchangeRate> gatheredPrices, String endpoint, ArrayList<Object> oldTrades) {
+        ArrayList<Object> currentTrades = oldTrades;
         ExchangeRate rate;
         Double avgPrice;
         boolean foundStart = false;
-        Object[] trades = parser.fromJSON(json);
-        ArrayList<Object> currentTrades = new ArrayList<>();
-        Object[] currTrades;
-        String oldestID;
-        LocalDateTime tradeTime = Helpers.startOfMinute(LocalDateTime.now());
+        String pagination = "";
         
-        while (avgPrices.size() < readings){
-            //The oldest trade will probably be spread from this page to the next,
-            //so taking its time allows the prices to be merged
-            oldestID = String.valueOf(((GDAXTrade)trades[trades.length - 1]).getTrade_id());
-            
-            for (Object trade : trades){
-                if (Helpers.stringsMatch(((GDAXTrade)trade).getTime(), String.valueOf(tradeTime.minusMinutes(1)), 16)) {
-                    currentTrades.add(trade);
-                    foundStart = true;
-                } else if (foundStart) {
-                    currTrades = currentTrades.toArray();
-                    currentTrades.clear();
-                    avgPrice = calculateAveragePrice(currTrades, tradeTime);
-                    rate = new ExchangeRate(Helpers.startOfMinute(tradeTime), String.valueOf(avgPrice));
-                    avgPrices.add(rate);
-                    tradeTime = tradeTime.minusMinutes(1);
-                }
-            }
-            for (ExchangeRate rt : avgPrices){
-                System.out.println(rt.getTimestamp() + " " + rt.getValue());
-            }
-            
-            trades = parser.fromJSON(json + "?after=" + oldestID);
+        LocalDateTime tradeTime;
+        if (oldTrades.isEmpty()) {
+            tradeTime = Helpers.startOfMinute(LocalDateTime.now());
+        } else {
+            tradeTime = Helpers.localDateTimeParser(((GDAXTrade)oldTrades.get(oldTrades.size() - 1)).getTime());
+            tradeTime = tradeTime.plusMinutes(1);
+            pagination = "?after=" + ((GDAXTrade)oldTrades.get(oldTrades.size() - 1)).getTrade_id();
+            currentTrades.addAll(oldTrades);
+            oldTrades.clear();
         }
-        return avgPrices;
+        
+        String json = apiController.getJSONString(endpoint + pagination);
+        
+        Object[] trades = parser.fromJSON(json);
+        
+        Object[] currTrades;
+        for (Object trade : trades){
+            if (Helpers.stringsMatch(((GDAXTrade)trade).getTime(), String.valueOf(tradeTime.minusMinutes(1)), 16)) {
+                currentTrades.add(trade);
+                foundStart = true;
+                if (((GDAXTrade)trade).tradesMatch((GDAXTrade)trades[trades.length - 1])){
+                    oldTrades = currentTrades;
+                    System.out.println(((GDAXTrade)oldTrades.get(oldTrades.size() - 1)).getTrade_id());
+                }
+            } else if (foundStart) {
+                currTrades = currentTrades.toArray();
+                currentTrades.clear();
+                avgPrice = calculateAveragePrice(currTrades, tradeTime);
+                rate = new ExchangeRate(Helpers.startOfMinute(tradeTime), String.valueOf(avgPrice));
+                gatheredPrices.add(rate);
+                tradeTime = tradeTime.minusMinutes(1);
+            }
+        }
     }
 
     private void initCollector(){
@@ -206,7 +195,7 @@ public class PriceCollector {
             }
         };
         currentSecond = LocalDateTime.now().getSecond();
-        exec.scheduleAtFixedRate(automatedCollection, (59 - currentSecond), 60, TimeUnit.SECONDS);
+        current.scheduleAtFixedRate(automatedCollection, (59 - currentSecond), 60, TimeUnit.SECONDS);
     }
 
     public Currency[] get(LocalDateTime postTime){

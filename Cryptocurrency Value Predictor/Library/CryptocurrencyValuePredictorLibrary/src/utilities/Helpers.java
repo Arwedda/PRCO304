@@ -23,9 +23,9 @@ public class Helpers {
         return time.minusSeconds(time.getSecond()).minusNanos(time.getNano());
     }
     
-    public static LocalDateTime localDateTimeParser(String date){
+    public static LocalDateTime localDateTimeParser(String datetime){
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(date, format);
+        LocalDateTime localDateTime = LocalDateTime.parse(datetime, format);
         return localDateTime;
     }
 }

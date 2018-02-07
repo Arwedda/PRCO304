@@ -14,6 +14,7 @@ import model.GDAXTrade;
  * @author jkell
  */
 public class JsonParser {
+    
     public JsonParser() {
     }
     
@@ -23,17 +24,19 @@ public class JsonParser {
         //GDAXTrade parser
         GDAXTrade trade;
         //String full = "time\\\":\\\"[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9]{1,3}Z\\\",\\\"trade_id\\\":[0-9]+,\\\"price\\\":\\\"[0-9]+.[0-9]+\\\",\\\"size\\\":\\\"[0-9]+.[0-9]+\\\",\\\"side\\\":\\\"(sell|buy)";
-        String datetimeRegex = "[0-9]{4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]";//:[0-5][0-9].[0-9]{1,3}Z";
-        String priceRegex = "price\\\":\\\"[0-9]+.[0-9]+";
-        String tradeIDRegex = "trade_id\\\":[0-9]+";
+        String datetimeRegex = "\\d{4}-[0-1]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d";//:[0-5][0-9].[0-9]{1,3}Z";
+        String priceRegex = "price\\\":\\\"\\d+.\\d+";
+        String tradeIDRegex = "trade_id\\\":\\d+";
         ArrayList<String> arlTimestamps = getMatches(json, datetimeRegex);
         ArrayList<String> arlPrices = getMatches(json, priceRegex);
         ArrayList<String> arlTradeIDs = getMatches(json, tradeIDRegex);
         ArrayList<GDAXTrade> trades = new ArrayList<>();
+        String price;
+        String tradeID;
 
         for (String timestamp : arlTimestamps){
-            String price = arlPrices.get(0).substring(8);
-            String tradeID = arlTradeIDs.get(0);
+            price = arlPrices.get(0).substring(8);
+            tradeID = arlTradeIDs.get(0).substring(10);
             trade = new GDAXTrade(timestamp, price, tradeID);
             arlPrices.remove(0);
             arlTradeIDs.remove(0);

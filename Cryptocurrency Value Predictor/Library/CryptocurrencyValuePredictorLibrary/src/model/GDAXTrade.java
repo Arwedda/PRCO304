@@ -5,6 +5,8 @@
  */
 package model;
 
+import utilities.Helpers;
+
 /**
  *
  * @author jkell
@@ -48,5 +50,9 @@ public class GDAXTrade {
 
     public void setTrade_id(String trade_id) {
         this.trade_id = trade_id;
+    }
+    
+    public boolean tradesMatch(GDAXTrade trade){
+        return Helpers.stringsMatch(this.trade_id, trade.getTrade_id(), this.trade_id.length());
     }
 }
