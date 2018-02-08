@@ -14,25 +14,29 @@ import java.util.ArrayList;
 public class Currency {
     private String id;
     private String name;
-    private ArrayList<ExchangeRate> arlValues;
+    private ArrayList<ExchangeRate> rates;
+    private boolean calculatingGOFAI;
 
     public Currency() {
         this.id = "unknown";
         this.name = "unknown";
-        this.arlValues = new ArrayList<>();
+        this.rates = new ArrayList<>();
+        this.calculatingGOFAI = false;
     }
     
     public Currency(String id, String name) {
         this.id = id;
         this.name = name;
-        this.arlValues = new ArrayList<>();
+        this.rates = new ArrayList<>();
+        this.calculatingGOFAI = false;
     }
     
     public Currency(String id, String name, ExchangeRate rate) {
         this.id = id;
         this.name = name;
-        this.arlValues = new ArrayList<>();
-        this.arlValues.add(rate);
+        this.rates = new ArrayList<>();
+        this.rates.add(rate);
+        this.calculatingGOFAI = false;
     }
     
     public String getId() {
@@ -51,20 +55,33 @@ public class Currency {
         this.name = name;
     }
     
-    public ExchangeRate getValue(){
-        return arlValues.get(arlValues.size() - 1);
+    public ExchangeRate getRate(){
+        return rates.get(rates.size() - 1);
     }
     
     public void setValue(ExchangeRate rate){
-        this.arlValues.add(rate);
+        try {
+            rate.calculateGrowth(Double.parseDouble(this.getRate().getValue()));
+        } catch (Exception e) {
+            System.out.println("[INFO] Error: " + e);
+        }
+        this.rates.add(rate);
     }
     
     public ArrayList<ExchangeRate> getRates() {
-        return this.arlValues;
+        return this.rates;
     }
-    
+
+    public boolean isCalculatingGOFAI() {
+        return calculatingGOFAI;
+    }
+
+    public void setCalculatingGOFAI(boolean calculatingGOFAI) {
+        this.calculatingGOFAI = calculatingGOFAI;
+    }
+
     @Override
     public String toString(){
-        return "id=" + id + " name=" + name + " value=" + arlValues.get(arlValues.size() - 1).toString();
+        return "id=" + id + " name=" + name + " value=" + rates.get(rates.size() - 1).toString();
     }
 }

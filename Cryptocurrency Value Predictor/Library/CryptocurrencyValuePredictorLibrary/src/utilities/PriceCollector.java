@@ -25,7 +25,8 @@ public class PriceCollector {
     private JsonParser parser = new JsonParser();
     private ScheduledExecutorService current = Executors.newSingleThreadScheduledExecutor();
     private ScheduledExecutorService historic = Executors.newSingleThreadScheduledExecutor();
-    private final int readings = 100;
+    private final int startGOFAI = 21;
+    private final int startNN = 1001;
     private int currentSecond;
     private ArrayList<ExchangeRate> bch = new ArrayList<>();
     private ArrayList<ExchangeRate> btc = new ArrayList<>();
@@ -39,7 +40,7 @@ public class PriceCollector {
     
     
     public PriceCollector() {
-        //System.out.println("[INFO] Fetching resource from: " + apiController.API_ENDPOINT + "currencies/");
+        //System.out.println("[INFO] Fetching resource from: " + apiController.API_ENDPOINT + "/currencies/");
         try {
             setUpCurrencies();
             /*
@@ -100,41 +101,53 @@ public class PriceCollector {
             }
 
             private void priceCollection() {
-                if (currentSecond != 0) {
+                if (0 < currentSecond && currentSecond < 59 ) {
                     int bchSize = bch.size() + currencies[0].getRates().size();
                     int btcSize = btc.size() + currencies[1].getRates().size();
                     int ethSize = eth.size() + currencies[2].getRates().size();
                     int ltcSize = ltc.size() + currencies[3].getRates().size();
-                    
-                    if (bchSize < readings) {
-                        calculateRecentAverages(bch, apiController.getBCH_TRADES(), bchTrades);
-                    }
-                    if (btcSize < readings) {
-                        calculateRecentAverages(btc, apiController.getBTC_TRADES(), btcTrades);
-                    }
-                    if (ethSize < readings) {
-                        calculateRecentAverages(eth, apiController.getETH_TRADES(), ethTrades);
-                    }
-                    if (ltcSize < readings) {
-                        calculateRecentAverages(ltc, apiController.getLTC_TRADES(), ltcTrades);
-                    }
+                    int readingsTaken = 0;
+                    int readings = startGOFAI;
                     
                     if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
+                        if (!currencies[0].isCalculatingGOFAI()){
+                            
+                        }
+                        
+                        readings = startNN;
                         /*
                         MERGE LISTS
                         Remove historic readings from ScheduledExecutorService
                         */
                     }
-                }
+                            
+                    while (readingsTaken < 4){
+                        if (bchSize < readings) {
+                            calculateRecentAverages(bch, apiController.getBCH_TRADES(), bchTrades);
+                            readingsTaken++;
+                        }
+                        if (btcSize < readings) {
+                            calculateRecentAverages(btc, apiController.getBTC_TRADES(), btcTrades);
+                            readingsTaken++;
+                        }
+                        if (ethSize < readings) {
+                            calculateRecentAverages(eth, apiController.getETH_TRADES(), ethTrades);
+                            readingsTaken++;
+                        }
+                        if (ltcSize < readings) {
+                            calculateRecentAverages(ltc, apiController.getLTC_TRADES(), ltcTrades);
+                            readingsTaken++;
+                        }
+                    }
+                    
+                    if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
 
-                currentSecond++;
-                if (currentSecond == 60) {
-                    currentSecond = 0;
+                    }
                 }
             }
         };
 
-        historic.scheduleAtFixedRate(recentPriceCollection, 0, 1, TimeUnit.SECONDS);
+        historic.scheduleWithFixedDelay(recentPriceCollection, 0, 1, TimeUnit.SECONDS);
     }
     
     private void calculateRecentAverages(ArrayList<ExchangeRate> gatheredPrices, String endpoint, ArrayList<Object> oldTrades) {
@@ -187,19 +200,23 @@ public class PriceCollector {
             }
 
             private void priceCollection() {
-                Currency[] currencies = get(Helpers.startOfMinute(LocalDateTime.now()));
-                System.out.println(currencies[0].getId() + " " + currencies[0].getName() + " " + currencies[0].getValue());
-                System.out.println(currencies[1].getId() + " " + currencies[1].getName() + " " + currencies[1].getValue());
-                System.out.println(currencies[2].getId() + " " + currencies[2].getName() + " " + currencies[2].getValue());
-                System.out.println(currencies[3].getId() + " " + currencies[3].getName() + " " + currencies[3].getValue());
+                currentSecond++;
+                if (currentSecond == 60) {
+                    currentSecond = 0;
+                    get(Helpers.startOfMinute(LocalDateTime.now()));
+                    System.out.println(currencies[0].getId() + " " + currencies[0].getName() + " " + currencies[0].getRate());
+                    System.out.println(currencies[1].getId() + " " + currencies[1].getName() + " " + currencies[1].getRate());
+                    System.out.println(currencies[2].getId() + " " + currencies[2].getName() + " " + currencies[2].getRate());
+                    System.out.println(currencies[3].getId() + " " + currencies[3].getName() + " " + currencies[3].getRate());
+                }
             }
         };
         currentSecond = LocalDateTime.now().getSecond();
-        current.scheduleAtFixedRate(automatedCollection, (59 - currentSecond), 60, TimeUnit.SECONDS);
+        current.scheduleAtFixedRate(automatedCollection, 1, 1, TimeUnit.SECONDS);
     }
 
-    public Currency[] get(LocalDateTime postTime){
-        System.out.println("[INFO] Fetching resource from: " + apiController.getGDAX_ENDPOINT() + "products/.../trades");
+    public void get(LocalDateTime postTime){
+        System.out.println("[INFO] Fetching resource from: " + apiController.getGDAX_ENDPOINT() + "/products/.../trades");
         try {
             ExchangeRate rate;
             String json = apiController.getJSONString(apiController.getBCH_TRADES());
@@ -224,7 +241,6 @@ public class PriceCollector {
         } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
         }
-        return currencies;
     }
     
     private Double calculateAveragePrice(Object[] trades, LocalDateTime postTime) {

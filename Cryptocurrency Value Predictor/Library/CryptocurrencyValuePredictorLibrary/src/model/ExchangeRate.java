@@ -14,15 +14,19 @@ import java.time.LocalDateTime;
 public class ExchangeRate {
     private LocalDateTime timestamp;
     private String value;
+    private String growth;
+    private String[] GOFAIPrediction;
 
     public ExchangeRate() {
         this.timestamp = null;
         this.value = "unknown";
+        this.growth = "unknown";
     }
 
     public ExchangeRate(LocalDateTime timestamp, String value) {
         this.timestamp = timestamp;
         this.value = value;
+        this.growth = "unknown";
     }
 
     public LocalDateTime getTimestamp() {
@@ -40,9 +44,18 @@ public class ExchangeRate {
     public void setValue(String value) {
         this.value = value;
     }
+
+    public String getGrowth() {
+        return growth;
+    }
+
+    public void calculateGrowth(double previousValue) {
+        double difference = ((Double.parseDouble(this.value) - previousValue) / previousValue) * 100;
+        this.growth = String.valueOf(difference);
+    }
     
     @Override
     public String toString(){
-        return "timestamp=" + timestamp + " value=" + value;
+        return "timestamp=" + timestamp + " value=" + value + " growth=" + growth;
     }
 }
