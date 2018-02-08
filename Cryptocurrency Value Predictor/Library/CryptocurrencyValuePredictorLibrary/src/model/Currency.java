@@ -6,6 +6,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -81,10 +82,34 @@ public class Currency {
     }
 
     public void mergePrices(ArrayList<ExchangeRate> historicPrices){
+        Collections.reverse(historicPrices);
+        
+        /*
+        Debugging - ensure no 2 prices are entered for the same time
+        */
+        for (ExchangeRate rate : getRates()){
+            for (ExchangeRate rate2 : historicPrices) {
+                if (rate.getTimestamp().equals(rate2.getTimestamp())){
+                    System.out.println("[INFO] Two prices from same time: " + rate.toString() + " & " + rate2.toString());
+                }
+            }
+        }
+        
         this.rates.addAll(0, historicPrices);
+        calculateGrowth();
         historicPrices.clear();
         if (!isCalculatingGOFAI()){
             setCalculatingGOFAI();
+        }
+    }
+    
+    private void calculateGrowth(){
+        for (int i = 1; i < this.rates.size(); i++){
+            if (this.rates.get(i).getGrowth() == 0.0) {
+                this.rates.get(i).calculateGrowth(this.rates.get(i - 1).getValue());
+            } else {
+                break;
+            }
         }
     }
     
