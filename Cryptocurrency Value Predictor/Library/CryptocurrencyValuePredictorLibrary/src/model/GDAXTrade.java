@@ -5,6 +5,7 @@
  */
 package model;
 
+import java.time.LocalDateTime;
 import utilities.Helpers;
 
 /**
@@ -12,35 +13,35 @@ import utilities.Helpers;
  * @author jkell
  */
 public class GDAXTrade {
-    private String time;
-    private String price;
+    private LocalDateTime time;
+    private Double price;
     private String trade_id; 
 
     public GDAXTrade() {
-        this.time = "unknown";
-        this.price = "unknown";
+        this.time = null;
+        this.price = 0.0;
         this.trade_id = "0";
     }
     
-    public GDAXTrade(String time, String price, String trade_id) {
+    public GDAXTrade(LocalDateTime time, Double price, String trade_id) {
         this.time = time;
         this.price = price;
         this.trade_id = trade_id;
     }
 
-    public String getTime() {
+    public LocalDateTime getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(LocalDateTime time) {
         this.time = time;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

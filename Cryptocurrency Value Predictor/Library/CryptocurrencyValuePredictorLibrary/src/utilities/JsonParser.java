@@ -31,13 +31,13 @@ public class JsonParser {
         ArrayList<String> arlPrices = getMatches(json, priceRegex);
         ArrayList<String> arlTradeIDs = getMatches(json, tradeIDRegex);
         ArrayList<GDAXTrade> trades = new ArrayList<>();
-        String price;
+        double price;
         String tradeID;
 
         for (String timestamp : arlTimestamps){
-            price = arlPrices.get(0).substring(8);
+            price = Double.parseDouble(arlPrices.get(0).substring(8));
             tradeID = arlTradeIDs.get(0).substring(10);
-            trade = new GDAXTrade(timestamp, price, tradeID);
+            trade = new GDAXTrade(Helpers.localDateTimeParser(timestamp), price, tradeID);
             arlPrices.remove(0);
             arlTradeIDs.remove(0);
             trades.add(trade);

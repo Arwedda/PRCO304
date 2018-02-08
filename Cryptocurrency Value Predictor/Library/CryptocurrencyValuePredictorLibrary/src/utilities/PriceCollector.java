@@ -108,17 +108,25 @@ public class PriceCollector {
                     int ltcSize = ltc.size() + currencies[3].getRates().size();
                     int readingsTaken = 0;
                     int readings = startGOFAI;
-                    
+
                     if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
                         if (!currencies[0].isCalculatingGOFAI()){
-                            
+                            currencies[0].mergePrices(bch);
+                            currencies[1].mergePrices(btc);
+                            currencies[2].mergePrices(eth);
+                            currencies[3].mergePrices(ltc);
+                            System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
                         }
-                        
                         readings = startNN;
-                        /*
-                        MERGE LISTS
-                        Remove historic readings from ScheduledExecutorService
-                        */
+                        if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
+                            currencies[0].mergePrices(bch);
+                            currencies[1].mergePrices(btc);
+                            currencies[2].mergePrices(eth);
+                            currencies[3].mergePrices(ltc);
+                            System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
+                            System.out.println("[INFO] Shutting down historic price collection thread.");
+                            historic.shutdownNow();
+                        }
                     }
                             
                     while (readingsTaken < 4){
@@ -139,10 +147,6 @@ public class PriceCollector {
                             readingsTaken++;
                         }
                     }
-                    
-                    if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
-
-                    }
                 }
             }
         };
@@ -161,7 +165,7 @@ public class PriceCollector {
         if (oldTrades.isEmpty()) {
             tradeTime = Helpers.startOfMinute(LocalDateTime.now());
         } else {
-            tradeTime = Helpers.localDateTimeParser(((GDAXTrade)oldTrades.get(oldTrades.size() - 1)).getTime());
+            tradeTime = ((GDAXTrade)oldTrades.get(oldTrades.size() - 1)).getTime();
             tradeTime = tradeTime.plusMinutes(1);
             pagination = "?after=" + ((GDAXTrade)oldTrades.get(oldTrades.size() - 1)).getTrade_id();
             currentTrades.addAll(oldTrades);
@@ -174,7 +178,7 @@ public class PriceCollector {
         
         Object[] currTrades;
         for (Object trade : trades){
-            if (Helpers.stringsMatch(((GDAXTrade)trade).getTime(), String.valueOf(tradeTime.minusMinutes(1)), 16)) {
+            if (((GDAXTrade)trade).getTime().equals(tradeTime.minusMinutes(1))) {
                 currentTrades.add(trade);
                 foundStart = true;
                 if (((GDAXTrade)trade).tradesMatch((GDAXTrade)trades[trades.length - 1])){
@@ -185,7 +189,7 @@ public class PriceCollector {
                 currTrades = currentTrades.toArray();
                 currentTrades.clear();
                 avgPrice = calculateAveragePrice(currTrades, tradeTime);
-                rate = new ExchangeRate(Helpers.startOfMinute(tradeTime), String.valueOf(avgPrice));
+                rate = new ExchangeRate(Helpers.startOfMinute(tradeTime), avgPrice);
                 gatheredPrices.add(rate);
                 tradeTime = tradeTime.minusMinutes(1);
             }
@@ -221,22 +225,22 @@ public class PriceCollector {
             ExchangeRate rate;
             String json = apiController.getJSONString(apiController.getBCH_TRADES());
             Double avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
-            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
+            rate = new ExchangeRate(postTime, avgPrice);
             currencies[0].setValue(rate);
             
             json = apiController.getJSONString(apiController.getBTC_TRADES());
             avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
-            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
+            rate = new ExchangeRate(postTime, avgPrice);
             currencies[1].setValue(rate);
             
             json = apiController.getJSONString(apiController.getETH_TRADES());
             avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
-            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
+            rate = new ExchangeRate(postTime, avgPrice);
             currencies[2].setValue(rate);
             
             json = apiController.getJSONString(apiController.getLTC_TRADES());
             avgPrice = calculateAveragePrice(parser.fromJSON(json), postTime);
-            rate = new ExchangeRate(postTime, String.valueOf(avgPrice));
+            rate = new ExchangeRate(postTime, avgPrice);
             currencies[3].setValue(rate);
         } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
@@ -249,8 +253,8 @@ public class PriceCollector {
         boolean foundStart = false;
 
         for (Object trade : trades){
-            if (Helpers.stringsMatch(((GDAXTrade)trade).getTime(), String.valueOf(postTime.minusMinutes(1)), 16)) {
-            avgPrice += Double.parseDouble(((GDAXTrade)trade).getPrice());
+            if (((GDAXTrade)trade).getTime().equals(postTime.minusMinutes(1))) {
+            avgPrice += ((GDAXTrade)trade).getPrice();
             tradeNo += 1;
             foundStart = true;
             } else if (foundStart) break;

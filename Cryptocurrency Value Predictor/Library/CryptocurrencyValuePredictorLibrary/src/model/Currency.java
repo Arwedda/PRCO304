@@ -61,7 +61,7 @@ public class Currency {
     
     public void setValue(ExchangeRate rate){
         try {
-            rate.calculateGrowth(Double.parseDouble(this.getRate().getValue()));
+            rate.calculateGrowth(this.getRate().getValue());
         } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
         }
@@ -76,10 +76,18 @@ public class Currency {
         return calculatingGOFAI;
     }
 
-    public void setCalculatingGOFAI(boolean calculatingGOFAI) {
-        this.calculatingGOFAI = calculatingGOFAI;
+    private void setCalculatingGOFAI() {
+        this.calculatingGOFAI = true;
     }
 
+    public void mergePrices(ArrayList<ExchangeRate> historicPrices){
+        this.rates.addAll(0, historicPrices);
+        historicPrices.clear();
+        if (!isCalculatingGOFAI()){
+            setCalculatingGOFAI();
+        }
+    }
+    
     @Override
     public String toString(){
         return "id=" + id + " name=" + name + " value=" + rates.get(rates.size() - 1).toString();
