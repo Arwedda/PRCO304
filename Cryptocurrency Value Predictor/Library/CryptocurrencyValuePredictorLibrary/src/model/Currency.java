@@ -5,12 +5,8 @@
  */
 package model;
 
-import controllers.APIController;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import utilities.Helpers;
-import utilities.JsonParser;
 
 /**
  *
@@ -21,7 +17,7 @@ public class Currency {
     private String name;
     private ArrayList<ExchangeRate> rates;
     private ArrayList<ExchangeRate> historicRates;
-    private String lastTrade;
+    private ArrayList<GDAXTrade> historicTrades;
     private boolean calculatingGOFAI;
     private final String GDAXEndpoint;
 
@@ -30,7 +26,7 @@ public class Currency {
         this.name = "unknown";
         this.rates = new ArrayList<>();
         this.historicRates = new ArrayList<>();
-        this.lastTrade = "";
+        this.historicTrades = new ArrayList<>();
         this.calculatingGOFAI = false;
         this.GDAXEndpoint = "unknown";
     }
@@ -40,7 +36,7 @@ public class Currency {
         this.name = name;
         this.rates = new ArrayList<>();
         this.historicRates = new ArrayList<>();
-        this.lastTrade = "";
+        this.historicTrades = new ArrayList<>();
         this.calculatingGOFAI = false;
         this.GDAXEndpoint = GDAXEndpoint;
     }
@@ -51,7 +47,7 @@ public class Currency {
         this.rates = new ArrayList<>();
         this.rates.add(rate);
         this.historicRates = new ArrayList<>();
-        this.lastTrade = "";
+        this.historicTrades = new ArrayList<>();
         this.calculatingGOFAI = false;
         this.GDAXEndpoint = GDAXEndpoint;
     }
@@ -97,12 +93,13 @@ public class Currency {
         this.historicRates.add(rate);
     }
     
-    private String getLastTrade() {
-        return lastTrade;
-    }
-
-    private void setLastTrade(String lastTrade) {
-        this.lastTrade = lastTrade;
+    public GDAXTrade getLastHistoricTrade() {
+        try {
+            return historicTrades.get(historicTrades.size() - 1);
+        } catch (Exception e){
+            System.out.println("[Info] No historic trades currently stored.");
+            return null;
+        }
     }
     
     public boolean isCalculatingGOFAI() {
@@ -112,82 +109,17 @@ public class Currency {
     private void setCalculatingGOFAI() {
         this.calculatingGOFAI = true;
     }
-    
-    public void getPrice(APIController apiController, JsonParser parser){
-        ExchangeRate rate;
-        LocalDateTime postTime;
-        try {
-            postTime = getRate().getTimestamp();
-        } catch (Exception e){
-            postTime = Helpers.startOfMinute(LocalDateTime.now());
-        }
-        String json = apiController.getJSONString(apiController.getBCH_TRADES());
-        Object[] locRates = parser.fromJSON(json);
-        Double avgPrice = calculateAveragePrice(locRates, postTime);
-        rate = new ExchangeRate(postTime, avgPrice);
-        setValue(rate);
-    }
-    
-    private Double calculateAveragePrice(Object[] trades, LocalDateTime postTime) {
-        Double avgPrice = 0.0;
-        int tradeNo = 0;
-        boolean foundStart = false;
 
-        for (Object trade : trades){
-            if (((GDAXTrade)trade).getTime().equals(postTime.minusMinutes(1))) {
-            avgPrice += ((GDAXTrade)trade).getPrice();
-            tradeNo += 1;
-            foundStart = true;
-            } else if (foundStart) break;
-        }
-
-        /*
-            POST TO API
-        */
-        
-        return (avgPrice /= tradeNo);
+    public String getGDAXEndpoint() {
+        return GDAXEndpoint;
     }
-    
-    public void calculateRecentAverages(APIController apiController, JsonParser parser) {
-        ArrayList<Object> currentTrades = new ArrayList<>();
-        ExchangeRate rate;
-        Double avgPrice;
-        boolean foundStart = false;
-        String pagination = "";
-        LocalDateTime tradeTime;
-        String json;
-        Object[] trades;
-        
-        if (getLastTrade().equals("")) {
-            tradeTime = Helpers.startOfMinute(LocalDateTime.now());
-            json = apiController.getJSONString(GDAXEndpoint);
-            trades = parser.fromJSON(json);
-            System.out.println("[INFO] Restarting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
-        } else {
-            pagination = "?after=" + getLastTrade();
-            json = apiController.getJSONString(GDAXEndpoint + pagination);
-            trades = parser.fromJSON(json);
-            tradeTime = ((GDAXTrade)trades[0]).getTime();
-        }
-        
-        if (json.equals("")) return;
-        
-        Object[] currTrades;
-        for (Object trade : trades){
-            if (((GDAXTrade)trade).getTime().equals(tradeTime.minusMinutes(1))) {
-                currentTrades.add(trade);
-                foundStart = true;
-            } else if (foundStart) {
-                setLastTrade(((GDAXTrade)currentTrades.get(currentTrades.size() - 1)).getTrade_id());
-                currTrades = currentTrades.toArray();
-                currentTrades.clear();
-                avgPrice = calculateAveragePrice(currTrades, tradeTime);
-                rate = new ExchangeRate(tradeTime, avgPrice);
-                addHistoricRate(rate);
-                System.out.println("[INFO] Posting trade for: " + tradeTime.getHour() + ":" + tradeTime.plusMinutes(1).getMinute());
-                tradeTime = tradeTime.minusMinutes(1);
-            }
-        }
+
+    public ArrayList<GDAXTrade> getHistoricTrades() {
+        return historicTrades;
+    }
+
+    public void addHistoricTrade(GDAXTrade historicTrade) {
+        this.historicTrades.add(historicTrade);
     }
     
     public void mergePrices(){
