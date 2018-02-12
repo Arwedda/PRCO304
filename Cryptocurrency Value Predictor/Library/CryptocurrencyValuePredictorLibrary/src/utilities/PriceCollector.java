@@ -7,6 +7,8 @@ package utilities;
 
 import controllers.APIController;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -96,6 +98,7 @@ public class PriceCollector {
                     int ethSize = currencies[2].getNumberOfRatesCollected();
                     int ltcSize = currencies[3].getNumberOfRatesCollected();
                     int readingsTaken = 0;
+                    boolean collectionCompleted = true;
                     int readings = startGOFAI;
                     Object[] trades;
 
@@ -119,18 +122,19 @@ public class PriceCollector {
                             
                     while (readingsTaken < 4){
                         for (Currency currency : currencies){
+                            collectionCompleted = true;
                             if (currency.getNumberOfRatesCollected() < readings){
                                 trades = getHistoricTrades(currency);
                                 calculateHistoricAverages(currency, trades);
                                 readingsTaken++;
+                                collectionCompleted = false;
                             }
                             if (readingsTaken == 4) {
                                 System.out.println("[INFO] 4 readings taken. 1 second break for GDAX API.");
                                 break;
                             }
                         }
-                        if (readingsTaken == 0) {
-                            System.out.println("[INFO] Failed to take a reading - collected enough rates for all.");
+                        if (collectionCompleted){
                             break;
                         }
                     }
@@ -231,9 +235,9 @@ public class PriceCollector {
         Double avgPrice;
         LocalDateTime tradeTime;
         
-        if (currency.getLastHistoricTrade() == null) {
+        if (!currency.hasFoundPosition()) {
             tradeTime = Helpers.startOfMinute(LocalDateTime.now());
-            System.out.println("[INFO] Restarting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
+            System.out.println("[INFO] " + currency.getId() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
         } else {
             tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
         }
@@ -242,16 +246,46 @@ public class PriceCollector {
             if (((GDAXTrade)trade).getTime().equals(tradeTime.minusMinutes(1))) {
                 currency.addHistoricTrade((GDAXTrade)trade);
             } else {
-                if (!currency.getHistoricTrades().isEmpty()) {
+                if (currency.hasFoundPosition()) {
                     avgPrice = calculateAveragePrice((Object[])currency.getHistoricTrades().toArray(), tradeTime);
                     rate = new ExchangeRate(tradeTime, avgPrice);
                     currency.addHistoricRate(rate);
-                    System.out.println("[INFO] Posting trade for: " + tradeTime.getHour() + ":" + tradeTime.plusMinutes(1).getMinute());
+                    System.out.println("[INFO] Posting trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     tradeTime = tradeTime.minusMinutes(1);
-                } else {
-                    System.out.println("[INFO] No trades for minute " + tradeTime.getHour() + ":" + tradeTime.plusMinutes(1).getMinute());
+                    currency.addHistoricTrade((GDAXTrade)trade);
                 }
             }
         }
+    }
+
+    private void gofaiTest(Currency currency, int testSize){
+        double[] predictions = new double[20];
+        ExchangeRate[] rates = (ExchangeRate[]) currency.getRates().toArray();
+        ExchangeRate[] currentRates;
+
+        for (int i = 0; i < testSize; i++) {
+            currentRates = Arrays.copyOfRange(rates, (rates.length - 21) - i, (rates.length - 1) - i);
+            predictions = getPredictions(currentRates);
+            currency.getRates().get((currency.getRates().size() - 1) - i).GOFAINextGrowth = predictions;
+        }
+
+    }
+
+    private double[] getPredictions(ExchangeRate[] rates){
+        int preds = 20;
+        double[] predictions = new double[preds];
+
+        for (int i = 0; i < preds; i++){
+            predictions[i] = averageGrowth(rates, i+1);
+        }
+        return predictions;
+    }
+
+    private double averageGrowth(ExchangeRate[] rate, int entriesToUse){
+        double avg = 0.0;
+        for (int i = 0; i < entriesToUse; i++){
+            avg += rate[(rate.length - 1) - i].getGrowth();
+        }
+        return (avg / rate.length);
     }
 }

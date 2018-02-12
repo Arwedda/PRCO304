@@ -74,6 +74,9 @@ public class Currency {
     
     public void setValue(ExchangeRate rate){
         try {
+            if (rate.getValue() < 0.0000000000000001){
+                rate.setValue(this.getRate().getValue());
+            }
             rate.calculateGrowth(this.getRate().getValue());
         } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
@@ -90,16 +93,31 @@ public class Currency {
     }
 
     public void addHistoricRate(ExchangeRate rate) {
+        if (rate.getValue() < 0.0000000000000001){
+            rate.setValue(getHistoricRate().getValue());
+        }
         this.historicRates.add(rate);
+        this.historicTrades.clear();
+    }
+    
+    private ExchangeRate getHistoricRate(){
+        try {
+            return historicRates.get(historicRates.size() - 1);
+        } catch (Exception e){
+            return null;
+        }
     }
     
     public GDAXTrade getLastHistoricTrade() {
         try {
             return historicTrades.get(historicTrades.size() - 1);
         } catch (Exception e){
-            System.out.println("[Info] No historic trades currently stored.");
             return null;
         }
+    }
+
+    public boolean hasFoundPosition() {
+        return (0 < this.historicRates.size() || 0 < this.historicTrades.size());
     }
     
     public boolean isCalculatingGOFAI() {
@@ -148,9 +166,9 @@ public class Currency {
         for (int i = 1; i < this.rates.size(); i++){
             if (this.rates.get(i).getGrowth() == 0.0) {
                 this.rates.get(i).calculateGrowth(this.rates.get(i - 1).getValue());
-            } else {
+            }/* else {
                 break;
-            }
+            }*/
         }
     }
     

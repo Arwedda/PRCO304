@@ -15,7 +15,7 @@ public class ExchangeRate {
     private LocalDateTime timestamp;
     private double value;
     private double growth;
-    private double GOFAINextGrowth;
+    public double[] GOFAINextGrowth = new double[20];
 
     public ExchangeRate() {
         this.timestamp = null;
