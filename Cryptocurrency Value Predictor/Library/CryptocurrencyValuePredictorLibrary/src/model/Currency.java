@@ -52,11 +52,11 @@ public class Currency {
         this.GDAXEndpoint = GDAXEndpoint;
     }
 
-    public String getId() {
+    public String getID() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setID(String id) {
         this.id = id;
     }
 
@@ -69,7 +69,11 @@ public class Currency {
     }
     
     public ExchangeRate getRate(){
-        return rates.get(rates.size() - 1);
+        try {
+            return rates.get(rates.size() - 1);
+        } catch (Exception e){
+            return null;
+        }
     }
     
     public void setValue(ExchangeRate rate){
@@ -78,7 +82,13 @@ public class Currency {
                 rate.setValue(this.getRate().getValue());
             }
             rate.calculateGrowth(this.getRate().getValue());
-        } catch (Exception e) {
+        } catch (NullPointerException npe) {
+            if (rates.isEmpty()){
+                System.out.println("[INFO] Error: " + npe + " (expected - adding a value that doesn't have a predecessor.)");
+            } else {
+                System.out.println("[INFO] Error: " + npe + "! Does have predecessor to calculate growth! ERROR!");
+            }
+        } catch (Exception e){
             System.out.println("[INFO] Error: " + e);
         }
         this.rates.add(rate);
@@ -164,7 +174,7 @@ public class Currency {
     
     private void calculateGrowth(){
         for (int i = 1; i < this.rates.size(); i++){
-            if (this.rates.get(i).getGrowth() == 0.0) {
+            if (null == this.rates.get(i).getGrowth()) {
                 this.rates.get(i).calculateGrowth(this.rates.get(i - 1).getValue());
             }/* else {
                 break;
@@ -173,7 +183,7 @@ public class Currency {
     }
     
     public int getNumberOfRatesCollected(){
-        return this.rates.size() + this.historicRates.size();
+        return (this.rates.size() + this.historicRates.size());
     }
     
     @Override

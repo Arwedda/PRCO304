@@ -14,19 +14,19 @@ import java.time.LocalDateTime;
 public class ExchangeRate {
     private LocalDateTime timestamp;
     private double value;
-    private double growth;
+    private Double growth;
     public double[] GOFAINextGrowth = new double[20];
 
     public ExchangeRate() {
         this.timestamp = null;
         this.value = 0.0;
-        this.growth = 0.0;
+        this.growth = null;
     }
 
     public ExchangeRate(LocalDateTime timestamp, double value) {
         this.timestamp = timestamp;
         this.value = value;
-        this.growth = 0.0;
+        this.growth = null;
     }
 
     public LocalDateTime getTimestamp() {
@@ -49,8 +49,15 @@ public class ExchangeRate {
         return growth;
     }
 
-    public void calculateGrowth(double previousValue) { 
-        this.growth = ((this.value - previousValue) / previousValue) * 100;
+    public void calculateGrowth(Double previousValue) {
+        try {
+            this.growth = ((this.value - previousValue) / previousValue) * 100;
+        } catch (ArithmeticException e){
+            System.out.println("[INFO] Growth from 0 to " + getValue() + " can't be calculated.");
+            this.growth = null;
+        } catch (Exception e){
+            System.out.println("[INFO] Error: " + e);
+        }
     }
     
     @Override

@@ -15,18 +15,18 @@ import utilities.Helpers;
 public class GDAXTrade {
     private LocalDateTime time;
     private Double price;
-    private String trade_id; 
+    private String id; 
 
     public GDAXTrade() {
         this.time = null;
         this.price = 0.0;
-        this.trade_id = "0";
+        this.id = "0";
     }
     
     public GDAXTrade(LocalDateTime time, Double price, String trade_id) {
         this.time = time;
         this.price = price;
-        this.trade_id = trade_id;
+        this.id = trade_id;
     }
 
     public LocalDateTime getTime() {
@@ -45,15 +45,15 @@ public class GDAXTrade {
         this.price = price;
     }
 
-    public String getTrade_id() {
-        return trade_id;
+    public String getID() {
+        return id;
     }
 
-    public void setTrade_id(String trade_id) {
-        this.trade_id = trade_id;
+    public void setID(String id) {
+        this.id = id;
     }
     
     public boolean tradesMatch(GDAXTrade trade){
-        return Helpers.stringsMatch(this.trade_id, trade.getTrade_id(), this.trade_id.length());
+        return Helpers.stringsMatch(this.id, trade.getID(), this.id.length());
     }
 }

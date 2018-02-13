@@ -7,7 +7,6 @@ package utilities;
 
 import controllers.APIController;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -92,52 +91,57 @@ public class PriceCollector {
             }
 
             private void priceCollection() {
-                if (0 < currentSecond && currentSecond < 59 ) {
-                    int bchSize = currencies[0].getNumberOfRatesCollected();
-                    int btcSize = currencies[1].getNumberOfRatesCollected();
-                    int ethSize = currencies[2].getNumberOfRatesCollected();
-                    int ltcSize = currencies[3].getNumberOfRatesCollected();
-                    int readingsTaken = 0;
-                    boolean collectionCompleted = true;
-                    int readings = startGOFAI;
-                    Object[] trades;
+                try {
+                    if (0 < currentSecond && currentSecond < 59 ) {
+                        int[] sizes = new int[currencies.length];
+                        int readingsTaken = 0;
+                        int readings = startGOFAI;
+                        Object[] trades;
 
-                    if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
-                        if (!currencies[0].isCalculatingGOFAI()){
-                            for (Currency currency : currencies){
-                                currency.mergePrices();
-                            }
-                            System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
+                        for (int i = 0; i < sizes.length; i++){
+                            sizes[i] = currencies[i].getNumberOfRatesCollected();
                         }
-                        readings = startNN;
-                        if (readings <= bchSize && readings <= btcSize && readings <= ethSize && readings <=  ltcSize) {
-                            for (Currency currency : currencies){
-                                currency.mergePrices();
+
+                        if (collectionCompleted(readings, sizes)) {
+                            if (!currencies[0].isCalculatingGOFAI()){
+                                for (Currency currency : currencies){
+                                    currency.mergePrices();
+                                }
+                                System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
                             }
-                            System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
-                            System.out.println("[INFO] Shutting down historic price collection thread.");
-                            historic.shutdownNow();
+                            readings = startNN;
+                            if (collectionCompleted(readings, sizes)) {
+                                for (Currency currency : currencies){
+                                    currency.mergePrices();
+                                }
+                                System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
+                                System.out.println("[INFO] Shutting down historic price collection thread.");
+                                historic.shutdownNow();
+                            }
                         }
-                    }
-                            
-                    while (readingsTaken < 4){
-                        for (Currency currency : currencies){
-                            collectionCompleted = true;
-                            if (currency.getNumberOfRatesCollected() < readings){
-                                trades = getHistoricTrades(currency);
-                                calculateHistoricAverages(currency, trades);
-                                readingsTaken++;
-                                collectionCompleted = false;
+
+                        while (readingsTaken < 4){
+                            for (Currency currency : currencies){
+                                if (currency.getNumberOfRatesCollected() < readings){
+                                    trades = getHistoricTrades(currency);
+                                    calculateHistoricAverages(currency, trades);
+                                    readingsTaken++;
+                                }
+                                if (readingsTaken == 4) {
+                                    System.out.println("[INFO] 4 readings taken. 1 second break for GDAX API.");
+                                    break;
+                                }
                             }
-                            if (readingsTaken == 4) {
-                                System.out.println("[INFO] 4 readings taken. 1 second break for GDAX API.");
+                            for (int i = 0; i < sizes.length; i++){
+                                sizes[i] = currencies[i].getNumberOfRatesCollected();
+                            }
+                            if (collectionCompleted(readings, sizes)){
                                 break;
                             }
                         }
-                        if (collectionCompleted){
-                            break;
-                        }
                     }
+                } catch (Exception e){
+                    System.out.println("[INFO] Error: " + e);
                 }
             }
         };
@@ -153,11 +157,22 @@ public class PriceCollector {
             json = apiController.getJSONString(currency.getGDAXEndpoint());
             trades = parser.fromJSON(json);
         } else {
-            pagination = "?after=" + currency.getLastHistoricTrade().getTrade_id();
+            pagination = "?after=" + currency.getLastHistoricTrade().getID();
             json = apiController.getJSONString(currency.getGDAXEndpoint() + pagination);
             trades = parser.fromJSON(json);
         }
         return trades;
+    }
+    
+    private boolean collectionCompleted(int readings, int[] sizes){
+        boolean completed = true;
+        for (int i : sizes){
+            if (i < readings){
+                completed = false;
+                break;
+            }
+        }
+        return completed;
     }
 
     private void initCollector(){
@@ -173,7 +188,7 @@ public class PriceCollector {
                     currentSecond = 0;
                     getCurrentPrices(Helpers.startOfMinute(LocalDateTime.now()));
                     for (Currency currency : currencies){
-                        System.out.println(currency.getId() + " " + currency.getName() + " " + currency.getRate());
+                        System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
                     }
                 }
             }
@@ -237,7 +252,7 @@ public class PriceCollector {
         
         if (!currency.hasFoundPosition()) {
             tradeTime = Helpers.startOfMinute(LocalDateTime.now());
-            System.out.println("[INFO] " + currency.getId() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
+            System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
         } else {
             tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
         }
@@ -250,7 +265,7 @@ public class PriceCollector {
                     avgPrice = calculateAveragePrice((Object[])currency.getHistoricTrades().toArray(), tradeTime);
                     rate = new ExchangeRate(tradeTime, avgPrice);
                     currency.addHistoricRate(rate);
-                    System.out.println("[INFO] Posting trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
+                    System.out.println("[INFO] Posting " + currency.getID() + " trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     tradeTime = tradeTime.minusMinutes(1);
                     currency.addHistoricTrade((GDAXTrade)trade);
                 }
