@@ -167,7 +167,7 @@ public class CurrencyTest {
         assertFalse(ratelessCurrency.isCalculatingGOFAI());
         assertFalse(currency.isCalculatingGOFAI());
         
-        blankCurrency.mergePrices();
+        blankCurrency.mergeRates();
         assertTrue(blankCurrency.isCalculatingGOFAI());
         blankCurrency = new Currency();
     }
@@ -205,7 +205,7 @@ public class CurrencyTest {
         blankCurrency.addHistoricRate(rate);
         ExchangeRate newRate = new ExchangeRate(now, ONEHUNDREDANDTWENTYFIVE);
         blankCurrency.setValue(newRate);
-        blankCurrency.mergePrices();
+        blankCurrency.mergeRates();
         
         assertEquals(rate, blankCurrency.getRates().get(0));
         assertEquals(newRate, blankCurrency.getRates().get(1));

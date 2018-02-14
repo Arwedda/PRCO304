@@ -22,7 +22,7 @@ import model.GDAXTrade;
 public class PriceCollector {
     private APIController apiController = new APIController();
     private Currency[] currencies = new Currency[4];
-    private JsonParser parser = new JsonParser();
+    private JSONParser parser = new JSONParser();
     private ScheduledExecutorService current = Executors.newSingleThreadScheduledExecutor();
     private ScheduledExecutorService historic = Executors.newSingleThreadScheduledExecutor();
     private final int startGOFAI = 21;
@@ -41,7 +41,7 @@ public class PriceCollector {
             initWebsocketListener();
             */
             initCollector();
-            getRecentPrices();
+            initHistoricCollector();
         } catch (Exception e){
             System.out.println("[INFO] Error: " + e);
         }
@@ -83,8 +83,8 @@ public class PriceCollector {
         currencies[3] = newCurrency;
     }
     
-    private void getRecentPrices(){  
-        Runnable recentPriceCollection = new Runnable() {
+    private void initHistoricCollector(){  
+        Runnable historicPriceCollection = new Runnable() {
             @Override
             public void run() {
                 priceCollection();
@@ -105,14 +105,30 @@ public class PriceCollector {
                         if (collectionCompleted(readings, sizes)) {
                             if (!currencies[0].isCalculatingGOFAI()){
                                 for (Currency currency : currencies){
-                                    currency.mergePrices();
+                                    currency.mergeRates();
                                 }
                                 System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
                             }
+                            
+                            /*
+                                START OF GOFAI METHOD TESTING
+                            */
+                            readings = 21;
+                            if (collectionCompleted(readings, sizes)){
+                                for (Currency currency : currencies){
+                                    currency.mergeRates();
+                                    PricePredictor.gofaiTest(currency, readings);
+                                }
+                            }
+                            
+                            /*
+                                END OF GOFAI METHOD TESTING
+                            */
+                            
                             readings = startNN;
                             if (collectionCompleted(readings, sizes)) {
                                 for (Currency currency : currencies){
-                                    currency.mergePrices();
+                                    currency.mergeRates();
                                 }
                                 System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
                                 System.out.println("[INFO] Shutting down historic price collection thread.");
@@ -145,7 +161,7 @@ public class PriceCollector {
                 }
             }
         };
-        historic.scheduleWithFixedDelay(recentPriceCollection, 0, 1, TimeUnit.SECONDS);
+        historic.scheduleWithFixedDelay(historicPriceCollection, 0, 1, TimeUnit.SECONDS);
     }
     
     private Object[] getHistoricTrades(Currency currency) {
@@ -197,7 +213,7 @@ public class PriceCollector {
         current.scheduleAtFixedRate(automatedCollection, 1, 1, TimeUnit.SECONDS);
     }
 
-    public void getCurrentPrices(LocalDateTime postTime){
+    private void getCurrentPrices(LocalDateTime postTime){
         System.out.println("[INFO] Fetching resource from: " + apiController.getGDAX_ENDPOINT() + "/products/.../trades");
         try {
             Object[] trades;
@@ -214,14 +230,14 @@ public class PriceCollector {
         }
     }
     
-    public Object[] getTrades(Currency currency){
+    private Object[] getTrades(Currency currency){
         Object[] trades;
         String json = apiController.getJSONString(currency.getGDAXEndpoint());
         trades = parser.fromJSON(json);
         return trades;
     }
     
-    public Double calculateAveragePrice(Object[] trades, LocalDateTime postTime) {
+    private Double calculateAveragePrice(Object[] trades, LocalDateTime postTime) {
         Double avgPrice = 0.0;
         int tradeNo = 0;
         boolean foundStart = false;
@@ -241,7 +257,7 @@ public class PriceCollector {
         return (avgPrice /= tradeNo);
     }
     
-    public void calculateHistoricAverages(Currency currency, Object[] trades) {
+    private void calculateHistoricAverages(Currency currency, Object[] trades) {
         if (trades.length == 0) {
             System.out.println("[INFO] calculateHistoricAverages received no trades. GDAX endpoint may be down...");
             return;
@@ -271,36 +287,5 @@ public class PriceCollector {
                 }
             }
         }
-    }
-
-    private void gofaiTest(Currency currency, int testSize){
-        double[] predictions = new double[20];
-        ExchangeRate[] rates = (ExchangeRate[]) currency.getRates().toArray();
-        ExchangeRate[] currentRates;
-
-        for (int i = 0; i < testSize; i++) {
-            currentRates = Arrays.copyOfRange(rates, (rates.length - 21) - i, (rates.length - 1) - i);
-            predictions = getPredictions(currentRates);
-            currency.getRates().get((currency.getRates().size() - 1) - i).GOFAINextGrowth = predictions;
-        }
-
-    }
-
-    private double[] getPredictions(ExchangeRate[] rates){
-        int preds = 20;
-        double[] predictions = new double[preds];
-
-        for (int i = 0; i < preds; i++){
-            predictions[i] = averageGrowth(rates, i+1);
-        }
-        return predictions;
-    }
-
-    private double averageGrowth(ExchangeRate[] rate, int entriesToUse){
-        double avg = 0.0;
-        for (int i = 0; i < entriesToUse; i++){
-            avg += rate[(rate.length - 1) - i].getGrowth();
-        }
-        return (avg / rate.length);
     }
 }

@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
  * @author jkell
  */
 public class PriceCollectorTest {
+    PriceCollector pc;
     
     public PriceCollectorTest() {
     }
@@ -31,6 +32,7 @@ public class PriceCollectorTest {
     
     @Before
     public void setUp() {
+        pc = new PriceCollector();
     }
     
     @After
@@ -39,18 +41,22 @@ public class PriceCollectorTest {
 
     @Test
     public void testGetCurrentPrices() {
+        
     }
 
     @Test
     public void testGetTrades() {
+        
     }
 
     @Test
     public void testCalculateAveragePrice() {
+        
     }
 
     @Test
     public void testCalculateHistoricAverages() {
+        
     }
     
 }

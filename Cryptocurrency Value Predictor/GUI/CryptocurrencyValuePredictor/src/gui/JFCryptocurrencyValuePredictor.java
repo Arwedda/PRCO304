@@ -7,23 +7,23 @@ package gui;
  */
 
 
-import utilities.PriceCollector;
+import valuepredictor.CryptocurrencyValuePredictor;
 
 /**
  *
  * @author jkell
  */
-public class CryptocurrencyValuePredictor extends javax.swing.JFrame {
-    PriceCollector pc = new PriceCollector();
-    
+public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame {
+    private final CryptocurrencyValuePredictor cryptocurrencyValuePredictor;
+            
     /**
      * Creates new form CryptocurrencyValuePredictor
      */
-    public CryptocurrencyValuePredictor() {
+    public JFCryptocurrencyValuePredictor() {
         initComponents();
+        cryptocurrencyValuePredictor = CryptocurrencyValuePredictor.getInstance();
+        cryptocurrencyValuePredictor.initialise();
     }
-    
-
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -80,7 +80,7 @@ public class CryptocurrencyValuePredictor extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new CryptocurrencyValuePredictor().setVisible(true);
+                new JFCryptocurrencyValuePredictor().setVisible(true);
             }
         });
     }

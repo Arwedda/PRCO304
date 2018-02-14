@@ -19,13 +19,13 @@ public class Helpers {
         return string1.equals(string2);
     }
     
-    public static LocalDateTime startOfMinute(LocalDateTime time){
-        return time.minusSeconds(time.getSecond()).minusNanos(time.getNano());
+    public static LocalDateTime startOfMinute(LocalDateTime timestamp){
+        return timestamp.minusSeconds(timestamp.getSecond()).minusNanos(timestamp.getNano());
     }
     
-    public static LocalDateTime localDateTimeParser(String datetime){
+    public static LocalDateTime localDateTimeParser(String timestamp){
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(datetime, format);
+        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, format);
         return localDateTime;
     }
 }

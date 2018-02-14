@@ -150,7 +150,7 @@ public class Currency {
         this.historicTrades.add(historicTrade);
     }
     
-    public void mergePrices(){
+    public void mergeRates(){
         Collections.reverse(historicRates);
         
         /*

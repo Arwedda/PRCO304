@@ -13,17 +13,18 @@ import java.time.LocalDateTime;
  */
 public class ExchangeRate {
     private LocalDateTime timestamp;
-    private double value;
+    private Double value;
     private Double growth;
-    public double[] GOFAINextGrowth = new double[20];
-
+    public Double[] GOFAINextGrowth = new Double[20];
+    //private Double neuralNetworkNextGrowth;
+    
     public ExchangeRate() {
         this.timestamp = null;
         this.value = 0.0;
         this.growth = null;
     }
 
-    public ExchangeRate(LocalDateTime timestamp, double value) {
+    public ExchangeRate(LocalDateTime timestamp, Double value) {
         this.timestamp = timestamp;
         this.value = value;
         this.growth = null;
@@ -37,11 +38,11 @@ public class ExchangeRate {
         this.timestamp = timestamp;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 
-    public void setValue(double value) {
+    public void setValue(Double value) {
         this.value = value;
     }
 

@@ -13,9 +13,9 @@ import model.GDAXTrade;
  *
  * @author jkell
  */
-public class JsonParser {
+public class JSONParser {
     
-    public JsonParser() {
+    public JSONParser() {
     }
     
     public Object[] fromJSON(String json){
