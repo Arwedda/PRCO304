@@ -6,7 +6,7 @@
 package model;
 
 import java.time.LocalDateTime;
-import utilities.Helpers;
+import helpers.StringHelper;
 
 /**
  *
@@ -54,6 +54,6 @@ public class GDAXTrade {
     }
     
     public boolean tradesMatch(GDAXTrade trade){
-        return Helpers.stringsMatch(this.id, trade.getID(), this.id.length());
+        return StringHelper.stringsMatch(this.id, trade.getID(), this.id.length());
     }
 }

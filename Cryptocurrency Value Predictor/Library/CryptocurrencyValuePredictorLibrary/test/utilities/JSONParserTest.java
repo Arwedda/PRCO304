@@ -6,6 +6,7 @@
 package utilities;
 
 import controllers.APIController;
+import helpers.LocalDateTimeHelper;
 import java.time.LocalDateTime;
 import model.GDAXTrade;
 import org.junit.After;
@@ -48,12 +49,12 @@ public class JSONParserTest {
 
     @Test
     public void testFromJSON() {
-        LocalDateTime expectedTime = Helpers.localDateTimeParser("2016-05-18T00:14");
-        Object[] objArray = parser.fromJSON(json);
+        LocalDateTime expectedTime = LocalDateTimeHelper.localDateTimeParser("2016-05-18T00:14");
+        GDAXTrade[] objArray = parser.GDAXTradeFromJSON(json);
         assertEquals(1, objArray.length);
-        assertEquals("1", ((GDAXTrade)objArray[0]).getID());
-        assertEquals(12.5, ((GDAXTrade)objArray[0]).getPrice(), DELTA);
-        assertEquals(expectedTime, ((GDAXTrade)objArray[0]).getTime());
+        assertEquals("1", (objArray[0]).getID());
+        assertEquals(12.5, (objArray[0]).getPrice(), DELTA);
+        assertEquals(expectedTime, (objArray[0]).getTime());
     }
 
     @Test

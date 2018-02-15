@@ -3,24 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package utilities;
+package helpers;
 
-import model.Currency;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class PriceCollectorTest {
-    PriceCollector pc;
-    Currency firstTwoLitecoinTrades;
+public class StringHelperTest {
+    private String s1, s2;
     
-    public PriceCollectorTest() {
+    public StringHelperTest() {
     }
     
     @BeforeClass
@@ -33,8 +32,8 @@ public class PriceCollectorTest {
     
     @Before
     public void setUp() {
-        pc = new PriceCollector();
-        firstTwoLitecoinTrades = new Currency("LTC", "Litecoin", "https://api.gdax.com/products/LTC-USD/trades?after=3");
+        s1 = "abcdefghijklmnopqrstuvwxyz1234567890";
+        s2 = "abcdefghijklmnopqrstuvwxyz9876543210";
     }
     
     @After
@@ -42,23 +41,12 @@ public class PriceCollectorTest {
     }
 
     @Test
-    public void testGetCurrentPrices() {
-        
+    public void testStringsMatch() {
+        for (int i = 0; i < 27; i++){
+            assertTrue(StringHelper.stringsMatch(s1, s2, i));
+        }
+        for (int i = 27; i < 37; i++){
+            assertFalse(StringHelper.stringsMatch(s1, s2, i));
+        }
     }
-
-    @Test
-    public void testGetTrades() {
-        
-    }
-
-    @Test
-    public void testCalculateAveragePrice() {
-        
-    }
-
-    @Test
-    public void testCalculateHistoricAverages() {
-        
-    }
-    
 }

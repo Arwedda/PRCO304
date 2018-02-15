@@ -6,8 +6,9 @@
 package utilities;
 
 import controllers.APIController;
+import helpers.LocalDateTimeHelper;
+import helpers.SafeCastHelper;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -32,7 +33,7 @@ public class PriceCollector {
     public PriceCollector() {
         //System.out.println("[INFO] Fetching resource from: " + apiController.API_ENDPOINT + "/currencies/");
         try {
-            setUpCurrencies();
+            initCurrencies();
             /*
                 Websocket listener will act as collector (rather than RESTful) if the bug is ever ironed out:
                 It can't find an implementation of ContainerProvider.getWebSocketContainer();
@@ -69,7 +70,7 @@ public class PriceCollector {
         }*/
     }
     
-    private void setUpCurrencies(){
+    private void initCurrencies(){
         /*
         GET FROM API
         */
@@ -96,7 +97,7 @@ public class PriceCollector {
                         int[] sizes = new int[currencies.length];
                         int readingsTaken = 0;
                         int readings = startGOFAI;
-                        Object[] trades;
+                        GDAXTrade[] trades;
 
                         for (int i = 0; i < sizes.length; i++){
                             sizes[i] = currencies[i].getNumberOfRatesCollected();
@@ -164,18 +165,18 @@ public class PriceCollector {
         historic.scheduleWithFixedDelay(historicPriceCollection, 0, 1, TimeUnit.SECONDS);
     }
     
-    private Object[] getHistoricTrades(Currency currency) {
-        Object[] trades;
+    private GDAXTrade[] getHistoricTrades(Currency currency) {
+        GDAXTrade[] trades;
         String pagination;
         String json;
         
         if (currency.getLastHistoricTrade() == null) {
             json = apiController.getJSONString(currency.getGDAXEndpoint());
-            trades = parser.fromJSON(json);
+            trades = parser.GDAXTradeFromJSON(json);
         } else {
             pagination = "?after=" + currency.getLastHistoricTrade().getID();
             json = apiController.getJSONString(currency.getGDAXEndpoint() + pagination);
-            trades = parser.fromJSON(json);
+            trades = parser.GDAXTradeFromJSON(json);
         }
         return trades;
     }
@@ -202,7 +203,7 @@ public class PriceCollector {
                 currentSecond++;
                 if (currentSecond == 60) {
                     currentSecond = 0;
-                    getCurrentPrices(Helpers.startOfMinute(LocalDateTime.now()));
+                    getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
                     for (Currency currency : currencies){
                         System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
                     }
@@ -216,7 +217,7 @@ public class PriceCollector {
     private void getCurrentPrices(LocalDateTime postTime){
         System.out.println("[INFO] Fetching resource from: " + apiController.getGDAX_ENDPOINT() + "/products/.../trades");
         try {
-            Object[] trades;
+            GDAXTrade[] trades;
             Double avgPrice;
             ExchangeRate rate;
             for (Currency currency : currencies){
@@ -230,21 +231,21 @@ public class PriceCollector {
         }
     }
     
-    private Object[] getTrades(Currency currency){
-        Object[] trades;
+    private GDAXTrade[] getTrades(Currency currency){
+        GDAXTrade[] trades;
         String json = apiController.getJSONString(currency.getGDAXEndpoint());
-        trades = parser.fromJSON(json);
+        trades = parser.GDAXTradeFromJSON(json);
         return trades;
     }
     
-    private Double calculateAveragePrice(Object[] trades, LocalDateTime postTime) {
+    private Double calculateAveragePrice(GDAXTrade[] trades, LocalDateTime postTime) {
         Double avgPrice = 0.0;
         int tradeNo = 0;
         boolean foundStart = false;
 
-        for (Object trade : trades){
-            if (((GDAXTrade)trade).getTime().equals(postTime.minusMinutes(1))) {
-            avgPrice += ((GDAXTrade)trade).getPrice();
+        for (GDAXTrade trade : trades){
+            if (trade.getTime().equals(postTime.minusMinutes(1))) {
+            avgPrice += trade.getPrice();
             tradeNo += 1;
             foundStart = true;
             } else if (foundStart) break;
@@ -257,7 +258,7 @@ public class PriceCollector {
         return (avgPrice /= tradeNo);
     }
     
-    private void calculateHistoricAverages(Currency currency, Object[] trades) {
+    private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades) {
         if (trades.length == 0) {
             System.out.println("[INFO] calculateHistoricAverages received no trades. GDAX endpoint may be down...");
             return;
@@ -267,18 +268,18 @@ public class PriceCollector {
         LocalDateTime tradeTime;
         
         if (!currency.hasFoundPosition()) {
-            tradeTime = Helpers.startOfMinute(LocalDateTime.now());
+            tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
             System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
         } else {
             tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
         }
         
-        for (Object trade : trades){
-            if (((GDAXTrade)trade).getTime().equals(tradeTime.minusMinutes(1))) {
-                currency.addHistoricTrade((GDAXTrade)trade);
+        for (GDAXTrade trade : trades){
+            if (trade.getTime().equals(tradeTime.minusMinutes(1))) {
+                currency.addHistoricTrade(trade);
             } else {
                 if (currency.hasFoundPosition()) {
-                    avgPrice = calculateAveragePrice((Object[])currency.getHistoricTrades().toArray(), tradeTime);
+                    avgPrice = calculateAveragePrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()), tradeTime);
                     rate = new ExchangeRate(tradeTime, avgPrice);
                     currency.addHistoricRate(rate);
                     System.out.println("[INFO] Posting " + currency.getID() + " trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());

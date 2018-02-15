@@ -221,4 +221,12 @@ public class CurrencyTest {
         assertEquals(2, currency.getNumberOfRatesCollected());
         currency = new Currency(IDETH, NAMEETHEREUM, rate, apiController.getETH_TRADES());
     }
+
+    @Test
+    public void testMergeRates() {
+    }
+
+    @Test
+    public void testToString() {
+    }
 }

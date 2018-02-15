@@ -5,6 +5,7 @@
  */
 package utilities;
 
+import helpers.SafeCastHelper;
 import java.util.Arrays;
 import model.Currency;
 import model.ExchangeRate;
@@ -17,7 +18,7 @@ public class PricePredictor {
     public static void gofaiTest(Currency currency, int testSize){
         testSize = testSize - 20; //Because 20 readings are required to predict first
         Double[] predictions = new Double[20];
-        ExchangeRate[] rates = (ExchangeRate[]) currency.getRates().toArray();
+        ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
         ExchangeRate[] currentRates;
 
         for (int i = 0; i < testSize; i++) {
@@ -37,11 +38,11 @@ public class PricePredictor {
         return predictions;
     }
 
-    private static Double averageGrowth(ExchangeRate[] rate, int entriesToUse){
+    private static Double averageGrowth(ExchangeRate[] rates, int entriesToUse){
         Double avg = 0.0;
         for (int i = 0; i < entriesToUse; i++){
-            avg += rate[(rate.length - 1) - i].getGrowth();
+            avg += rates[(rates.length - 1) - i].getGrowth();
         }
-        return (avg / rate.length);
+        return (avg / rates.length);
     }
 }

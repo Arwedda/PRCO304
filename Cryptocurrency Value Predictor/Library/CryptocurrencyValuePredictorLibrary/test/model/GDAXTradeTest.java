@@ -95,4 +95,12 @@ public class GDAXTradeTest {
         assertTrue(blankTrade.tradesMatch(trade));
         blankTrade = new GDAXTrade();
     }
+
+    @Test
+    public void testGetID() {
+    }
+
+    @Test
+    public void testSetID() {
+    }
 }

@@ -88,4 +88,8 @@ public class ExchangeRateTest {
         rate.calculateGrowth(ZERO);
         assertEquals(Double.POSITIVE_INFINITY, rate.getGrowth(), DELTA);
     }
+
+    @Test
+    public void testToString() {
+    }
 }
