@@ -18,7 +18,7 @@ public class SafeCastHelper {
         ExchangeRate rate;
         for (int i = 0; i < objs.length; i++) {
             if (objs[i] instanceof ExchangeRate){
-                rate = new ExchangeRate(((ExchangeRate) objs[i]).getTimestamp(), ((ExchangeRate) objs[i]).getValue());
+                rate = new ExchangeRate(((ExchangeRate) objs[i]).getTimestamp(), ((ExchangeRate) objs[i]).getValue(), ((ExchangeRate) objs[i]).getGrowth());
                 exchangeRates[i] = rate;
             }
         }

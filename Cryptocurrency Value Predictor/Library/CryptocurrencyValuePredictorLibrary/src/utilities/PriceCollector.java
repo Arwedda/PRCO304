@@ -109,6 +109,11 @@ public class PriceCollector {
                                     currency.mergeRates();
                                 }
                                 System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
+                                
+                                
+                                PricePredictor.gofaiTest(currencies);
+                                
+                                
                             }
                             
                             /*
@@ -118,8 +123,8 @@ public class PriceCollector {
                             if (collectionCompleted(readings, sizes)){
                                 for (Currency currency : currencies){
                                     currency.mergeRates();
-                                    PricePredictor.gofaiTest(currency, readings);
                                 }
+                                
                             }
                             
                             /*

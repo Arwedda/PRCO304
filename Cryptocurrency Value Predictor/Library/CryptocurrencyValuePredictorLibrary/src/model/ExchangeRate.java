@@ -15,7 +15,7 @@ public class ExchangeRate {
     private LocalDateTime timestamp;
     private Double value;
     private Double growth;
-    public Double[] GOFAINextGrowth = new Double[20];
+
     //private Double neuralNetworkNextGrowth;
     
     public ExchangeRate() {
@@ -23,11 +23,17 @@ public class ExchangeRate {
         this.value = 0.0;
         this.growth = null;
     }
-
+    
     public ExchangeRate(LocalDateTime timestamp, Double value) {
         this.timestamp = timestamp;
         this.value = value;
         this.growth = null;
+    }
+
+    public ExchangeRate(LocalDateTime timestamp, Double value, Double growth) {
+        this.timestamp = timestamp;
+        this.value = value;
+        this.growth = growth;
     }
 
     public LocalDateTime getTimestamp() {
