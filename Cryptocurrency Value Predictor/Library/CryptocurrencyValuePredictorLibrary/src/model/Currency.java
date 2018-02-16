@@ -7,6 +7,7 @@ package model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -15,9 +16,9 @@ import java.util.Collections;
 public class Currency {
     private String id;
     private String name;
-    private ArrayList<ExchangeRate> rates;
-    private ArrayList<ExchangeRate> historicRates;
-    private ArrayList<GDAXTrade> historicTrades;
+    private List<ExchangeRate> rates;
+    private List<ExchangeRate> historicRates;
+    private List<GDAXTrade> historicTrades;
     private boolean calculatingGOFAI;
     private final String GDAXEndpoint;
 
@@ -94,11 +95,11 @@ public class Currency {
         this.rates.add(rate);
     }
     
-    public ArrayList<ExchangeRate> getRates() {
+    public List<ExchangeRate> getRates() {
         return this.rates;
     }
 
-    public ArrayList<ExchangeRate> getHistoricRates() {
+    public List<ExchangeRate> getHistoricRates() {
         return historicRates;
     }
 
@@ -142,7 +143,7 @@ public class Currency {
         return GDAXEndpoint;
     }
 
-    public ArrayList<GDAXTrade> getHistoricTrades() {
+    public List<GDAXTrade> getHistoricTrades() {
         return historicTrades;
     }
 

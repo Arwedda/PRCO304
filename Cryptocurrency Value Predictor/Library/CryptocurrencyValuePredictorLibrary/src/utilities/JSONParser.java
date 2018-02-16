@@ -8,6 +8,7 @@ package utilities;
 import helpers.LocalDateTimeHelper;
 import helpers.SafeCastHelper;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.*;
 import model.GDAXTrade;
 
@@ -28,10 +29,10 @@ public class JSONParser {
         String datetimeRegex = "\\d{4}-[0-1]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d";//:[0-5][0-9].[0-9]{1,3}Z";
         String priceRegex = "price\\\":\\\"\\d+.\\d+";
         String tradeIDRegex = "trade_id\\\":\\d+";
-        ArrayList<String> arlTimestamps = getMatches(json, datetimeRegex);
-        ArrayList<String> arlPrices = getMatches(json, priceRegex);
-        ArrayList<String> arlTradeIDs = getMatches(json, tradeIDRegex);
-        ArrayList<GDAXTrade> trades = new ArrayList<>();
+        List<String> arlTimestamps = getMatches(json, datetimeRegex);
+        List<String> arlPrices = getMatches(json, priceRegex);
+        List<String> arlTradeIDs = getMatches(json, tradeIDRegex);
+        List<GDAXTrade> trades = new ArrayList<>();
         double price;
         String tradeID;
 
@@ -49,10 +50,10 @@ public class JSONParser {
         return array;
     }
     
-    private ArrayList<String> getMatches(String json, String regex){
+    private List<String> getMatches(String json, String regex){
         Pattern pattern = Pattern.compile(regex);
         Matcher match = pattern.matcher(json);
-        ArrayList<String> arlMatches = new ArrayList<>();
+        List<String> arlMatches = new ArrayList<>();
         
         while (match.find()){
             arlMatches.add(match.group());

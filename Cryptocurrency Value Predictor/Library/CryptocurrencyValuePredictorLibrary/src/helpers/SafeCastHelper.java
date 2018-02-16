@@ -36,4 +36,16 @@ public class SafeCastHelper {
         }
         return trades;
     }
+    
+    public static Double[] objectsToDoubles(Object[] objs){
+        Double[] doubles = new Double[objs.length];
+        Double dub;
+        for (int i = 0; i < objs.length; i++) {
+            if (objs[i] instanceof Double){
+                dub = (Double) objs[i];
+                doubles[i] = dub;
+            }
+        }
+        return doubles;
+    }
 }

@@ -10,14 +10,15 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class SafeCastHelperTest {
+public class MathsHelperTest {
     
-    public SafeCastHelperTest() {
+    public MathsHelperTest() {
     }
     
     @BeforeClass
@@ -37,15 +38,15 @@ public class SafeCastHelperTest {
     }
 
     @Test
-    public void testObjectsToExchangeRates() {
+    public void testMean() {
     }
 
     @Test
-    public void testObjectsToGDAXTrades() {
+    public void testMode() {
     }
 
     @Test
-    public void testObjectsToDoubles() {
+    public void testModes() {
+
     }
-    
 }

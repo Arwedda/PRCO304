@@ -7,8 +7,11 @@ package utilities;
 
 import controllers.APIController;
 import helpers.LocalDateTimeHelper;
+import helpers.MathsHelper;
 import helpers.SafeCastHelper;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -212,6 +215,9 @@ public class PriceCollector {
                     for (Currency currency : currencies){
                         System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
                     }
+                    /*
+                        POST TO API
+                    */
                 }
             }
         };
@@ -223,12 +229,15 @@ public class PriceCollector {
         System.out.println("[INFO] Fetching resource from: " + apiController.getGDAX_ENDPOINT() + "/products/.../trades");
         try {
             GDAXTrade[] trades;
-            Double avgPrice;
+            Double meanPrice;
             ExchangeRate rate;
             for (Currency currency : currencies){
                 trades = getTrades(currency);
-                avgPrice = calculateAveragePrice(trades, postTime);
-                rate = new ExchangeRate(postTime, avgPrice);
+                meanPrice = calculateMeanPrice(trades, postTime);
+                if (meanPrice == null){
+                    meanPrice = currency.getRate().getValue();
+                }
+                rate = new ExchangeRate(postTime, meanPrice);
                 currency.setValue(rate);
             }
         } catch (Exception e) {
@@ -243,24 +252,19 @@ public class PriceCollector {
         return trades;
     }
     
-    private Double calculateAveragePrice(GDAXTrade[] trades, LocalDateTime postTime) {
-        Double avgPrice = 0.0;
-        int tradeNo = 0;
+    private Double calculateMeanPrice(GDAXTrade[] trades, LocalDateTime postTime) {
+        List<Double> relevantTrades = new ArrayList<>();
+        Double meanPrice;
         boolean foundStart = false;
 
         for (GDAXTrade trade : trades){
             if (trade.getTime().equals(postTime.minusMinutes(1))) {
-            avgPrice += trade.getPrice();
-            tradeNo += 1;
+            relevantTrades.add(trade.getPrice());
             foundStart = true;
             } else if (foundStart) break;
         }
-
-        /*
-            POST TO API
-        */
-        
-        return (avgPrice /= tradeNo);
+        meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(relevantTrades.toArray()));
+        return meanPrice;
     }
     
     private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades) {
@@ -269,7 +273,7 @@ public class PriceCollector {
             return;
         }
         ExchangeRate rate;
-        Double avgPrice;
+        Double meanPrice;
         LocalDateTime tradeTime;
         
         if (!currency.hasFoundPosition()) {
@@ -284,8 +288,8 @@ public class PriceCollector {
                 currency.addHistoricTrade(trade);
             } else {
                 if (currency.hasFoundPosition()) {
-                    avgPrice = calculateAveragePrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()), tradeTime);
-                    rate = new ExchangeRate(tradeTime, avgPrice);
+                    meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()), tradeTime);
+                    rate = new ExchangeRate(tradeTime, meanPrice);
                     currency.addHistoricRate(rate);
                     System.out.println("[INFO] Posting " + currency.getID() + " trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     tradeTime = tradeTime.minusMinutes(1);

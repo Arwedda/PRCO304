@@ -5,8 +5,11 @@
  */
 package utilities;
 
+import helpers.MathsHelper;
 import helpers.SafeCastHelper;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import model.Currency;
 import model.ExchangeRate;
 
@@ -16,16 +19,19 @@ import model.ExchangeRate;
  */
 public class PricePredictor {
     static final int numberOfPredictions = 20;
+    static List<List<Double>> arlDeltas = new ArrayList<>();
     static Double[] meanDeltas = new Double[numberOfPredictions];
     static Double[] closest = new Double[numberOfPredictions];
     static int totalReadings = 0;
     
     public static void gofaiTest(Currency[] currencies){
+        
         for (Currency currency: currencies){
             GOFAICalculations(currency);
         }
         for (int i = 0; i < numberOfPredictions; i++){
-            meanDeltas[i] /= totalReadings;
+            Double[] deltas = SafeCastHelper.objectsToDoubles(arlDeltas.get(i).toArray());
+            meanDeltas[i] = MathsHelper.mean(deltas);
         }
         GOFAIResults();
     }
@@ -33,6 +39,11 @@ public class PricePredictor {
     private static void GOFAICalculations(Currency currency){
         int numberOfReadingsPerPrediction = 20;
         Double[] predictions = new Double[numberOfPredictions];
+        for (int i = 0; i < numberOfPredictions; i++){
+            List<Double> deltas = new ArrayList<>();
+            arlDeltas.add(deltas);
+        }
+
         Double[] deltas = new Double[numberOfPredictions];
         ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
         ExchangeRate[] currentRates;
@@ -42,41 +53,29 @@ public class PricePredictor {
 
         for (int i = 0; i < noOfPredictions; i++) {
             currentRates = Arrays.copyOfRange(rates, noOfPredictions - i, highestIndex - i);
-            predictions = getPredictions(currentRates);
+            predictions = makePredictions(currentRates);
+            
+            /*
+                NEED TO ENSURE THAT NEXT GROWTH EXISTS~~
+            */
             if (i < noOfPredictions){
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
-                deltas = getDeltas(predictions, actualGrowth);
+                deltas = MathsHelper.deltas(actualGrowth, predictions);
                 for (int j = 0; j < numberOfPredictions; j++){
-                    meanDeltas[i] += deltas[i];
+                    arlDeltas.get(j).add(deltas[j]);
                 }
-                totalReadings++;
             }
         }
     }
 
-    private static Double[] getPredictions(ExchangeRate[] rates){
+    private static Double[] makePredictions(ExchangeRate[] rates){
         Double[] predictions = new Double[numberOfPredictions];
+        List<Double> values = new ArrayList<>();
         for (int i = 0; i < numberOfPredictions; i++){
-            predictions[i] = averageGrowth(rates, i+1);
+            values.add(rates[i].getGrowth());
+            predictions[i] = MathsHelper.mean(SafeCastHelper.objectsToDoubles(values.toArray()));
         }
         return predictions;
-    }
-
-    private static Double averageGrowth(ExchangeRate[] rates, int entriesToUse){
-        Double avg = 0.0;
-        int highestIndex = rates.length - 1;
-        for (int i = 0; i < entriesToUse; i++){
-            avg += rates[highestIndex - i].getGrowth();
-        }
-        return (avg / (highestIndex + 1));
-    }
-    
-    private static Double[] getDeltas(Double[] predictions, Double actualGrowth){
-        Double[] deltas = new Double[numberOfPredictions];
-        for (int i = 0; i < numberOfPredictions; i++){
-            deltas[i] = Math.abs(actualGrowth - predictions[i]);
-        }
-        return deltas;
     }
     
     private static void GOFAIResults(){
