@@ -19,31 +19,33 @@ import model.ExchangeRate;
  */
 public class PricePredictor {
     static final int numberOfPredictions = 20;
-    static List<List<Double>> arlDeltas = new ArrayList<>();
+    static final int numberOfReadingsPerPrediction = 20;
+    static Double[] meanPredictedChange = new Double [numberOfPredictions];
+    static int[] predictedChangeNo = new int[numberOfPredictions];
     static Double[] meanDeltas = new Double[numberOfPredictions];
+    static int[] deltaNo = new int[numberOfPredictions];
     static Double[] closest = new Double[numberOfPredictions];
     static int totalReadings = 0;
     
     public static void gofaiTest(Currency[] currencies){
-        
+        initialise();
         for (Currency currency: currencies){
             GOFAICalculations(currency);
-        }
-        for (int i = 0; i < numberOfPredictions; i++){
-            Double[] deltas = SafeCastHelper.objectsToDoubles(arlDeltas.get(i).toArray());
-            meanDeltas[i] = MathsHelper.mean(deltas);
         }
         GOFAIResults();
     }
     
-    private static void GOFAICalculations(Currency currency){
-        int numberOfReadingsPerPrediction = 20;
-        Double[] predictions = new Double[numberOfPredictions];
+    private static void initialise(){
         for (int i = 0; i < numberOfPredictions; i++){
-            List<Double> deltas = new ArrayList<>();
-            arlDeltas.add(deltas);
+            meanPredictedChange[i] = 0.0;
+            predictedChangeNo[i] = 0;
+            meanDeltas[i] = 0.0;
+            deltaNo[i] = 0;
         }
-
+    }
+    
+    private static void GOFAICalculations(Currency currency){
+        Double[] predictions = new Double[numberOfPredictions];
         Double[] deltas = new Double[numberOfPredictions];
         ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
         ExchangeRate[] currentRates;
@@ -58,12 +60,18 @@ public class PricePredictor {
             /*
                 NEED TO ENSURE THAT NEXT GROWTH EXISTS~~
             */
-            if (i < noOfPredictions){
+            try {
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
                 deltas = MathsHelper.deltas(actualGrowth, predictions);
                 for (int j = 0; j < numberOfPredictions; j++){
-                    arlDeltas.get(j).add(deltas[j]);
+                    meanPredictedChange[j] += Math.abs(predictions[j]);
+                    predictedChangeNo[j]++;
+                    meanDeltas[j] += deltas[j];
+                    deltaNo[j]++;
                 }
+            } catch (Exception e){
+                System.out.println("[INFO] Error: " + e);
+                System.out.println("[INFO] Failed to get growth for " + currency.getID() + " at " + currency.getRates().get(highestIndex - i).getTimestamp().plusMinutes(1));
             }
         }
     }
@@ -79,8 +87,12 @@ public class PricePredictor {
     }
     
     private static void GOFAIResults(){
-        for (Double delta : meanDeltas){
-            System.out.println(delta);
+        for (int i = 0; i < numberOfPredictions; i++){
+            meanPredictedChange[i] /= predictedChangeNo[i];
+            meanDeltas[i] /= deltaNo[i];
+            
+            System.out.println("Mean predicted change using " + (i+1) + " historic prices: " + meanPredictedChange[i]);
+            System.out.println("Mean prediction error using " + (i+1) + " historic prices: " + meanDeltas[i]);
         }
     }
 }

@@ -112,16 +112,11 @@ public class PriceCollector {
                                     currency.mergeRates();
                                 }
                                 System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
-                                
-                                
-                                PricePredictor.gofaiTest(currencies);
-                                
-                                
                             }
                             
                             /*
                                 START OF GOFAI METHOD TESTING
-                            */
+                           
                             readings = 21;
                             if (collectionCompleted(readings, sizes)){
                                 for (Currency currency : currencies){
@@ -141,6 +136,7 @@ public class PriceCollector {
                                 }
                                 System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
                                 System.out.println("[INFO] Shutting down historic price collection thread.");
+                                PricePredictor.gofaiTest(currencies);
                                 historic.shutdownNow();
                             }
                         }
