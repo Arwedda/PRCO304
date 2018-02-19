@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author jkell
  */
-public class MathsHelperTest {
+public class GlobalsTest {
     
-    public MathsHelperTest() {
+    public GlobalsTest() {
     }
     
     @BeforeClass
@@ -38,19 +38,7 @@ public class MathsHelperTest {
     }
 
     @Test
-    public void testMean() {
+    public void testSomeMethod() {
     }
-
-    @Test
-    public void testMode() {
-    }
-
-    @Test
-    public void testModes() {
-
-    }
-
-    @Test
-    public void testDeltas() {
-    }
+    
 }

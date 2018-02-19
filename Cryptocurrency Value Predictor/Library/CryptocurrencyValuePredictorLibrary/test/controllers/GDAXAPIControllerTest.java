@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package helpers;
+package controllers;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,9 +16,11 @@ import static org.junit.Assert.*;
  *
  * @author jkell
  */
-public class MathsHelperTest {
+public class GDAXAPIControllerTest {
+    GDAXAPIController controller;
+
     
-    public MathsHelperTest() {
+    public GDAXAPIControllerTest() {
     }
     
     @BeforeClass
@@ -31,6 +33,7 @@ public class MathsHelperTest {
     
     @Before
     public void setUp() {
+        controller = new GDAXAPIController();
     }
     
     @After
@@ -38,19 +41,20 @@ public class MathsHelperTest {
     }
 
     @Test
-    public void testMean() {
+    public void testGet() {
+        String json = "[{\"time\":\"2016-05-18T00:14:03.60168Z\",\"trade_id\":1,\"price\":\"12.50000000\",\"size\":\"0.39900249\",\"side\":\"sell\"}]";
+        assertEquals(json, controller.get("https://api.gdax.com/products/ETH-USD/trades?after=2"));
     }
 
     @Test
-    public void testMode() {
+    public void testPost() {
     }
 
     @Test
-    public void testModes() {
-
+    public void testPut() {
     }
 
     @Test
-    public void testDeltas() {
+    public void testDelete() {
     }
 }

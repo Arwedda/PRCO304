@@ -21,6 +21,7 @@ public class ExchangeRateTest {
     ExchangeRate blankRate;
     ExchangeRate rate;
     LocalDateTime timeStamp;
+    static final String LASTTRADE = "DOESNOTMATTER";
     static final double ZERO = 0.0;
     static final double ONE = 1.0;
     static final double ONEHUNDRED = 100.0;
@@ -42,7 +43,7 @@ public class ExchangeRateTest {
     public void setUp() {
         timeStamp = LocalDateTime.now();
         blankRate = new ExchangeRate();
-        rate = new ExchangeRate(timeStamp, ONEHUNDRED);
+        rate = new ExchangeRate(timeStamp, ONEHUNDRED, LASTTRADE);
     }
     
     @After
@@ -91,5 +92,13 @@ public class ExchangeRateTest {
 
     @Test
     public void testToString() {
+    }
+
+    @Test
+    public void testGetLastTrade() {
+    }
+
+    @Test
+    public void testSetLastTrade() {
     }
 }

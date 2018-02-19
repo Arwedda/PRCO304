@@ -5,6 +5,7 @@
  */
 package helpers;
 
+import model.Currency;
 import model.ExchangeRate;
 import model.GDAXTrade;
 
@@ -13,12 +14,24 @@ import model.GDAXTrade;
  * @author jkell
  */
 public class SafeCastHelper {
+    public static Currency[] objectsToCurrencies(Object[] objs){
+        Currency[] currencies = new Currency[objs.length];
+        Currency currency;
+        for (int i = 0; i < objs.length; i++) {
+            if (objs[i] instanceof ExchangeRate){
+                currency = new Currency(((Currency) currencies[i]).getID(), ((Currency) currencies[i]).getName(), ((Currency) currencies[i]).getGDAXEndpoint());
+                currencies[i] = currency;
+            }
+        }
+        return currencies;
+    }
+    
     public static ExchangeRate[] objectsToExchangeRates(Object[] objs){
         ExchangeRate[] exchangeRates = new ExchangeRate[objs.length];
         ExchangeRate rate;
         for (int i = 0; i < objs.length; i++) {
             if (objs[i] instanceof ExchangeRate){
-                rate = new ExchangeRate(((ExchangeRate) objs[i]).getTimestamp(), ((ExchangeRate) objs[i]).getValue(), ((ExchangeRate) objs[i]).getGrowth());
+                rate = new ExchangeRate(((ExchangeRate) objs[i]).getTimestamp(), ((ExchangeRate) objs[i]).getValue(), ((ExchangeRate) objs[i]).getLastTrade(), ((ExchangeRate) objs[i]).getGrowth());
                 exchangeRates[i] = rate;
             }
         }

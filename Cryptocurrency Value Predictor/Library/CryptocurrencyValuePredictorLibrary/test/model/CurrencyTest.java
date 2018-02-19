@@ -5,7 +5,8 @@
  */
 package model;
 
-import controllers.APIController;
+import controllers.GDAXAPIController;
+import helpers.Globals;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import org.junit.After;
@@ -20,7 +21,7 @@ import static org.junit.Assert.*;
  * @author jkell
  */
 public class CurrencyTest {
-    APIController apiController;
+    GDAXAPIController apiController;
     Currency blankCurrency;
     Currency ratelessCurrency;
     Currency currency;
@@ -30,6 +31,7 @@ public class CurrencyTest {
     static final String IDLTC = "LTC";
     static final String NAMEETHEREUM = "ETHEREUM";
     static final String NAMELITECOIN = "LITECOIN";
+    static final String LASTTRADE = "DOESNOTMATTER";
     static final double ONEHUNDRED = 100.0;
     static final double ONEHUNDREDANDTWENTYFIVE = 125.0;
     static final double DELTA = 1e-15;
@@ -48,11 +50,11 @@ public class CurrencyTest {
     @Before
     public void setUp() {
         timeStamp = LocalDateTime.now();
-        apiController = new APIController();
-        rate = new ExchangeRate(timeStamp, ONEHUNDRED);
+        apiController = new GDAXAPIController();
+        rate = new ExchangeRate(timeStamp, ONEHUNDRED, LASTTRADE);
         blankCurrency = new Currency();
-        ratelessCurrency = new Currency(IDLTC, NAMELITECOIN, apiController.getLTC_TRADES());
-        currency = new Currency(IDETH, NAMEETHEREUM, rate, apiController.getETH_TRADES());
+        ratelessCurrency = new Currency(IDLTC, NAMELITECOIN, Globals.LTC_TRADES);
+        currency = new Currency(IDETH, NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
     
     @After
@@ -106,7 +108,7 @@ public class CurrencyTest {
         
         rate.setValue(ONEHUNDRED);
         blankCurrency = new Currency();
-        currency = new Currency(IDETH, NAMEETHEREUM, rate, apiController.getETH_TRADES());
+        currency = new Currency(IDETH, NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
     @Test
@@ -135,7 +137,7 @@ public class CurrencyTest {
         assertArrayEquals(rates.toArray(), currency.getHistoricRates().toArray());
         assertEquals(rate, currency.getHistoricRates().get(0));
         
-        currency = new Currency(IDETH, NAMEETHEREUM, rate, apiController.getETH_TRADES());
+        currency = new Currency(IDETH, NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
     @Test
@@ -175,8 +177,8 @@ public class CurrencyTest {
     @Test
     public void testGetGDAXEndpoint() {
         assertEquals("unknown", blankCurrency.getGDAXEndpoint());
-        assertEquals(apiController.getLTC_TRADES(), ratelessCurrency.getGDAXEndpoint());
-        assertEquals(apiController.getETH_TRADES(), currency.getGDAXEndpoint());
+        assertEquals(Globals.LTC_TRADES, ratelessCurrency.getGDAXEndpoint());
+        assertEquals(Globals.ETH_TRADES, currency.getGDAXEndpoint());
     }
 
     @Test
@@ -196,14 +198,14 @@ public class CurrencyTest {
         assertArrayEquals(trades.toArray(), currency.getHistoricTrades().toArray());
         assertEquals(trade, currency.getHistoricTrades().get(0));
         
-        currency = new Currency(IDETH, NAMEETHEREUM, rate, apiController.getETH_TRADES());
+        currency = new Currency(IDETH, NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
     @Test
     public void testMergePrices() {
         LocalDateTime now = LocalDateTime.now().plusSeconds(1);
         blankCurrency.addHistoricRate(rate);
-        ExchangeRate newRate = new ExchangeRate(now, ONEHUNDREDANDTWENTYFIVE);
+        ExchangeRate newRate = new ExchangeRate(now, ONEHUNDREDANDTWENTYFIVE, LASTTRADE);
         blankCurrency.setValue(newRate);
         blankCurrency.mergeRates();
         
@@ -219,7 +221,7 @@ public class CurrencyTest {
         assertEquals(1, currency.getNumberOfRatesCollected());
         currency.addHistoricRate(rate);
         assertEquals(2, currency.getNumberOfRatesCollected());
-        currency = new Currency(IDETH, NAMEETHEREUM, rate, apiController.getETH_TRADES());
+        currency = new Currency(IDETH, NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
     @Test

@@ -15,6 +15,7 @@ public class ExchangeRate {
     private LocalDateTime timestamp;
     private Double value;
     private Double growth;
+    private String lastTrade;
 
     //private Double neuralNetworkNextGrowth;
     
@@ -22,17 +23,20 @@ public class ExchangeRate {
         this.timestamp = null;
         this.value = 0.0;
         this.growth = null;
+        this.lastTrade = null;
     }
     
-    public ExchangeRate(LocalDateTime timestamp, Double value) {
+    public ExchangeRate(LocalDateTime timestamp, Double value, String lastTrade) {
         this.timestamp = timestamp;
         this.value = value;
+        this.lastTrade = lastTrade;
         this.growth = null;
     }
 
-    public ExchangeRate(LocalDateTime timestamp, Double value, Double growth) {
+    public ExchangeRate(LocalDateTime timestamp, Double value, String lastTrade, Double growth) {
         this.timestamp = timestamp;
         this.value = value;
+        this.lastTrade = lastTrade;
         this.growth = growth;
     }
 
@@ -56,6 +60,14 @@ public class ExchangeRate {
         return growth;
     }
 
+    public String getLastTrade() {
+        return lastTrade;
+    }
+
+    public void setLastTrade(String lastTrade) {
+        this.lastTrade = lastTrade;
+    }
+
     public void calculateGrowth(Double previousValue) {
         try {
             this.growth = ((this.value - previousValue) / previousValue) * 100;
@@ -69,6 +81,6 @@ public class ExchangeRate {
     
     @Override
     public String toString(){
-        return "timestamp=" + timestamp + " value=" + value + " growth=" + growth;
+        return "timestamp=" + timestamp + " value=" + value + " lastTrade=" + lastTrade + " growth=" + growth;
     }
 }

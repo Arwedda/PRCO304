@@ -47,5 +47,9 @@ public class SafeCastHelperTest {
     @Test
     public void testObjectsToDoubles() {
     }
+
+    @Test
+    public void testObjectsToCurrencies() {
+    }
     
 }

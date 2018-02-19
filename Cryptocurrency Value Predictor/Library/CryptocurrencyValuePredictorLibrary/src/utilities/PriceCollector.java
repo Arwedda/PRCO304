@@ -5,7 +5,10 @@
  */
 package utilities;
 
-import controllers.APIController;
+import controllers.CurrencyAPIController;
+import controllers.ExchangeRateAPIController;
+import controllers.GDAXAPIController;
+import helpers.Globals;
 import helpers.LocalDateTimeHelper;
 import helpers.MathsHelper;
 import helpers.SafeCastHelper;
@@ -24,7 +27,9 @@ import model.GDAXTrade;
  * @author jkell
  */
 public class PriceCollector {
-    private APIController apiController = new APIController();
+    private GDAXAPIController gdaxAPIController = new GDAXAPIController();
+    private CurrencyAPIController currencyAPIController = new CurrencyAPIController();
+    private ExchangeRateAPIController exchangeRateAPIController = new ExchangeRateAPIController();
     private Currency[] currencies = new Currency[4];
     private JSONParser parser = new JSONParser();
     private ScheduledExecutorService current = Executors.newSingleThreadScheduledExecutor();
@@ -32,10 +37,12 @@ public class PriceCollector {
     private final int startGOFAI = 21;
     private final int startNN = 1001;
     private int currentSecond;
+    private boolean connectedToDatabase = false;
     
     public PriceCollector() {
-        //System.out.println("[INFO] Fetching resource from: " + apiController.API_ENDPOINT + "/currencies/");
+        //System.out.println("[INFO] Fetching resource from: " + gdaxAPIController.API_ENDPOINT + "/currencies/");
         try {
+            checkForDatabase();
             initCurrencies();
             /*
                 Websocket listener will act as collector (rather than RESTful) if the bug is ever ironed out:
@@ -48,6 +55,13 @@ public class PriceCollector {
             initHistoricCollector();
         } catch (Exception e){
             System.out.println("[INFO] Error: " + e);
+        }
+    }
+    
+    private void checkForDatabase(){
+        //Ping database
+        if (true){
+            connectedToDatabase = true;
         }
     }
     
@@ -77,14 +91,19 @@ public class PriceCollector {
         /*
         GET FROM API
         */
-        Currency newCurrency = new Currency("BCH", "Bitcoin Cash", apiController.getBCH_TRADES());
-        currencies[0] = newCurrency;
-        newCurrency = new Currency("BTC", "Bitcoin", apiController.getBTC_TRADES());
-        currencies[1] = newCurrency;
-        newCurrency = new Currency("ETH", "Ethereum", apiController.getETH_TRADES());
-        currencies[2] = newCurrency;
-        newCurrency = new Currency("LTC", "Litecoin", apiController.getLTC_TRADES());
-        currencies[3] = newCurrency;
+        if (connectedToDatabase){
+            String json = currencyAPIController.get(Globals.API_ENDPOINT + "/currency");
+            currencies = parser.CurrencyFromJSON(json);
+        } else {
+            Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
+            currencies[0] = newCurrency;
+            newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
+            currencies[1] = newCurrency;
+            newCurrency = new Currency("ETH", "Ethereum", Globals.ETH_TRADES);
+            currencies[2] = newCurrency;
+            newCurrency = new Currency("LTC", "Litecoin", Globals.LTC_TRADES);
+            currencies[3] = newCurrency;
+        }
     }
     
     private void initHistoricCollector(){  
@@ -175,11 +194,11 @@ public class PriceCollector {
         String json;
         
         if (currency.getLastHistoricTrade() == null) {
-            json = apiController.getJSONString(currency.getGDAXEndpoint());
+            json = gdaxAPIController.get(currency.getGDAXEndpoint());
             trades = parser.GDAXTradeFromJSON(json);
         } else {
             pagination = "?after=" + currency.getLastHistoricTrade().getID();
-            json = apiController.getJSONString(currency.getGDAXEndpoint() + pagination);
+            json = gdaxAPIController.get(currency.getGDAXEndpoint() + pagination);
             trades = parser.GDAXTradeFromJSON(json);
         }
         return trades;
@@ -222,18 +241,19 @@ public class PriceCollector {
     }
 
     private void getCurrentPrices(LocalDateTime postTime){
-        System.out.println("[INFO] Fetching resource from: " + apiController.getGDAX_ENDPOINT() + "/products/.../trades");
+        System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
         try {
             GDAXTrade[] trades;
             Double meanPrice;
             ExchangeRate rate;
             for (Currency currency : currencies){
                 trades = getTrades(currency);
-                meanPrice = calculateMeanPrice(trades, postTime);
+                trades = getRelevantTrades(trades, postTime);
+                meanPrice = calculateMeanPrice(trades);
                 if (meanPrice == null){
                     meanPrice = currency.getRate().getValue();
                 }
-                rate = new ExchangeRate(postTime, meanPrice);
+                rate = new ExchangeRate(postTime, meanPrice, trades[trades.length - 1].getID());
                 currency.setValue(rate);
             }
         } catch (Exception e) {
@@ -243,22 +263,27 @@ public class PriceCollector {
     
     private GDAXTrade[] getTrades(Currency currency){
         GDAXTrade[] trades;
-        String json = apiController.getJSONString(currency.getGDAXEndpoint());
+        String json = gdaxAPIController.get(currency.getGDAXEndpoint());
         trades = parser.GDAXTradeFromJSON(json);
         return trades;
     }
     
-    private Double calculateMeanPrice(GDAXTrade[] trades, LocalDateTime postTime) {
-        List<Double> relevantTrades = new ArrayList<>();
-        Double meanPrice;
+    private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime){
+        ArrayList<GDAXTrade> relevantTrades = new ArrayList<>();
         boolean foundStart = false;
-
         for (GDAXTrade trade : trades){
             if (trade.getTime().equals(postTime.minusMinutes(1))) {
-            relevantTrades.add(trade.getPrice());
+            relevantTrades.add(trade);
             foundStart = true;
             } else if (foundStart) break;
         }
+        
+        return SafeCastHelper.objectsToGDAXTrades(relevantTrades.toArray());
+    }
+    
+    private Double calculateMeanPrice(GDAXTrade[] trades) {
+        List<Double> relevantTrades = new ArrayList<>();
+        Double meanPrice;
         meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(relevantTrades.toArray()));
         return meanPrice;
     }
@@ -284,8 +309,8 @@ public class PriceCollector {
                 currency.addHistoricTrade(trade);
             } else {
                 if (currency.hasFoundPosition()) {
-                    meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()), tradeTime);
-                    rate = new ExchangeRate(tradeTime, meanPrice);
+                    meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()));
+                    rate = new ExchangeRate(tradeTime, meanPrice, trade.getID());
                     currency.addHistoricRate(rate);
                     System.out.println("[INFO] Posting " + currency.getID() + " trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     tradeTime = tradeTime.minusMinutes(1);

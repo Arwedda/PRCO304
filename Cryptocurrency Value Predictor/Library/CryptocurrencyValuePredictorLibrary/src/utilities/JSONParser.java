@@ -10,6 +10,8 @@ import helpers.SafeCastHelper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
+import model.Currency;
+import model.ExchangeRate;
 import model.GDAXTrade;
 
 /**
@@ -46,7 +48,28 @@ public class JSONParser {
         }
         
         array = SafeCastHelper.objectsToGDAXTrades(trades.toArray());
+        return array;
+    }
+    
+    public Currency[] CurrencyFromJSON(String json){
+        Currency[] array;
+        Currency currency;
+        List<Currency> currencies = new ArrayList<>();
         
+        
+        
+        array = SafeCastHelper.objectsToCurrencies(currencies.toArray());
+        return array;
+    }
+    
+    public ExchangeRate[] ExchangeRateFromJSON(String json){
+        ExchangeRate[] array;
+        ExchangeRate rate;
+        List<ExchangeRate> rates = new ArrayList<>();
+        
+        
+        
+        array = SafeCastHelper.objectsToExchangeRates(rates.toArray());
         return array;
     }
     

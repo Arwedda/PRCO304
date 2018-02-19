@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package helpers;
+package utilities;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author jkell
  */
-public class MathsHelperTest {
+public class PricePredictorTest {
     
-    public MathsHelperTest() {
+    public PricePredictorTest() {
     }
     
     @BeforeClass
@@ -38,19 +38,7 @@ public class MathsHelperTest {
     }
 
     @Test
-    public void testMean() {
+    public void testGofaiTest() {
     }
-
-    @Test
-    public void testMode() {
-    }
-
-    @Test
-    public void testModes() {
-
-    }
-
-    @Test
-    public void testDeltas() {
-    }
+    
 }

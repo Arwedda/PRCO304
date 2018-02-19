@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package helpers;
+package utilities;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author jkell
  */
-public class MathsHelperTest {
+public class WebsocketListenerTest {
     
-    public MathsHelperTest() {
+    public WebsocketListenerTest() {
     }
     
     @BeforeClass
@@ -38,19 +38,23 @@ public class MathsHelperTest {
     }
 
     @Test
-    public void testMean() {
+    public void testOnOpen() {
     }
 
     @Test
-    public void testMode() {
+    public void testOnClose() {
     }
 
     @Test
-    public void testModes() {
-
+    public void testAddMessageHandler() {
     }
 
     @Test
-    public void testDeltas() {
+    public void testSendMessage() {
     }
+
+    @Test
+    public void testOnMessage() {
+    }
+    
 }

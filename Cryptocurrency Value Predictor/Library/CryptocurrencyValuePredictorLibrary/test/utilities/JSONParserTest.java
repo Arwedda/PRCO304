@@ -5,7 +5,7 @@
  */
 package utilities;
 
-import controllers.APIController;
+import controllers.GDAXAPIController;
 import helpers.LocalDateTimeHelper;
 import java.time.LocalDateTime;
 import model.GDAXTrade;
@@ -38,9 +38,9 @@ public class JSONParserTest {
     
     @Before
     public void setUp() {
-        APIController apiController = new APIController();
+        GDAXAPIController apiController = new GDAXAPIController();
         parser = new JSONParser();
-        json = apiController.getJSONString("https://api.gdax.com/products/ETH-USD/trades?after=2");
+        json = apiController.get("https://api.gdax.com/products/ETH-USD/trades?after=2");
     }
     
     @After
@@ -60,5 +60,17 @@ public class JSONParserTest {
     @Test
     public void testToJSON() {
         //Not yet implemented
+    }
+
+    @Test
+    public void testGDAXTradeFromJSON() {
+    }
+
+    @Test
+    public void testCurrencyFromJSON() {
+    }
+
+    @Test
+    public void testExchangeRateFromJSON() {
     }
 }

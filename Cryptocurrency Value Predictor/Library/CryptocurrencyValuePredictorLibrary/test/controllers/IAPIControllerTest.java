@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package helpers;
+package controllers;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author jkell
  */
-public class MathsHelperTest {
+public class IAPIControllerTest {
     
-    public MathsHelperTest() {
+    public IAPIControllerTest() {
     }
     
     @BeforeClass
@@ -38,19 +38,35 @@ public class MathsHelperTest {
     }
 
     @Test
-    public void testMean() {
+    public void testGet() {
     }
 
     @Test
-    public void testMode() {
+    public void testPost() {
     }
 
     @Test
-    public void testModes() {
-
+    public void testPut() {
     }
 
     @Test
-    public void testDeltas() {
+    public void testDelete() {
     }
+
+    public class IAPIControllerImpl implements IAPIController {
+
+        public String get(String url) {
+            return "";
+        }
+
+        public void post(String url, String json) {
+        }
+
+        public void put(String url, String json, String id) {
+        }
+
+        public void delete(String url, String id) {
+        }
+    }
+    
 }
