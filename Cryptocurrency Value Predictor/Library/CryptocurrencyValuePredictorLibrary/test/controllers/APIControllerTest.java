@@ -16,9 +16,9 @@ import static org.junit.Assert.*;
  *
  * @author jkell
  */
-public class IAPIControllerTest {
+public class APIControllerTest {
     
-    public IAPIControllerTest() {
+    public APIControllerTest() {
     }
     
     @BeforeClass
@@ -51,22 +51,6 @@ public class IAPIControllerTest {
 
     @Test
     public void testDelete() {
-    }
-
-    public class IAPIControllerImpl implements IAPIController {
-
-        public String get(String url) {
-            return "";
-        }
-
-        public void post(String url, String json) {
-        }
-
-        public void put(String url, String json, String id) {
-        }
-
-        public void delete(String url, String id) {
-        }
     }
     
 }

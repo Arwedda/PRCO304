@@ -12,6 +12,6 @@ package controllers;
 public interface IAPIController {
     public String get(String url);
     public void post(String url, String json);
-    public void put(String url, String json, String id);
-    public void delete(String url, String id);
+    public void put(String url, String json);
+    public void delete(String url);
 }

@@ -9,28 +9,5 @@ package controllers;
  *
  * @author jkell
  */
-public class ExchangeRateAPIController implements IAPIController {
-    public ExchangeRateAPIController() {
-    }
-    
-    @Override
-    public String get(String url) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void post(String url, String json) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void put(String url, String json, String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void delete(String url, String id) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+public class ExchangeRateAPIController extends APIController {
 }
