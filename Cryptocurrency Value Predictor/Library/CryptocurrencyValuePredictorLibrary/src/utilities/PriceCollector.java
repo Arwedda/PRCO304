@@ -42,7 +42,6 @@ public class PriceCollector {
     public PriceCollector() {
         //System.out.println("[INFO] Fetching resource from: " + gdaxAPIController.API_ENDPOINT + "/currencies/");
         try {
-            checkForDatabase();
             initCurrencies();
             /*
                 Websocket listener will act as collector (rather than RESTful) if the bug is ever ironed out:
@@ -55,13 +54,6 @@ public class PriceCollector {
             initHistoricCollector();
         } catch (Exception e){
             System.out.println("[INFO] Error: " + e);
-        }
-    }
-    
-    private void checkForDatabase(){
-        //Ping database
-        if (true){
-            connectedToDatabase = true;
         }
     }
     
@@ -88,13 +80,14 @@ public class PriceCollector {
     }
     
     private void initCurrencies(){
-        /*
-        GET FROM API
-        */
-        if (connectedToDatabase){
+        try {
             String json = currencyAPIController.get(Globals.API_ENDPOINT + "/currency");
             currencies = parser.CurrencyFromJSON(json);
-        } else {
+            IF currencies blank throw exception
+            connectedToDatabase = true;
+            System.out.println("[INFO] Successfully connected to Oracle database. Initialising catch up.");
+        } catch (Exception e){
+            System.out.println("[INFO] Failed to connect to Oracle database. Initialising local mode.");
             Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
             currencies[0] = newCurrency;
             newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
@@ -103,6 +96,7 @@ public class PriceCollector {
             currencies[2] = newCurrency;
             newCurrency = new Currency("LTC", "Litecoin", Globals.LTC_TRADES);
             currencies[3] = newCurrency;
+            
         }
     }
     
