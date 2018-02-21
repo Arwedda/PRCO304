@@ -18,8 +18,8 @@ public class SafeCastHelper {
         Currency[] currencies = new Currency[objs.length];
         Currency currency;
         for (int i = 0; i < objs.length; i++) {
-            if (objs[i] instanceof ExchangeRate){
-                currency = new Currency(((Currency) currencies[i]).getID(), ((Currency) currencies[i]).getName(), ((Currency) currencies[i]).getGDAXEndpoint());
+            if (objs[i] instanceof Currency){
+                currency = new Currency(((Currency) objs[i]).getID(), ((Currency) objs[i]).getName(), ((Currency) objs[i]).getGDAXEndpoint());
                 currencies[i] = currency;
             }
         }

@@ -10,7 +10,7 @@
     <Property Name="DOLLAR_VALUE" Type="Decimal" Precision="8" Scale="2" Nullable="false" />
     <Property Name="GROWTH" Type="Decimal" Precision="7" Scale="4" />
     <Property Name="GOFAI_NEXT_GROWTH" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="NEURALNETWORK_NEXT_GROWTH" Type="Decimal" Precision="7" Scale="5" />
+    <Property Name="NEURALNETWORK_NEXT_GROWTH" Type="Decimal" Precision="7" Scale="4" />
     <Property Name="LAST_GDAXTRADE" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
   </EntityType>
   <EntityContainer Name="ExchangeRateEntities" annotation:LazyLoadingEnabled="true">

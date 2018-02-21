@@ -80,24 +80,24 @@ public class PriceCollector {
     }
     
     private void initCurrencies(){
-        try {
             String json = currencyAPIController.get(Globals.API_ENDPOINT + "/currency");
-            currencies = parser.CurrencyFromJSON(json);
-            IF currencies blank throw exception
-            connectedToDatabase = true;
-            System.out.println("[INFO] Successfully connected to Oracle database. Initialising catch up.");
-        } catch (Exception e){
-            System.out.println("[INFO] Failed to connect to Oracle database. Initialising local mode.");
-            Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
-            currencies[0] = newCurrency;
-            newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
-            currencies[1] = newCurrency;
-            newCurrency = new Currency("ETH", "Ethereum", Globals.ETH_TRADES);
-            currencies[2] = newCurrency;
-            newCurrency = new Currency("LTC", "Litecoin", Globals.LTC_TRADES);
-            currencies[3] = newCurrency;
             
-        }
+            if (json.isEmpty()){
+                System.out.println("[INFO] Failed to connect to Oracle database. Initialising local mode.");
+                Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
+                currencies[0] = newCurrency;
+                newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
+                currencies[1] = newCurrency;
+                newCurrency = new Currency("ETH", "Ethereum", Globals.ETH_TRADES);
+                currencies[2] = newCurrency;
+                newCurrency = new Currency("LTC", "Litecoin", Globals.LTC_TRADES);
+                currencies[3] = newCurrency;
+            } else {
+                System.out.println("[INFO] Successfully connected to Oracle database. Initialising catch up.");
+                currencies = parser.currencyFromJSON(json);
+                connectedToDatabase = true;
+            }
+            
     }
     
     private void initHistoricCollector(){  
@@ -222,11 +222,11 @@ public class PriceCollector {
                     currentSecond = 0;
                     getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
                     for (Currency currency : currencies){
+                        if (connectedToDatabase){
+                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/ExchangeRate", parser.currentRateToJSON(currency));
+                        }
                         System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
                     }
-                    /*
-                        POST TO API
-                    */
                 }
             }
         };
@@ -276,9 +276,14 @@ public class PriceCollector {
     }
     
     private Double calculateMeanPrice(GDAXTrade[] trades) {
-        List<Double> relevantTrades = new ArrayList<>();
+        List<Double> prices = new ArrayList<>();
         Double meanPrice;
-        meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(relevantTrades.toArray()));
+        
+        for (GDAXTrade trade : trades){
+            prices.add(trade.getPrice());
+        }
+        
+        meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(prices.toArray()));
         return meanPrice;
     }
     

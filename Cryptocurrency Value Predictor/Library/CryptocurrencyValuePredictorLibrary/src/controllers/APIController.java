@@ -8,9 +8,11 @@ package controllers;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
@@ -39,10 +41,12 @@ public class APIController implements IAPIController {
     }
 
     @Override
-    public void post(String url, String json) {
-        System.out.println("[INFO] Posting resource to: " + url);
-        try {
-            HttpURLConnection http = (HttpURLConnection) new URL(url).openConnection();
+    public void post(String endpoint, String json) {
+        System.out.println("[INFO] Posting to: " + endpoint);
+        try {      
+            
+            /*URL url = new URL(endpoint);
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
             http.setRequestProperty("Content-Type", "application/json");
@@ -51,10 +55,20 @@ public class APIController implements IAPIController {
             OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
             out.write(json);
             out.close();
-
-            System.out.println(http.getResponseCode());
+*/
+        URL url = new URL(endpoint);
+        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        con.setDoOutput(true);
+        con.setDoInput(true);
+ 
+        con.setRequestProperty("Content-Type", "application/json;");
+        con.setRequestProperty("Accept", "application/json");
+        con.setRequestProperty("Method", "POST");
+        OutputStream os = con.getOutputStream();
+        os.write(json.getBytes("UTF-8"));
+        os.close();
             
-            http.disconnect();
+        System.out.println(con.getResponseCode());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
