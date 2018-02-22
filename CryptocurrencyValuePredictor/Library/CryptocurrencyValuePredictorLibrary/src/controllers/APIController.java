@@ -35,7 +35,7 @@ public class APIController implements IAPIController {
                             Collectors.joining(System.lineSeparator()));
                 }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         }
         return json;
     }
@@ -44,33 +44,23 @@ public class APIController implements IAPIController {
     public void post(String endpoint, String json) {
         System.out.println("[INFO] Posting to: " + endpoint);
         try {      
-            
-            /*URL url = new URL(endpoint);
+            URL url = new URL(endpoint);
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
-            http.setRequestProperty("Content-Type", "application/json");
+            http.setRequestProperty("Content-Type", "application/json;");
             http.setRequestProperty("Accept", "application/json");
-
-            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
-            out.write(json);
-            out.close();
-*/
-        URL url = new URL(endpoint);
-        HttpURLConnection con = (HttpURLConnection)url.openConnection();
-        con.setDoOutput(true);
-        con.setDoInput(true);
- 
-        con.setRequestProperty("Content-Type", "application/json;");
-        con.setRequestProperty("Accept", "application/json");
-        con.setRequestProperty("Method", "POST");
-        OutputStream os = con.getOutputStream();
-        os.write(json.getBytes("UTF-8"));
-        os.close();
             
-        System.out.println(con.getResponseCode());
+            try (OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream(), "UTF-8")) {
+                out.write(json);
+            }
+
+            int responseCode = http.getResponseCode();
+            System.out.println(http.getResponseMessage());
+            http.disconnect();
+            System.out.println(responseCode);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(e);
         }
     }
 
@@ -91,7 +81,7 @@ public class APIController implements IAPIController {
             System.out.println(http.getResponseCode());
             http.disconnect();
         } catch (Exception e) {
-            System.out.println("[ERR] " + e.getMessage());
+            System.out.println("[ERR] " + e);
         }
     }
 
@@ -109,7 +99,7 @@ public class APIController implements IAPIController {
             System.out.println(http.getResponseCode());
             http.disconnect();
         } catch (Exception e) {
-            System.out.println("[ERR] " + e.getMessage());
+            System.out.println("[ERR] " + e);
         }
 
     }

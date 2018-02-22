@@ -314,6 +314,9 @@ public class PriceCollector {
                     System.out.println("[INFO] Posting " + currency.getID() + " trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     tradeTime = tradeTime.minusMinutes(1);
                     currency.addHistoricTrade((GDAXTrade)trade);
+                    if (connectedToDatabase){
+                        //exchangeRateAPIController.post(Globals.API_ENDPOINT + "/ExchangeRate", parser.currentRateToJSON(currency));
+                    }
                 }
             }
         }
