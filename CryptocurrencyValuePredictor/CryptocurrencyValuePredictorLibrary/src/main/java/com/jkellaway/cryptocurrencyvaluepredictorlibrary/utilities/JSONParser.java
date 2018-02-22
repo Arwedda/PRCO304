@@ -5,15 +5,16 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
-import helpers.LocalDateTimeHelper;
-import helpers.SafeCastHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
-import model.Currency;
-import model.ExchangeRate;
-import model.GDAXTrade;
+
 
 /**
  *

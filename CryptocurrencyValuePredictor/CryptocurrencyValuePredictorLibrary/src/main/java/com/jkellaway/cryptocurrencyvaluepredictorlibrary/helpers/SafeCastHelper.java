@@ -5,9 +5,11 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
 
-import model.Currency;
-import model.ExchangeRate;
-import model.GDAXTrade;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
+
+
 
 /**
  *

@@ -5,22 +5,24 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
-import controllers.CurrencyAPIController;
-import controllers.ExchangeRateAPIController;
-import controllers.GDAXAPIController;
-import helpers.Globals;
-import helpers.LocalDateTimeHelper;
-import helpers.MathsHelper;
-import helpers.SafeCastHelper;
+
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers.CurrencyAPIController;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers.ExchangeRateAPIController;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers.GDAXAPIController;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import model.Currency;
-import model.ExchangeRate;
-import model.GDAXTrade;
+
 
 /**
  *

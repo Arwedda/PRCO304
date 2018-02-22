@@ -5,13 +5,15 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
-import helpers.MathsHelper;
-import helpers.SafeCastHelper;
+
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import model.Currency;
-import model.ExchangeRate;
+
 
 /**
  *
