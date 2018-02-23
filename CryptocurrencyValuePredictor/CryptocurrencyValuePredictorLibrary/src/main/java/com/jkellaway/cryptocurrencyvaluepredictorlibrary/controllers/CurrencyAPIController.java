@@ -12,7 +12,7 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
  * @author jkell
  */
 public class CurrencyAPIController extends APIController {
-    public Currency[] getCurrency(String url){
+    public Currency[] getCurrencies(String url){
         Currency[] currencies = new Currency[0];
         String json = get(url);
         currencies = gson.fromJson(json, Currency[].class);

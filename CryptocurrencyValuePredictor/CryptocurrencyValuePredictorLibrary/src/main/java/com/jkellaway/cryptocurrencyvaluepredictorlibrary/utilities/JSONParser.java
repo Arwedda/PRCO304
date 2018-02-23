@@ -7,7 +7,6 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +47,20 @@ public class JSONParser {
         return array;
     }
     
+    private List<String> getMatches(String json, String regex){
+        Pattern pattern = Pattern.compile(regex);
+        Matcher match = pattern.matcher(json);
+        List<String> arlMatches = new ArrayList<>();
+        
+        while (match.find()){
+            arlMatches.add(match.group());
+        }
+        
+        return arlMatches;
+    }
+    
+    
+    /*
     public Currency[] currencyFromJSON(String json){
         Currency[] array;
         Currency currency;
@@ -73,15 +86,33 @@ public class JSONParser {
         return array;
     }
     
-    private List<String> getMatches(String json, String regex){
-        Pattern pattern = Pattern.compile(regex);
-        Matcher match = pattern.matcher(json);
-        List<String> arlMatches = new ArrayList<>();
+    public ExchangeRate[] exchangeRateFromJSON(String json){
+        ExchangeRate[] array;
+        ExchangeRate rate;
+        List<ExchangeRate> rates = new ArrayList<>();
         
-        while (match.find()){
-            arlMatches.add(match.group());
-        }
         
-        return arlMatches;
+        
+        array = SafeCastHelper.objectsToExchangeRates(rates.toArray());
+        return array;
     }
+    
+    public String currentRateToJSON(Currency currency){
+        ExchangeRate rate = currency.getRate();
+        String currencyID = currency.getID();
+        LocalDateTime dateTime = rate.getTimestamp();
+        Double dollarValue = rate.getValue();
+        Double growth = rate.getGrowth();
+        Double GOFAINextGrowth = null;
+        Double neuralNetworkNextGrowth = null;
+        String lastGDAXTrade = rate.getLastTrade();
+        String json = "{\"CURRENCY_ID\":\"" + currencyID + 
+                "\", \"DATETIME\": \"" + dateTime.toString() + 
+                "\", \"DOLLAR_VALUE\": " + dollarValue + 
+                ", \"GROWTH\\\": " + growth + 
+                ", \"GOFAI_NEXT_GROWTH\": " + GOFAINextGrowth + 
+                ", \"NEURALNETWORK_NEXT_GROWTH\": " + neuralNetworkNextGrowth + 
+                ", \"LAST_GDAXTRADE\": \"" + lastGDAXTrade + "\\\"}";
+        return json;
+    }*/
 }

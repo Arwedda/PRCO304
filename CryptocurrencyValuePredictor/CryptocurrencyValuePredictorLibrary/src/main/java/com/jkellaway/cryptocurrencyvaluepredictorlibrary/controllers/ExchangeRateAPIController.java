@@ -12,8 +12,20 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
  * @author jkell
  */
 public class ExchangeRateAPIController extends APIController {
-    public void postExchangeRate(String endpoint, ExchangeRate rate){
-        String json = gson.toJson(rate, ExchangeRate.class);
+    public ExchangeRate[] getExchangeRates(String url){
+        ExchangeRate[] rates = new ExchangeRate[0];
+        String json = get(url);
+        rates = gson.fromJson(json, ExchangeRate[].class);
+        return rates;
+    }
+    
+    public void post(String endpoint, ExchangeRate rate){
+       //String json = gson.toJson(rate, ExchangeRate.class);
+        //post(endpoint, json);
+    }
+    
+    public void post(String endpoint, ExchangeRate[] rates){
+        String json = gson.toJson(rates, ExchangeRate[].class);
         post(endpoint, json);
     }
 }

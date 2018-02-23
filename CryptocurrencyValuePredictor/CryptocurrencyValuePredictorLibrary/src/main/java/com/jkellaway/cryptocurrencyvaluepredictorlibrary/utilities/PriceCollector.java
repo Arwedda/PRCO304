@@ -29,62 +29,48 @@ import java.util.concurrent.TimeUnit;
  * @author jkell
  */
 public class PriceCollector {
-    private GDAXAPIController gdaxAPIController = new GDAXAPIController();
-    private CurrencyAPIController currencyAPIController = new CurrencyAPIController();
-    private ExchangeRateAPIController exchangeRateAPIController = new ExchangeRateAPIController();
-    private Currency[] currencies = new Currency[4];
-    private ScheduledExecutorService current = Executors.newSingleThreadScheduledExecutor();
-    private ScheduledExecutorService historic = Executors.newSingleThreadScheduledExecutor();
-    private final int startGOFAI = 21;
-    private final int startNN = 1001;
+    private GDAXAPIController gdaxAPIController;
+    private CurrencyAPIController currencyAPIController;
+    private ExchangeRateAPIController exchangeRateAPIController;
+    private Currency[] currencies;
+    private ScheduledExecutorService current;
+    private ScheduledExecutorService historic;
+    private LocalDateTime firstRelevantReading;
     private int currentSecond;
-    private boolean connectedToDatabase = false;
+    private boolean connectedToDatabase;
     
     public PriceCollector() {
         //System.out.println("[INFO] Fetching resource from: " + gdaxAPIController.API_ENDPOINT + "/currencies/");
         try {
-            initCurrencies();
-            /*
-                Websocket listener will act as collector (rather than RESTful) if the bug is ever ironed out:
-                It can't find an implementation of ContainerProvider.getWebSocketContainer();
-                [Info] Error: java.lang.RuntimeException: Could not find an implementation class.
-                [INFO] Error: java.lang.NullPointerException
-            initWebsocketListener();
-            */
-            initCollector();
-            initHistoricCollector();
+            initialise();
+
         } catch (Exception e){
             System.out.println("[INFO] Error: " + e);
         }
     }
     
-    private void initWebsocketListener(){
-        /*try {
-            wsListener = new WebsocketListener(new URI("wss://ws-feed.gdax.com"));
-        
-            wsListener.addMessageHandler(new WebsocketListener.MessageHandler() {
-                @Override
-                public void handleMessage(String message) {
-                    System.out.println(message);
-                }
-            });
-
-            // send message to websocket
-            wsListener.sendMessage("{\"type\": \"subscribe\", \"product_ids\": [\"BCH-USD\", \"BTC-USD\", \"ETH-USD\", \"LTC-USD\"], \"channels\": [\"level2\", \"heartbeat\"] }");
-
-            // wait 5 seconds for messages from websocket
-            Thread.sleep(5000);
-
-        } catch (Exception e) {
-            System.out.println("[INFO] Error: " + e);
-        }*/
+    private void initialise(){
+        initClass();
+        initCurrencies();
+        initCollector();
+        initHistoricCollector();
+    }
+    
+    private void initClass(){
+        gdaxAPIController = new GDAXAPIController();
+        currencyAPIController = new CurrencyAPIController();
+        exchangeRateAPIController = new ExchangeRateAPIController();
+        current = Executors.newSingleThreadScheduledExecutor();
+        historic = Executors.newSingleThreadScheduledExecutor();
+        connectedToDatabase = false;
+        firstRelevantReading = LocalDateTimeHelper.startOfMinute(LocalDateTime.now().minusMinutes(10000));
     }
     
     private void initCurrencies(){
-            currencies = currencyAPIController.getCurrency(Globals.API_ENDPOINT + "/currency");
-            String json = exchangeRateAPIController.get(Globals.API_ENDPOINT + "/exchangerate");
+            currencies = currencyAPIController.getCurrencies(Globals.API_ENDPOINT + "/currency");
             if (currencies.length == 0){
                 System.out.println("[INFO] Failed to connect to Oracle database. Initialising local mode.");
+                currencies = new Currency[4];
                 Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
                 currencies[0] = newCurrency;
                 newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
@@ -112,7 +98,7 @@ public class PriceCollector {
                     if (0 < currentSecond && currentSecond < 59 ) {
                         int[] sizes = new int[currencies.length];
                         int readingsTaken = 0;
-                        int readings = startGOFAI;
+                        int readings = Globals.STARTGOFAI;
                         GDAXTrade[] trades;
 
                         for (int i = 0; i < sizes.length; i++){
@@ -122,29 +108,20 @@ public class PriceCollector {
                         if (collectionCompleted(readings, sizes)) {
                             if (!currencies[0].isCalculatingGOFAI()){
                                 for (Currency currency : currencies){
+                                    if (connectedToDatabase){
+                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                    }
                                     currency.mergeRates();
                                 }
                                 System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
                             }
                             
-                            /*
-                                START OF GOFAI METHOD TESTING
-                           
-                            readings = 21;
-                            if (collectionCompleted(readings, sizes)){
-                                for (Currency currency : currencies){
-                                    currency.mergeRates();
-                                }
-                                
-                            }
-                            
-                            /*
-                                END OF GOFAI METHOD TESTING
-                            */
-                            
-                            readings = startNN;
+                            readings = Globals.STARTNN;
                             if (collectionCompleted(readings, sizes)) {
                                 for (Currency currency : currencies){
+                                    if (connectedToDatabase){
+                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                    }
                                     currency.mergeRates();
                                 }
                                 System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
@@ -219,12 +196,6 @@ public class PriceCollector {
                 if (currentSecond == 60) {
                     currentSecond = 0;
                     getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
-                    for (Currency currency : currencies){
-                        if (connectedToDatabase){
-                            exchangeRateAPIController.postExchangeRate(Globals.API_ENDPOINT + "/exchangerate", currency.getRate());
-                        }
-                        System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
-                    }
                 }
             }
         };
@@ -247,6 +218,11 @@ public class PriceCollector {
                 }
                 rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, trades[trades.length - 1].getTrade_id());
                 currency.setValue(rate);
+                
+                if (connectedToDatabase){
+                    exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
+                }
+                System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
             }
         } catch (Exception e) {
             System.out.println("[INFO] Error: " + e);
@@ -300,14 +276,11 @@ public class PriceCollector {
             } else {
                 if (currency.hasFoundPosition()) {
                     meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()));
-                    rate = new ExchangeRate(currency.getID(), tradeTime, meanPrice, null, null, null, trade.getTrade_id());
+                    rate = new ExchangeRate(currency.getID(), tradeTime.toString(), meanPrice, null, null, null, trade.getTrade_id());
                     currency.addHistoricRate(rate);
                     System.out.println("[INFO] Posting " + currency.getID() + " trade for: " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     tradeTime = tradeTime.minusMinutes(1);
                     currency.addHistoricTrade((GDAXTrade)trade);
-                    if (connectedToDatabase){
-                        //exchangeRateAPIController.postExchangeRates(Globals.API_ENDPOINT + "/ExchangeRate", currency.getRates());
-                    }
                 }
             }
         }

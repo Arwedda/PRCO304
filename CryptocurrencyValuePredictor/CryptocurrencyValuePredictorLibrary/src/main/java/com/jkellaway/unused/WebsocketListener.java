@@ -3,8 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
-
+package com.jkellaway.unused;
+/*
 import java.net.URI;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -19,9 +19,9 @@ import javax.websocket.WebSocketContainer;
  *
  * @author jkell
  */
-@ClientEndpoint
+//@ClientEndpoint
 public class WebsocketListener {
-    public Session session = null;
+/*    public Session session = null;
     private MessageHandler messageHandler;
     
     public WebsocketListener(URI endpointURI) {
@@ -62,5 +62,30 @@ public class WebsocketListener {
     
     public static interface MessageHandler {
         public void handleMessage(String message);
-    }
+    }*/
 }
+
+
+/*  instantiating class
+    private void initialiseWebsocketListener(){
+        try {
+            wsListener = new WebsocketListener(new URI("wss://ws-feed.gdax.com"));
+        
+            wsListener.addMessageHandler(new WebsocketListener.MessageHandler() {
+                @Override
+                public void handleMessage(String message) {
+                    System.out.println(message);
+                }
+            });
+
+            // send message to websocket
+            wsListener.sendMessage("{\"type\": \"subscribe\", \"product_ids\": [\"BCH-USD\", \"BTC-USD\", \"ETH-USD\", \"LTC-USD\"], \"channels\": [\"level2\", \"heartbeat\"] }");
+
+            // wait 5 seconds for messages from websocket
+            Thread.sleep(5000);
+
+        } catch (Exception e) {
+            System.out.println("[INFO] Error: " + e);
+        }
+    }
+*/

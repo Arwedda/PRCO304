@@ -101,6 +101,37 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = pRCO304_EXCHANGERATE.currency_id }, pRCO304_EXCHANGERATE);
         }
 
+        // POST: api/ExchangeRate
+        [ResponseType(typeof(PRCO304_EXCHANGERATE))]
+        public async Task<IHttpActionResult> PostPRCO304_EXCHANGERATE(PRCO304_EXCHANGERATE[] pRCO304_EXCHANGERATE)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            foreach (PRCO304_EXCHANGERATE rate in pRCO304_EXCHANGERATE){
+                db.PRCO304_EXCHANGERATE.Add(rate);
+                try
+                {
+                    await db.SaveChangesAsync();
+                }
+                catch (DbUpdateException)
+                {
+                    if (PRCO304_EXCHANGERATEExists(rate.currency_id))
+                    {
+                        return Conflict();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return CreatedAtRoute("DefaultApi", new { id = pRCO304_EXCHANGERATE[0].currency_id }, pRCO304_EXCHANGERATE);
+        }
+
         // DELETE: api/ExchangeRate/5
         [ResponseType(typeof(PRCO304_EXCHANGERATE))]
         public async Task<IHttpActionResult> DeletePRCO304_EXCHANGERATE(string id)
