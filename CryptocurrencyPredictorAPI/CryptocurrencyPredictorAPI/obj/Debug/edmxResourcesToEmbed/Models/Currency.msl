@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="CurrencyStoreContainer" CdmEntityContainer="Entities">
+    <EntitySetMapping Name="PRCO304_CURRENCY">
+      <EntityTypeMapping TypeName="Currency.PRCO304_CURRENCY">
+        <MappingFragment StoreEntitySet="PRCO304_CURRENCY">
+          <ScalarProperty Name="id" ColumnName="CURRENCY_ID" />
+          <ScalarProperty Name="name" ColumnName="CURRENCY_NAME" />
+          <ScalarProperty Name="GDAXEndpoint" ColumnName="GDAX_ENDPOINT" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

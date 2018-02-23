@@ -10,7 +10,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
  * @author jkell
  */
 public class Globals {
-    public static final String API_ENDPOINT = "http://localhost:50191/api";
+    public static final String API_ENDPOINT = "http://localhost:63783/api";
     public static final String GDAX_ENDPOINT = "https://api.gdax.com/";
     public static final String BCH_TRADES = "https://api.gdax.com/products/BCH-USD/trades";
     public static final String BTC_TRADES = "https://api.gdax.com/products/BTC-USD/trades";

@@ -45,77 +45,16 @@ public class APIController implements IAPIController {
     @Override
     public void post(String endpoint, String json) {
         System.out.println("[INFO] Posting to: " + endpoint);
-        try {      
-            URL url = new URL(endpoint);
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.setRequestProperty("Content-Type", "application/json;");
-            http.setRequestProperty("Accept", "application/json");
-            
-            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
-            out.write(json);
-            out.close();
-
-            int responseCode = http.getResponseCode();
-            System.out.println(http.getResponseMessage());
-            http.disconnect();
-            System.out.println(responseCode);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        
-        try {      
-            URL url = new URL(endpoint);
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+        try {        
+            HttpURLConnection http = (HttpURLConnection) new URL(endpoint).openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);
             http.setRequestProperty("Content-Type", "application/json");
             http.setRequestProperty("Accept", "application/json");
             
-            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
-            out.write(json);
-            out.close();
-
-            int responseCode = http.getResponseCode();
-            System.out.println(http.getResponseMessage());
-            http.disconnect();
-            System.out.println(responseCode);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        
-        try {      
-            URL url = new URL(endpoint);
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.setRequestProperty("Content-Type", "application/json;");
-            http.setRequestProperty("Accept", "application/json");
-            
-            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
-            out.write(json);
-            out.close();
-
-            int responseCode = http.getResponseCode();
-            System.out.println(http.getResponseMessage());
-            http.disconnect();
-            System.out.println(responseCode);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        
-        try {      
-            URL url = new URL(endpoint);
-            HttpURLConnection http = (HttpURLConnection) url.openConnection();
-            http.setRequestMethod("POST");
-            http.setDoOutput(true);
-            http.setRequestProperty("Content-Type", "application/json");
-            http.setRequestProperty("Accept", "application/json");
-            
-            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
-            out.write(json);
-            out.close();
+            try (OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream())) {
+                out.write(json);
+            }
 
             int responseCode = http.getResponseCode();
             System.out.println(http.getResponseMessage());

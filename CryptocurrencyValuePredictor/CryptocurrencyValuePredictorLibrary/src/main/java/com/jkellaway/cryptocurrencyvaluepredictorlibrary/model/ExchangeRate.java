@@ -5,6 +5,7 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import java.time.LocalDateTime;
 
 /**
@@ -13,12 +14,13 @@ import java.time.LocalDateTime;
  */
 public class ExchangeRate {
     private String currency_id;
-    private LocalDateTime timestamp;
+    private String timestamp;
     private Double value;
     private Double growth;
     private Double gofaiNextGrowth;
     private Double neuralNetworkNextGrowth;
     private Integer lastTrade;
+    private LocalDateTime ldtTimestamp;
     
     public ExchangeRate() {
         this.currency_id = null;
@@ -28,9 +30,21 @@ public class ExchangeRate {
         this.growth = null;
         this.gofaiNextGrowth = null;
         this.neuralNetworkNextGrowth = null;
+        this.ldtTimestamp = null;
     }
 
     public ExchangeRate(String currency_id, LocalDateTime timestamp, Double value, Double growth, Double gofaiNextGrowth, Double neuralNetworkNextGrowth, Integer lastTrade) {
+        this.currency_id = currency_id;
+        this.timestamp = timestamp.toString();
+        this.value = value;
+        this.growth = growth;
+        this.gofaiNextGrowth = gofaiNextGrowth;
+        this.neuralNetworkNextGrowth = neuralNetworkNextGrowth;
+        this.lastTrade = lastTrade;
+        this.ldtTimestamp = timestamp;
+    }
+
+    public ExchangeRate(String currency_id, String timestamp, Double value, Double growth, Double gofaiNextGrowth, Double neuralNetworkNextGrowth, Integer lastTrade) {
         this.currency_id = currency_id;
         this.timestamp = timestamp;
         this.value = value;
@@ -38,8 +52,9 @@ public class ExchangeRate {
         this.gofaiNextGrowth = gofaiNextGrowth;
         this.neuralNetworkNextGrowth = neuralNetworkNextGrowth;
         this.lastTrade = lastTrade;
+        this.ldtTimestamp = LocalDateTimeHelper.localDateTimeParser(timestamp);
     }
-
+    
     public String getCurrency_id() {
         return currency_id;
     }
@@ -47,13 +62,23 @@ public class ExchangeRate {
     public void setCurrency_id(String currency_id) {
         this.currency_id = currency_id;
     }
-    
-    public LocalDateTime getTimestamp() {
+
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+        this.ldtTimestamp = LocalDateTimeHelper.localDateTimeParser(timestamp);
+    }
+
+    public LocalDateTime getLDTTimestamp() {
+        return ldtTimestamp;
+    }
+
+    public void setTimestamp(LocalDateTime timestamp) {
+        this.ldtTimestamp = timestamp;
+        this.timestamp = timestamp.toString();
     }
 
     public Double getValue() {

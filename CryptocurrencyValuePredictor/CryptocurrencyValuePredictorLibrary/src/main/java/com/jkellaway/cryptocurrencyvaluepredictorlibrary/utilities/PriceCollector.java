@@ -82,7 +82,7 @@ public class PriceCollector {
     
     private void initCurrencies(){
             currencies = currencyAPIController.getCurrency(Globals.API_ENDPOINT + "/currency");
-
+            String json = exchangeRateAPIController.get(Globals.API_ENDPOINT + "/exchangerate");
             if (currencies.length == 0){
                 System.out.println("[INFO] Failed to connect to Oracle database. Initialising local mode.");
                 Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
@@ -221,7 +221,7 @@ public class PriceCollector {
                     getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
                     for (Currency currency : currencies){
                         if (connectedToDatabase){
-                            exchangeRateAPIController.postExchangeRate(Globals.API_ENDPOINT + "/ExchangeRate", currency.getRate());
+                            exchangeRateAPIController.postExchangeRate(Globals.API_ENDPOINT + "/exchangerate", currency.getRate());
                         }
                         System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
                     }

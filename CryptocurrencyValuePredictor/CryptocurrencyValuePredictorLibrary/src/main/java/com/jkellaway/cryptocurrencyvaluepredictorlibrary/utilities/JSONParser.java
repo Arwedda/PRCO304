@@ -8,9 +8,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.*;
@@ -21,7 +19,6 @@ import java.util.regex.*;
  * @author jkell
  */
 public class JSONParser {
-    
     public JSONParser() {
     }
     
@@ -76,17 +73,6 @@ public class JSONParser {
         return array;
     }
     
-    public ExchangeRate[] exchangeRateFromJSON(String json){
-        ExchangeRate[] array;
-        ExchangeRate rate;
-        List<ExchangeRate> rates = new ArrayList<>();
-        
-        
-        
-        array = SafeCastHelper.objectsToExchangeRates(rates.toArray());
-        return array;
-    }
-    
     private List<String> getMatches(String json, String regex){
         Pattern pattern = Pattern.compile(regex);
         Matcher match = pattern.matcher(json);
@@ -97,24 +83,5 @@ public class JSONParser {
         }
         
         return arlMatches;
-    }
-    
-    public String currentRateToJSON(Currency currency){
-        ExchangeRate rate = currency.getRate();
-        String currencyID = currency.getID();
-        LocalDateTime dateTime = rate.getTimestamp();
-        Double dollarValue = rate.getValue();
-        Double growth = rate.getGrowth();
-        Double GOFAINextGrowth = null;
-        Double neuralNetworkNextGrowth = null;
-        Integer lastGDAXTrade = rate.getLastTrade();
-        String json = "{\"CURRENCY_ID\":\"" + currencyID + 
-                "\", \"DATETIME\": \"" + dateTime.toString() + 
-                "\", \"DOLLAR_VALUE\": " + dollarValue + 
-                ", \"GROWTH\\\": " + growth + 
-                ", \"GOFAI_NEXT_GROWTH\": " + GOFAINextGrowth + 
-                ", \"NEURALNETWORK_NEXT_GROWTH\": " + neuralNetworkNextGrowth + 
-                ", \"LAST_GDAXTRADE\": \"" + lastGDAXTrade + "\\\"}";
-        return json;
     }
 }

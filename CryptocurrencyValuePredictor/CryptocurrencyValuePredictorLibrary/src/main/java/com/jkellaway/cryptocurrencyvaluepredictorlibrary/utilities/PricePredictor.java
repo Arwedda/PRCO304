@@ -47,8 +47,8 @@ public class PricePredictor {
     }
     
     private static void GOFAICalculations(Currency currency){
-        Double[] predictions = new Double[numberOfPredictions];
-        Double[] deltas = new Double[numberOfPredictions];
+        Double[] predictions;
+        Double[] deltas;
         ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
         ExchangeRate[] currentRates;
         int highestIndex = rates.length - 1;
@@ -73,7 +73,7 @@ public class PricePredictor {
                 }
             } catch (Exception e){
                 System.out.println("[INFO] Error: " + e);
-                System.out.println("[INFO] Failed to get growth for " + currency.getID() + " at " + currency.getRates().get(highestIndex - i).getTimestamp().plusMinutes(1));
+                System.out.println("[INFO] Failed to get growth for " + currency.getID() + " at " + currency.getRates().get(highestIndex - i).getLDTTimestamp().plusMinutes(1));
             }
         }
     }

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ExchangeRateStoreContainer" CdmEntityContainer="ExchangeRates">
+    <EntitySetMapping Name="PRCO304_EXCHANGERATE">
+      <EntityTypeMapping TypeName="ExchangeRate.PRCO304_EXCHANGERATE">
+        <MappingFragment StoreEntitySet="PRCO304_EXCHANGERATE">
+          <ScalarProperty Name="currency_id" ColumnName="CURRENCY_ID" />
+          <ScalarProperty Name="timestamp" ColumnName="DATETIME" />
+          <ScalarProperty Name="value" ColumnName="DOLLAR_VALUE" />
+          <ScalarProperty Name="growth" ColumnName="GROWTH" />
+          <ScalarProperty Name="gofaiNextGrowth" ColumnName="GOFAI_NEXT_GROWTH" />
+          <ScalarProperty Name="neuralNetworkNextGrowth" ColumnName="NEURALNETWORK_NEXT_GROWTH" />
+          <ScalarProperty Name="lastTrade" ColumnName="LAST_GDAXTRADE" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>
