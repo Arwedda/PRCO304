@@ -7,6 +7,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.StringHelper;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  *
@@ -15,18 +16,18 @@ import java.time.LocalDateTime;
 public class GDAXTrade {
     private LocalDateTime time;
     private Double price;
-    private String id; 
+    private Integer trade_id; 
 
     public GDAXTrade() {
         this.time = null;
         this.price = 0.0;
-        this.id = "0";
+        this.trade_id = null;
     }
     
-    public GDAXTrade(LocalDateTime time, Double price, String trade_id) {
+    public GDAXTrade(LocalDateTime time, Double price, Integer trade_id) {
         this.time = time;
         this.price = price;
-        this.id = trade_id;
+        this.trade_id = trade_id;
     }
 
     public LocalDateTime getTime() {
@@ -45,15 +46,15 @@ public class GDAXTrade {
         this.price = price;
     }
 
-    public String getID() {
-        return id;
+    public Integer getTrade_id() {
+        return trade_id;
     }
 
-    public void setID(String id) {
-        this.id = id;
+    public void setTrade_id(Integer trade_id) {
+        this.trade_id = trade_id;
     }
     
     public boolean tradesMatch(GDAXTrade trade){
-        return StringHelper.stringsMatch(this.id, trade.getID(), this.id.length());
+        return Objects.equals(this.trade_id, trade.getTrade_id());
     }
 }

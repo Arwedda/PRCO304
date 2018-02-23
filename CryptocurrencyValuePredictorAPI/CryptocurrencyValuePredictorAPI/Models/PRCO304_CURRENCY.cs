@@ -14,8 +14,8 @@ namespace CryptocurrencyValuePredictorAPI.Models
     
     public partial class PRCO304_CURRENCY
     {
-        public string CURRENCY_ID { get; set; }
-        public string CURRENCY_NAME { get; set; }
-        public string GDAX_ENDPOINT { get; set; }
+        public string id { get; set; }
+        public string name { get; set; }
+        public string GDAXEndpoint { get; set; }
     }
 }

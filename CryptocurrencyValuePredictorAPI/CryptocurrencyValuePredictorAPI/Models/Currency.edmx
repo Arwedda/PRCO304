@@ -23,11 +23,11 @@
       <Schema Namespace="Currency" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="PRCO304_CURRENCY">
           <Key>
-            <PropertyRef Name="CURRENCY_ID" />
+            <PropertyRef Name="id" />
           </Key>
-          <Property Name="CURRENCY_ID" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CURRENCY_NAME" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="GDAX_ENDPOINT" Type="String" MaxLength="60" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="id" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="GDAXEndpoint" Type="String" MaxLength="60" FixedLength="false" Unicode="false" Nullable="false" />
         </EntityType>
         <EntityContainer Name="CurrencyEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="PRCO304_CURRENCY" EntityType="Self.PRCO304_CURRENCY" />
@@ -41,9 +41,9 @@
           <EntitySetMapping Name="PRCO304_CURRENCY">
             <EntityTypeMapping TypeName="Currency.PRCO304_CURRENCY">
               <MappingFragment StoreEntitySet="PRCO304_CURRENCY">
-                <ScalarProperty Name="CURRENCY_ID" ColumnName="CURRENCY_ID" />
-                <ScalarProperty Name="CURRENCY_NAME" ColumnName="CURRENCY_NAME" />
-                <ScalarProperty Name="GDAX_ENDPOINT" ColumnName="GDAX_ENDPOINT" />
+                <ScalarProperty Name="id" ColumnName="CURRENCY_ID" />
+                <ScalarProperty Name="name" ColumnName="CURRENCY_NAME" />
+                <ScalarProperty Name="GDAXEndpoint" ColumnName="GDAX_ENDPOINT" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

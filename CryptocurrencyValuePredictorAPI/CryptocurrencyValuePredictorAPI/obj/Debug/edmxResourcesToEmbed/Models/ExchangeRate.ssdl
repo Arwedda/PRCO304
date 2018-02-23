@@ -6,12 +6,12 @@
       <PropertyRef Name="DATETIME" />
     </Key>
     <Property Name="CURRENCY_ID" Type="varchar2" MaxLength="5" Nullable="false" />
-    <Property Name="DATETIME" Type="timestamp with local time zone" Precision="6" Nullable="false" />
-    <Property Name="DOLLAR_VALUE" Type="number" Precision="8" Scale="2" Nullable="false" />
-    <Property Name="GROWTH" Type="number" Precision="7" Scale="4" />
-    <Property Name="GOFAI_NEXT_GROWTH" Type="number" Precision="7" Scale="4" />
-    <Property Name="NEURALNETWORK_NEXT_GROWTH" Type="number" Precision="7" Scale="5" />
-    <Property Name="LAST_GDAXTRADE" Type="varchar2" MaxLength="10" />
+    <Property Name="DATETIME" Type="timestamp" Precision="6" Nullable="false" />
+    <Property Name="DOLLAR_VALUE" Type="number" Precision="38" Scale="17" Nullable="false" />
+    <Property Name="GROWTH" Type="number" Precision="38" Scale="17" />
+    <Property Name="GOFAI_NEXT_GROWTH" Type="number" Precision="38" Scale="17" />
+    <Property Name="NEURALNETWORK_NEXT_GROWTH" Type="number" Precision="38" Scale="17" />
+    <Property Name="LAST_GDAXTRADE" Type="number" Precision="38" Scale="17" />
   </EntityType>
   <EntityContainer Name="ExchangeRateStoreContainer">
     <EntitySet Name="PRCO304_EXCHANGERATE" EntityType="Self.PRCO304_EXCHANGERATE" Schema="JOSEPHKELLAWAY" store:Type="Tables" />

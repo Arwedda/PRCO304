@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Users\jkell\Desktop\Final Project\PRCO304\CryptocurrencyValuePredictorAPI\CryptocurrencyValuePredictorAPI\Models\ExchangeRate.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyValuePredictorAPI\CryptocurrencyValuePredictorAPI\Models\ExchangeRate.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

@@ -2,16 +2,16 @@
 <Schema Namespace="ExchangeRate" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
   <EntityType Name="PRCO304_EXCHANGERATE">
     <Key>
-      <PropertyRef Name="CURRENCY_ID" />
-      <PropertyRef Name="DATETIME" />
+      <PropertyRef Name="currency_id" />
+      <PropertyRef Name="timestamp" />
     </Key>
-    <Property Name="CURRENCY_ID" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="DATETIME" Type="DateTime" Precision="255" Nullable="false" />
-    <Property Name="DOLLAR_VALUE" Type="Decimal" Precision="8" Scale="2" Nullable="false" />
-    <Property Name="GROWTH" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="GOFAI_NEXT_GROWTH" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="NEURALNETWORK_NEXT_GROWTH" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="LAST_GDAXTRADE" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+    <Property Name="currency_id" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="timestamp" Type="DateTime" Precision="255" Nullable="false" />
+    <Property Name="value" Type="Decimal" Precision="8" Scale="2" Nullable="false" />
+    <Property Name="growth" Type="Decimal" Precision="7" Scale="4" />
+    <Property Name="gofaiNextGrowth" Type="Decimal" Precision="7" Scale="4" />
+    <Property Name="neuralNetworkNextGrowth" Type="Decimal" Precision="7" Scale="4" />
+    <Property Name="lastTrade" Type="Int32" />
   </EntityType>
   <EntityContainer Name="ExchangeRateEntities" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="PRCO304_EXCHANGERATE" EntityType="Self.PRCO304_EXCHANGERATE" />

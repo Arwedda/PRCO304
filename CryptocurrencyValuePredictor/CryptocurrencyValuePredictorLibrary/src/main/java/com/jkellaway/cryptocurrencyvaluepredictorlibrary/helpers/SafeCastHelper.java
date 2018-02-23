@@ -33,7 +33,8 @@ public class SafeCastHelper {
         ExchangeRate rate;
         for (int i = 0; i < objs.length; i++) {
             if (objs[i] instanceof ExchangeRate){
-                rate = new ExchangeRate(((ExchangeRate) objs[i]).getTimestamp(), ((ExchangeRate) objs[i]).getValue(), ((ExchangeRate) objs[i]).getLastTrade(), ((ExchangeRate) objs[i]).getGrowth());
+                rate = new ExchangeRate(((ExchangeRate) objs[i]).getCurrency_id(), ((ExchangeRate) objs[i]).getTimestamp(), ((ExchangeRate) objs[i]).getValue(), ((ExchangeRate) objs[i]).getGrowth(), 
+                        ((ExchangeRate) objs[i]).getGofaiNextGrowth(), ((ExchangeRate) objs[i]).getNeuralNetworkNextGrowth(), ((ExchangeRate) objs[i]).getLastTrade());
                 exchangeRates[i] = rate;
             }
         }
@@ -45,7 +46,7 @@ public class SafeCastHelper {
         GDAXTrade trade;
         for (int i = 0; i < objs.length; i++) {
             if (objs[i] instanceof GDAXTrade){
-                trade = new GDAXTrade(((GDAXTrade) objs[i]).getTime(), ((GDAXTrade) objs[i]).getPrice(),((GDAXTrade)objs[i]).getID());
+                trade = new GDAXTrade(((GDAXTrade) objs[i]).getTime(), ((GDAXTrade) objs[i]).getPrice(),((GDAXTrade)objs[i]).getTrade_id());
                 trades[i] = trade;
             }
         }

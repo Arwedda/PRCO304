@@ -4,9 +4,9 @@
     <EntitySetMapping Name="PRCO304_CURRENCY">
       <EntityTypeMapping TypeName="Currency.PRCO304_CURRENCY">
         <MappingFragment StoreEntitySet="PRCO304_CURRENCY">
-          <ScalarProperty Name="CURRENCY_ID" ColumnName="CURRENCY_ID" />
-          <ScalarProperty Name="CURRENCY_NAME" ColumnName="CURRENCY_NAME" />
-          <ScalarProperty Name="GDAX_ENDPOINT" ColumnName="GDAX_ENDPOINT" />
+          <ScalarProperty Name="id" ColumnName="CURRENCY_ID" />
+          <ScalarProperty Name="name" ColumnName="CURRENCY_NAME" />
+          <ScalarProperty Name="GDAXEndpoint" ColumnName="GDAX_ENDPOINT" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

@@ -4,13 +4,13 @@
     <EntitySetMapping Name="PRCO304_EXCHANGERATE">
       <EntityTypeMapping TypeName="ExchangeRate.PRCO304_EXCHANGERATE">
         <MappingFragment StoreEntitySet="PRCO304_EXCHANGERATE">
-          <ScalarProperty Name="CURRENCY_ID" ColumnName="CURRENCY_ID" />
-          <ScalarProperty Name="DATETIME" ColumnName="DATETIME" />
-          <ScalarProperty Name="DOLLAR_VALUE" ColumnName="DOLLAR_VALUE" />
-          <ScalarProperty Name="GROWTH" ColumnName="GROWTH" />
-          <ScalarProperty Name="GOFAI_NEXT_GROWTH" ColumnName="GOFAI_NEXT_GROWTH" />
-          <ScalarProperty Name="NEURALNETWORK_NEXT_GROWTH" ColumnName="NEURALNETWORK_NEXT_GROWTH" />
-          <ScalarProperty Name="LAST_GDAXTRADE" ColumnName="LAST_GDAXTRADE" />
+          <ScalarProperty Name="currency_id" ColumnName="CURRENCY_ID" />
+          <ScalarProperty Name="timestamp" ColumnName="DATETIME" />
+          <ScalarProperty Name="value" ColumnName="DOLLAR_VALUE" />
+          <ScalarProperty Name="growth" ColumnName="GROWTH" />
+          <ScalarProperty Name="gofaiNextGrowth" ColumnName="GOFAI_NEXT_GROWTH" />
+          <ScalarProperty Name="neuralNetworkNextGrowth" ColumnName="NEURALNETWORK_NEXT_GROWTH" />
+          <ScalarProperty Name="lastTrade" ColumnName="LAST_GDAXTRADE" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

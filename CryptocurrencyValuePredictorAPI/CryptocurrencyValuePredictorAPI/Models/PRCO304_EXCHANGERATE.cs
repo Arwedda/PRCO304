@@ -14,12 +14,12 @@ namespace CryptocurrencyValuePredictorAPI.Models
     
     public partial class PRCO304_EXCHANGERATE
     {
-        public string CURRENCY_ID { get; set; }
-        public System.DateTime DATETIME { get; set; }
-        public decimal DOLLAR_VALUE { get; set; }
-        public Nullable<decimal> GROWTH { get; set; }
-        public Nullable<decimal> GOFAI_NEXT_GROWTH { get; set; }
-        public Nullable<decimal> NEURALNETWORK_NEXT_GROWTH { get; set; }
-        public string LAST_GDAXTRADE { get; set; }
+        public string currency_id { get; set; }
+        public System.DateTime timestamp { get; set; }
+        public decimal value { get; set; }
+        public Nullable<decimal> growth { get; set; }
+        public Nullable<decimal> gofaiNextGrowth { get; set; }
+        public Nullable<decimal> neuralNetworkNextGrowth { get; set; }
+        public Nullable<int> lastTrade { get; set; }
     }
 }

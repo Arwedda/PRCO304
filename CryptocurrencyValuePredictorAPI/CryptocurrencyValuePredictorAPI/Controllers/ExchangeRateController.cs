@@ -44,7 +44,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != pRCO304_EXCHANGERATE.CURRENCY_ID)
+            if (id != pRCO304_EXCHANGERATE.currency_id)
             {
                 return BadRequest();
             }
@@ -87,7 +87,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (PRCO304_EXCHANGERATEExists(pRCO304_EXCHANGERATE.CURRENCY_ID))
+                if (PRCO304_EXCHANGERATEExists(pRCO304_EXCHANGERATE.currency_id))
                 {
                     return Conflict();
                 }
@@ -97,7 +97,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = pRCO304_EXCHANGERATE.CURRENCY_ID }, pRCO304_EXCHANGERATE);
+            return CreatedAtRoute("DefaultApi", new { id = pRCO304_EXCHANGERATE.currency_id }, pRCO304_EXCHANGERATE);
         }
 
         // DELETE: api/ExchangeRate/5
@@ -127,7 +127,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
 
         private bool PRCO304_EXCHANGERATEExists(string id)
         {
-            return db.PRCO304_EXCHANGERATE.Count(e => e.CURRENCY_ID == id) > 0;
+            return db.PRCO304_EXCHANGERATE.Count(e => e.currency_id == id) > 0;
         }
     }
 }

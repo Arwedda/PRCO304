@@ -29,7 +29,7 @@ public class JSONParser {
         GDAXTrade[] array;
         GDAXTrade trade;
         double price;
-        String tradeID;
+        Integer tradeID;
         List<GDAXTrade> trades = new ArrayList<>();
         String datetimeRegex = "\\d{4}-[0-1]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d";//:[0-5][0-9].[0-9]{1,3}Z";
         String priceRegex = "price\\\":\\\"\\d+.\\d+";
@@ -40,7 +40,7 @@ public class JSONParser {
 
         for (String timestamp : timestamps){
             price = Double.parseDouble(prices.get(0).substring(8));
-            tradeID = tradeIDs.get(0).substring(10);
+            tradeID = Integer.parseInt(tradeIDs.get(0).substring(10));
             trade = new GDAXTrade(LocalDateTimeHelper.localDateTimeParser(timestamp), price, tradeID);
             prices.remove(0);
             tradeIDs.remove(0);
@@ -107,7 +107,7 @@ public class JSONParser {
         Double growth = rate.getGrowth();
         Double GOFAINextGrowth = null;
         Double neuralNetworkNextGrowth = null;
-        String lastGDAXTrade = rate.getLastTrade();
+        Integer lastGDAXTrade = rate.getLastTrade();
         String json = "{\"CURRENCY_ID\":\"" + currencyID + 
                 "\", \"DATETIME\": \"" + dateTime.toString() + 
                 "\", \"DOLLAR_VALUE\": " + dollarValue + 

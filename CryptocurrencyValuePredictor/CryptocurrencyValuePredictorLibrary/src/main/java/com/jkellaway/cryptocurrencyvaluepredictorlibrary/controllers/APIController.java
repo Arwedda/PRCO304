@@ -5,14 +5,13 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
+import com.google.gson.Gson;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
@@ -21,7 +20,10 @@ import java.util.stream.Collectors;
  * @author jkell
  */
 public class APIController implements IAPIController {
+    Gson gson;
+    
     public APIController() {
+        gson = new Gson();
     }
 
     @Override
@@ -51,9 +53,69 @@ public class APIController implements IAPIController {
             http.setRequestProperty("Content-Type", "application/json;");
             http.setRequestProperty("Accept", "application/json");
             
-            try (OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream(), "UTF-8")) {
-                out.write(json);
-            }
+            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
+            out.write(json);
+            out.close();
+
+            int responseCode = http.getResponseCode();
+            System.out.println(http.getResponseMessage());
+            http.disconnect();
+            System.out.println(responseCode);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+        try {      
+            URL url = new URL(endpoint);
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+            http.setRequestProperty("Content-Type", "application/json");
+            http.setRequestProperty("Accept", "application/json");
+            
+            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
+            out.write(json);
+            out.close();
+
+            int responseCode = http.getResponseCode();
+            System.out.println(http.getResponseMessage());
+            http.disconnect();
+            System.out.println(responseCode);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+        try {      
+            URL url = new URL(endpoint);
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+            http.setRequestProperty("Content-Type", "application/json;");
+            http.setRequestProperty("Accept", "application/json");
+            
+            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
+            out.write(json);
+            out.close();
+
+            int responseCode = http.getResponseCode();
+            System.out.println(http.getResponseMessage());
+            http.disconnect();
+            System.out.println(responseCode);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        
+        try {      
+            URL url = new URL(endpoint);
+            HttpURLConnection http = (HttpURLConnection) url.openConnection();
+            http.setRequestMethod("POST");
+            http.setDoOutput(true);
+            http.setRequestProperty("Content-Type", "application/json");
+            http.setRequestProperty("Accept", "application/json");
+            
+            OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream());
+            out.write(json);
+            out.close();
 
             int responseCode = http.getResponseCode();
             System.out.println(http.getResponseMessage());

@@ -5,9 +5,15 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+
 /**
  *
  * @author jkell
  */
 public class ExchangeRateAPIController extends APIController {
+    public void postExchangeRate(String endpoint, ExchangeRate rate){
+        String json = gson.toJson(rate, ExchangeRate.class);
+        post(endpoint, json);
+    }
 }

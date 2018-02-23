@@ -44,7 +44,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (id != pRCO304_CURRENCY.CURRENCY_ID)
+            if (id != pRCO304_CURRENCY.id)
             {
                 return BadRequest();
             }
@@ -87,7 +87,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
             }
             catch (DbUpdateException)
             {
-                if (PRCO304_CURRENCYExists(pRCO304_CURRENCY.CURRENCY_ID))
+                if (PRCO304_CURRENCYExists(pRCO304_CURRENCY.id))
                 {
                     return Conflict();
                 }
@@ -97,7 +97,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = pRCO304_CURRENCY.CURRENCY_ID }, pRCO304_CURRENCY);
+            return CreatedAtRoute("DefaultApi", new { id = pRCO304_CURRENCY.id }, pRCO304_CURRENCY);
         }
 
         // DELETE: api/Currency/5
@@ -127,7 +127,7 @@ namespace CryptocurrencyValuePredictorAPI.Controllers
 
         private bool PRCO304_CURRENCYExists(string id)
         {
-            return db.PRCO304_CURRENCY.Count(e => e.CURRENCY_ID == id) > 0;
+            return db.PRCO304_CURRENCY.Count(e => e.id == id) > 0;
         }
     }
 }
