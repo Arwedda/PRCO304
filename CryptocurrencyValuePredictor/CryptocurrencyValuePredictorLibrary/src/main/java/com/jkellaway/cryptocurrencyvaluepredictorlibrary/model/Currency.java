@@ -5,6 +5,7 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,10 +17,11 @@ import java.util.List;
 public class Currency {
     private String id;
     private String name;
-    private List<ExchangeRate> rates;
-    private List<ExchangeRate> historicRates;
-    private List<GDAXTrade> historicTrades;
-    private boolean calculatingGOFAI;
+    private transient List<ExchangeRate> rates;
+    private transient List<ExchangeRate> historicRates;
+    private transient List<GDAXTrade> historicTrades;
+    private transient boolean calculatingGOFAI;
+    private transient boolean calculatingNN;
     private final String GDAXEndpoint;
 
     public Currency() {
@@ -29,6 +31,7 @@ public class Currency {
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
         this.calculatingGOFAI = false;
+        this.calculatingNN = false;
         this.GDAXEndpoint = "unknown";
     }
     
@@ -39,6 +42,7 @@ public class Currency {
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
         this.calculatingGOFAI = false;
+        this.calculatingNN = false;
         this.GDAXEndpoint = GDAXEndpoint;
     }
     
@@ -50,6 +54,7 @@ public class Currency {
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
         this.calculatingGOFAI = false;
+        this.calculatingNN = false;
         this.GDAXEndpoint = GDAXEndpoint;
     }
 
@@ -80,9 +85,11 @@ public class Currency {
     public void setValue(ExchangeRate rate){
         try {
             if (rate.getValue() < 0.0000000000000001){
-                rate.setValue(this.getRate().getValue());
+                rate.setValue(getRate().getValue());
             }
-            rate.calculateGrowth(this.getRate().getValue());
+            if (rate.isMinuteAfter(getRate())){
+                rate.calculateGrowth(getRate().getValue());
+            }
         } catch (NullPointerException npe) {
             if (rates.isEmpty()){
                 System.out.println("[INFO] Error: " + npe + " (expected - adding a value that doesn't have a predecessor.)");
@@ -135,10 +142,14 @@ public class Currency {
         return calculatingGOFAI;
     }
 
-    private void setCalculatingGOFAI() {
-        this.calculatingGOFAI = true;
+    public boolean isCalculatingNN() {
+        return calculatingNN;
     }
 
+    private void setCalculatingNN() {
+        this.calculatingNN = true;
+    }
+    
     public String getGDAXEndpoint() {
         return GDAXEndpoint;
     }
@@ -150,41 +161,62 @@ public class Currency {
     public void addHistoricTrade(GDAXTrade historicTrade) {
         this.historicTrades.add(historicTrade);
     }
+
+    public void initialMerge(){
+        mergeRates();
+    }
     
-    public void mergeRates(){
+    public void GOFAIMerge(){
+        this.calculatingGOFAI = true;
         Collections.reverse(historicRates);
-        
+        mergeRates();
+    }
+    
+    public void NNMerge(){
+        this.calculatingNN = true;
+        Collections.reverse(historicRates);
+        mergeRates();
+    }
+    
+    public void finalMerge(){
+        Collections.reverse(historicRates);
+        mergeRates();
+    }
+    
+    private void mergeRates(){        
         /*
         Debugging - ensure no 2 prices are entered for the same time
         */
+        List<ExchangeRate> toRemove = new ArrayList<>();
         for (ExchangeRate rate : getRates()){
             for (ExchangeRate rate2 : getHistoricRates()) {
-                if (rate.getTimestamp().equals(rate2.getTimestamp())){
+                if (rate.isSameMinute(rate2)){
                     System.out.println("[INFO] Two prices from same time: " + rate.toString() + " & " + rate2.toString());
+                    toRemove.add(rate2);
                 }
             }
         }
-        
+        historicRates.removeAll(toRemove);
         this.rates.addAll(0, historicRates);
-        calculateGrowth();
+        Collections.sort(rates);
         historicRates.clear();
-        if (!isCalculatingGOFAI()){
-            setCalculatingGOFAI();
-        }
     }
     
-    private void calculateGrowth(){
-        for (int i = 1; i < this.rates.size(); i++){
-            if (null == this.rates.get(i).getGrowth()) {
-                this.rates.get(i).calculateGrowth(this.rates.get(i - 1).getValue());
-            }/* else {
-                break;
-            }*/
+    public ExchangeRate[] calculateGrowth(){
+        List<ExchangeRate> updatedRates = new ArrayList<>();
+        for (int i = 1; i < rates.size(); i++){
+            if (null == rates.get(i).getGrowth()) {
+                if (rates.get(i).isMinuteAfter(rates.get(i - 1))){
+                    rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
+                    updatedRates.add(rates.get(i));
+                }
+            }
         }
+        return SafeCastHelper.objectsToExchangeRates(updatedRates.toArray());
     }
     
-    public int getNumberOfRatesCollected(){
-        return (this.rates.size() + this.historicRates.size());
+    public int noOfHistoricRates(){
+        return this.historicRates.size();
     }
     
     @Override

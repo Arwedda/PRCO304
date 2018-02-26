@@ -20,12 +20,29 @@ public class ExchangeRateAPIController extends APIController {
     }
     
     public void post(String endpoint, ExchangeRate rate){
-       //String json = gson.toJson(rate, ExchangeRate.class);
-        //post(endpoint, json);
+        String json = gson.toJson(rate, ExchangeRate.class);
+        post(endpoint, json);
     }
     
     public void post(String endpoint, ExchangeRate[] rates){
-        String json = gson.toJson(rates, ExchangeRate[].class);
+        //String json = gson.toJson(rates, ExchangeRate[].class);
+        String json;
+        for (ExchangeRate rate : rates){
+            json = gson.toJson(rate, ExchangeRate.class);
+            post(endpoint, json);
+        }
+    }
+    
+    public void put(String endpoint, ExchangeRate rate){
+        String json = gson.toJson(rate, ExchangeRate.class);
         post(endpoint, json);
+    }
+    
+    public void put(String endpoint, ExchangeRate[] rates){
+        String json;
+        for (ExchangeRate rate : rates){ 
+            json = gson.toJson(rate, ExchangeRate.class);
+            put(endpoint, json);
+        }
     }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  *
  * @author jkell
  */
-public class ExchangeRate {
+public class ExchangeRate implements Comparable<ExchangeRate> {
     private String currency_id;
     private String timestamp;
     private Double value;
@@ -20,7 +20,7 @@ public class ExchangeRate {
     private Double gofaiNextGrowth;
     private Double neuralNetworkNextGrowth;
     private Integer lastTrade;
-    private LocalDateTime ldtTimestamp;
+    private transient LocalDateTime ldtTimestamp;
     
     public ExchangeRate() {
         this.currency_id = null;
@@ -128,8 +128,21 @@ public class ExchangeRate {
         }
     }
     
+    public boolean isMinuteAfter(ExchangeRate rate){
+        return ldtTimestamp.minusMinutes(1).isEqual(rate.getLDTTimestamp());
+    }
+    
+    public boolean isSameMinute(ExchangeRate rate){
+        return ldtTimestamp.isEqual(rate.getLDTTimestamp());
+    }
+    
     @Override
     public String toString(){
         return "timestamp=" + timestamp + " value=" + value + " lastTrade=" + lastTrade + " growth=" + growth;
+    }
+
+    @Override
+    public int compareTo(ExchangeRate rate) {
+        return ldtTimestamp.compareTo(rate.getLDTTimestamp());
     }
 }

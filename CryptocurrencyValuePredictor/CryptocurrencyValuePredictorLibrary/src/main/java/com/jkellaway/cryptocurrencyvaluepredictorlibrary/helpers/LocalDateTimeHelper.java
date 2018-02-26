@@ -7,6 +7,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  *
@@ -18,8 +19,17 @@ public class LocalDateTimeHelper {
     }
     
     public static LocalDateTime localDateTimeParser(String timestamp){
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, format);
-        return localDateTime;
+        try {
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            LocalDateTime localDateTime = LocalDateTime.parse(timestamp, format);
+            return localDateTime;
+        } catch (DateTimeParseException dtpe){
+            DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            LocalDateTime localDateTime = LocalDateTime.parse(timestamp, format);
+            return localDateTime;
+        } catch (Exception e){
+            System.out.println("[Info] Error : " + e);
+            return null;
+        }
     }
 }
