@@ -16,6 +16,7 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -118,50 +119,50 @@ public class PriceCollector {
                     getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
                 }
             }
+            
+            private void getCurrentPrices(LocalDateTime postTime){
+                System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
+                try {
+                    GDAXTrade[] trades;
+                    Double meanPrice;
+                    ExchangeRate rate;
+                    for (Currency currency : currencies){
+                        trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
+                        trades = getRelevantTrades(trades, postTime);
+                        meanPrice = calculateMeanPrice(trades);
+                        if (meanPrice == null){
+                            meanPrice = currency.getRate().getValue();
+                        }
+                        rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, trades[trades.length - 1].getTrade_id());
+                        currency.setValue(rate);
+
+                        if (connectedToDatabase){
+                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
+                        }
+                        System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
+                    }
+                } catch (Exception e) {
+                    System.out.println("[INFO] Error: " + e);
+                }
+            }
+            
+            private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime){
+                ArrayList<GDAXTrade> relevantTrades = new ArrayList<>();
+                boolean foundStart = false;
+                for (GDAXTrade trade : trades){
+                    if (trade.getTime().equals(postTime.minusMinutes(1))) {
+                    relevantTrades.add(trade);
+                    foundStart = true;
+                    } else if (foundStart) break;
+                }
+                return SafeCastHelper.objectsToGDAXTrades(relevantTrades.toArray());
+            }
         };
         currentSecond = LocalDateTime.now().getSecond();
         liveReadings = 0;
         current.scheduleAtFixedRate(automatedCollection, 1, 1, TimeUnit.SECONDS);
     }
 
-    private void getCurrentPrices(LocalDateTime postTime){
-        System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
-        try {
-            GDAXTrade[] trades;
-            Double meanPrice;
-            ExchangeRate rate;
-            for (Currency currency : currencies){
-                trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
-                trades = getRelevantTrades(trades, postTime);
-                meanPrice = calculateMeanPrice(trades);
-                if (meanPrice == null){
-                    meanPrice = currency.getRate().getValue();
-                }
-                rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, trades[trades.length - 1].getTrade_id());
-                currency.setValue(rate);
-                
-                if (connectedToDatabase){
-                    exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
-                }
-                System.out.println(currency.getID() + " " + currency.getName() + " " + currency.getRate());
-            }
-        } catch (Exception e) {
-            System.out.println("[INFO] Error: " + e);
-        }
-    }
-    
-    private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime){
-        ArrayList<GDAXTrade> relevantTrades = new ArrayList<>();
-        boolean foundStart = false;
-        for (GDAXTrade trade : trades){
-            if (trade.getTime().equals(postTime.minusMinutes(1))) {
-            relevantTrades.add(trade);
-            foundStart = true;
-            } else if (foundStart) break;
-        }
-        return SafeCastHelper.objectsToGDAXTrades(relevantTrades.toArray());
-    }
-    
     private void initHistoricCollector(){
         Runnable historicPriceCollection = new Runnable() {
             @Override
@@ -176,7 +177,6 @@ public class PriceCollector {
                         int readingsTaken = 0;
                         int historicPricesRequired = Globals.STARTGOFAI - liveReadings;
                         GDAXTrade[] trades;
-                        ExchangeRate[] updatedRates;
 
                         for (int i = 0; i < sizes.length; i++){
                             sizes[i] = currencies[i].noOfHistoricRates();
@@ -185,20 +185,7 @@ public class PriceCollector {
                         if (collectionCompleted(historicPricesRequired, sizes)) {
                             if (!currencies[0].isCalculatingGOFAI()){
                                 for (Currency currency : currencies){
-                                    /*
-                                        logic issues here. System needs to:
-                                            Post new values
-                                            Merge old rates into current rates
-                                            Put updated rates (i.e. rates that now have a growth value)
-                                    */
-                                    currency.GOFAIMerge();
-                                    if (connectedToDatabase){
-                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
-                                    }
-                                    updatedRates = currency.calculateGrowth();
-                                    if (connectedToDatabase){
-                                        exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
-                                    }
+                                    handleMerge(currency, "GOFAIMerge");
                                 }
                                 liveReadings = 0;
                                 System.out.println("[INFO] First price list merge complete. Can now calculate GOFAI predictions.");
@@ -208,14 +195,7 @@ public class PriceCollector {
                             if (collectionCompleted(historicPricesRequired, sizes)) {
                                 if (!currencies[0].isCalculatingNN()){
                                     for (Currency currency : currencies){
-                                        currency.NNMerge();
-                                        if (connectedToDatabase){
-                                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
-                                        }
-                                        updatedRates = currency.calculateGrowth();
-                                        if (connectedToDatabase){
-                                            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
-                                        }
+                                        handleMerge(currency, "NNMerge");
                                     }
                                     System.out.println("[INFO] Second price list merge complete. Can now calculate Neural Network predictions.");
                                 }
@@ -223,14 +203,7 @@ public class PriceCollector {
                                 historicPricesRequired = Globals.READINGSREQUIRED - (liveReadings + Globals.STARTNN);
                                 if (collectionCompleted(historicPricesRequired, sizes)) {
                                     for (Currency currency : currencies){
-                                        currency.finalMerge();
-                                        if (connectedToDatabase){
-                                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
-                                        }
-                                        updatedRates = currency.calculateGrowth();
-                                        if (connectedToDatabase){
-                                            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
-                                        }
+                                        handleMerge(currency, "finalMerge");
                                     }
                                     System.out.println("[INFO] Shutting down historic price collection thread.");
                                     PricePredictor.gofaiTest(currencies);
@@ -263,65 +236,84 @@ public class PriceCollector {
                     System.out.println("[INFO] Error: " + e);
                 }
             }
-        };
-        historic.scheduleWithFixedDelay(historicPriceCollection, 0, 1, TimeUnit.SECONDS);
-    }
-    
-    private GDAXTrade[] getHistoricTrades(Currency currency) {
-        GDAXTrade[] trades;
-        String pagination;
-        String json;
-        
-        if (currency.getLastHistoricTrade() == null) {
-            trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
-        } else {
-            pagination = "?after=" + currency.getLastHistoricTrade().getTrade_id();
-            trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint() + pagination);
-        }
-        return trades;
-    }
-    
-    private boolean collectionCompleted(int readings, int[] sizes){
-        boolean completed = true;
-        for (int i : sizes){
-            if (i < readings){
-                completed = false;
-                break;
-            }
-        }
-        return completed;
-    }
+            
+            private GDAXTrade[] getHistoricTrades(Currency currency) {
+                GDAXTrade[] trades;
+                String pagination;
+                String json;
 
-    
-    private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades) {
-        if (trades.length == 0) {
-            System.out.println("[INFO] calculateHistoricAverages received no trades. GDAX endpoint may be down...");
-            return;
-        }
-        ExchangeRate rate;
-        Double meanPrice;
-        LocalDateTime tradeTime;
-        
-        if (!currency.hasFoundPosition()) {
-            tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
-            System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
-        } else {
-            tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
-        }
-        
-        for (GDAXTrade trade : trades){
-            if (trade.getTime().equals(tradeTime.minusMinutes(1))) {
-                currency.addHistoricTrade(trade);
-            } else {
-                if (currency.hasFoundPosition()) {
-                    meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()));
-                    rate = new ExchangeRate(currency.getID(), tradeTime.toString(), meanPrice, null, null, null, trade.getTrade_id());
-                    currency.addHistoricRate(rate);
-                    tradeTime = tradeTime.minusMinutes(1);
-                    currency.addHistoricTrade((GDAXTrade)trade);
+                if (currency.getLastHistoricTrade() == null) {
+                    trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
+                } else {
+                    pagination = "?after=" + currency.getLastHistoricTrade().getTrade_id();
+                    trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint() + pagination);
+                }
+                return trades;
+            }
+
+            private boolean collectionCompleted(int readings, int[] sizes){
+                boolean completed = true;
+                for (int i : sizes){
+                    if (i < readings){
+                        completed = false;
+                        break;
+                    }
+                }
+                return completed;
+            }
+
+
+            private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades) {
+                if (trades.length == 0) {
+                    System.out.println("[INFO] calculateHistoricAverages received no trades. GDAX endpoint may be down...");
+                    return;
+                }
+                ExchangeRate rate;
+                Double meanPrice;
+                LocalDateTime tradeTime;
+
+                if (!currency.hasFoundPosition()) {
+                    tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+                    System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
+                } else {
+                    tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
+                }
+
+                for (GDAXTrade trade : trades){
+                    if (trade.getTime().equals(tradeTime.minusMinutes(1))) {
+                        currency.addHistoricTrade(trade);
+                    } else {
+                        if (currency.hasFoundPosition()) {
+                            meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()));
+                            rate = new ExchangeRate(currency.getID(), tradeTime.toString(), meanPrice, null, null, null, trade.getTrade_id());
+                            currency.addHistoricRate(rate);
+                            tradeTime = tradeTime.minusMinutes(1);
+                            currency.addHistoricTrade((GDAXTrade)trade);
+                        }
+                    }
                 }
             }
-        }
+            
+            private void handleMerge(Currency currency, String mergeType){
+                currency.dumpDuplicates();
+                if (connectedToDatabase){
+                    exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                }
+                
+                try {
+                    Method method = Currency.class.getMethod(mergeType);
+                    method.invoke(currency);
+                } catch (Exception e){
+                    System.out.println("[INFO] Error: " + e);
+                }
+                
+                ExchangeRate[] updatedRates = currency.calculateGrowth();
+                if (connectedToDatabase){
+                    exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                }
+            }
+        };
+        historic.scheduleWithFixedDelay(historicPriceCollection, 0, 1, TimeUnit.SECONDS);
     }
     
     private Double calculateMeanPrice(GDAXTrade[] trades) {

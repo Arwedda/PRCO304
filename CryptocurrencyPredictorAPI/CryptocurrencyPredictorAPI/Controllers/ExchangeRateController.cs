@@ -23,11 +23,13 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return db.PRCO304_EXCHANGERATE;
         }
 
-        // GET: api/ExchangeRate/5
+        // GET: api/ExchangeRate/{currency_id}/{timestamp}
+        [Route("api/ExchangeRate/{currency_id}/{timestamp}")]
         [ResponseType(typeof(PRCO304_EXCHANGERATE))]
-        public async Task<IHttpActionResult> GetPRCO304_EXCHANGERATE(string id)
+        public async Task<IHttpActionResult> GetPRCO304_EXCHANGERATE(string currency_id, string timestamp)
         {
-            PRCO304_EXCHANGERATE pRCO304_EXCHANGERATE = await db.PRCO304_EXCHANGERATE.FindAsync(id);
+            DateTime timestamp_dt = Convert.ToDateTime(timestamp);
+            PRCO304_EXCHANGERATE pRCO304_EXCHANGERATE = await db.PRCO304_EXCHANGERATE.FindAsync(currency_id, timestamp_dt);
             if (pRCO304_EXCHANGERATE == null)
             {
                 return NotFound();
@@ -36,16 +38,19 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return Ok(pRCO304_EXCHANGERATE);
         }
 
-        // PUT: api/ExchangeRate/5
+        // PUT: api/ExchangeRate/{currency_id}/{timestamp}
+        [Route("api/ExchangeRate/{currency_id}/{timestamp}")]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutPRCO304_EXCHANGERATE(string id, PRCO304_EXCHANGERATE pRCO304_EXCHANGERATE)
+        public async Task<IHttpActionResult> PutPRCO304_EXCHANGERATE(string currency_id, string timestamp, PRCO304_EXCHANGERATE pRCO304_EXCHANGERATE)
         {
+            DateTime timestamp_dt = Convert.ToDateTime(timestamp);
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != pRCO304_EXCHANGERATE.currency_id)
+            if (currency_id != pRCO304_EXCHANGERATE.currency_id || timestamp_dt != pRCO304_EXCHANGERATE.timestamp)
             {
                 return BadRequest();
             }
@@ -58,7 +63,7 @@ namespace CryptocurrencyPredictorAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!PRCO304_EXCHANGERATEExists(id))
+                if (!PRCO304_EXCHANGERATEExists(currency_id))
                 {
                     return NotFound();
                 }
@@ -98,24 +103,28 @@ namespace CryptocurrencyPredictorAPI.Controllers
                 }
             }
 
-            return CreatedAtRoute("DefaultApi", new { id = pRCO304_EXCHANGERATE.currency_id }, pRCO304_EXCHANGERATE);
+            return CreatedAtRoute("DefaultApi", new { id = pRCO304_EXCHANGERATE.currency_id, pRCO304_EXCHANGERATE.timestamp }, pRCO304_EXCHANGERATE);
         }
 
-/*        // POST: api/ExchangeRate
-        [ResponseType(typeof(PRCO304_EXCHANGERATE))]
-        public async void PostPRCO304_EXCHANGERATE(PRCO304_EXCHANGERATE[] rates)
-        {
-            for (int i = 1; i < rates.Length; i++)
-            {
-                await PostPRCO304_EXCHANGERATE(rates[i]);
-            }
-        }
-*/
+        /*        // POST: api/ExchangeRate
+                [ResponseType(typeof(PRCO304_EXCHANGERATE))]
+                public async void PostPRCO304_EXCHANGERATE(PRCO304_EXCHANGERATE[] rates)
+                {
+                    for (int i = 1; i < rates.Length; i++)
+                    {
+                        await PostPRCO304_EXCHANGERATE(rates[i]);
+                    }
+                }
+        */
 
-        // DELETE: api/ExchangeRate/5
+        // DELETE: api/ExchangeRate/{currency_id}/{timestamp}
+        [Route("api/ExchangeRate/{currency_id}/{timestamp}")]
         [ResponseType(typeof(PRCO304_EXCHANGERATE))]
-        public async Task<IHttpActionResult> DeletePRCO304_EXCHANGERATE(string id)
+        public async Task<IHttpActionResult> DeletePRCO304_EXCHANGERATE(string currency_id, string timestamp)
         {
+            DateTime timestamp_dt = Convert.ToDateTime(timestamp);
+            Object[] id = { currency_id, timestamp_dt };
+
             PRCO304_EXCHANGERATE pRCO304_EXCHANGERATE = await db.PRCO304_EXCHANGERATE.FindAsync(id);
             if (pRCO304_EXCHANGERATE == null)
             {

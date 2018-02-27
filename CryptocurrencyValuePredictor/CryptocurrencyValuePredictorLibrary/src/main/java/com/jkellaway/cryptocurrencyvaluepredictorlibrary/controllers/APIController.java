@@ -44,7 +44,7 @@ public class APIController implements IAPIController {
 
     @Override
     public void post(String endpoint, String json) {
-        System.out.println("[INFO] Posting to: " + endpoint);
+        //System.out.println("[INFO] Posting to: " + endpoint);
         try {        
             HttpURLConnection http = (HttpURLConnection) new URL(endpoint).openConnection();
             http.setRequestMethod("POST");
@@ -56,10 +56,10 @@ public class APIController implements IAPIController {
                 out.write(json);
             }
 
-            int responseCode = http.getResponseCode();
-            System.out.println(http.getResponseMessage());
+            if (http.getResponseCode() != 201){
+                System.out.println(http.getResponseCode());
+            }
             http.disconnect();
-            System.out.println(responseCode);
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -67,7 +67,7 @@ public class APIController implements IAPIController {
 
     @Override
     public void put(String url, String json) {
-        System.out.println("[INFO] Putting resource to: " + url);
+        //System.out.println("[INFO] Putting resource to: " + url);
         try {
             HttpURLConnection http = (HttpURLConnection) new URL(url).openConnection();
             http.setRequestMethod("PUT");
@@ -78,8 +78,9 @@ public class APIController implements IAPIController {
             try (OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream())) {
                 out.write(json);
             }
-            
-            System.out.println(http.getResponseCode());
+            if (http.getResponseCode() != 204){
+                System.out.println(http.getResponseCode());
+            }
             http.disconnect();
         } catch (Exception e) {
             System.out.println("[ERR] " + e);
@@ -88,7 +89,7 @@ public class APIController implements IAPIController {
 
     @Override
     public void delete(String url) {
-        System.out.println("[INFO] Deleting resource at: " + url);
+        //System.out.println("[INFO] Deleting resource at: " + url);
         try {
             HttpURLConnection http = (HttpURLConnection) new URL(url).openConnection();
             http.setRequestMethod("DELETE");

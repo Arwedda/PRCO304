@@ -183,10 +183,7 @@ public class Currency {
         mergeRates();
     }
     
-    private void mergeRates(){        
-        /*
-        Debugging - ensure no 2 prices are entered for the same time
-        */
+    public void dumpDuplicates(){
         List<ExchangeRate> toRemove = new ArrayList<>();
         for (ExchangeRate rate : getRates()){
             for (ExchangeRate rate2 : getHistoricRates()) {
@@ -197,6 +194,9 @@ public class Currency {
             }
         }
         historicRates.removeAll(toRemove);
+    }
+    
+    private void mergeRates(){        
         this.rates.addAll(0, historicRates);
         Collections.sort(rates);
         historicRates.clear();

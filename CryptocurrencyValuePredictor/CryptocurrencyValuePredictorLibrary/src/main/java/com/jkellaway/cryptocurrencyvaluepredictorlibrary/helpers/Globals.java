@@ -11,7 +11,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
  */
 public class Globals {
     public static final String API_ENDPOINT = "http://localhost:63783/api";
-    public static final String GDAX_ENDPOINT = "https://api.gdax.com/";
+    public static final String GDAX_ENDPOINT = "https://api.gdax.com";
     public static final String BCH_TRADES = "https://api.gdax.com/products/BCH-USD/trades";
     public static final String BTC_TRADES = "https://api.gdax.com/products/BTC-USD/trades";
     public static final String ETH_TRADES = "https://api.gdax.com/products/ETH-USD/trades";

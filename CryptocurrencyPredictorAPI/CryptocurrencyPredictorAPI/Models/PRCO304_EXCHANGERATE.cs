@@ -11,10 +11,19 @@ namespace CryptocurrencyPredictorAPI.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+
+    [Table("PRCO304_EXCHANGERATE")]
     public partial class PRCO304_EXCHANGERATE
     {
+        [Key]
+        [Column(Order = 0)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string currency_id { get; set; }
+        [Key]
+        [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public System.DateTime timestamp { get; set; }
         public decimal value { get; set; }
         public Nullable<decimal> growth { get; set; }

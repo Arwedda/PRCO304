@@ -125,6 +125,6 @@ C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\Cryptocur
 C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\bin\System.Web.WebPages.Deployment.xml
 C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\bin\System.Web.WebPages.Razor.xml
 C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\bin\Antlr3.Runtime.pdb
-C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\obj\Debug\CryptocurrencyPredictorAPI.csprojResolveAssemblyReference.cache
 C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\obj\Debug\CryptocurrencyPredictorAPI.dll
 C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\obj\Debug\CryptocurrencyPredictorAPI.pdb
+C:\Users\jkell\Desktop\FinalProject\PRCO304\CryptocurrencyPredictorAPI\CryptocurrencyPredictorAPI\obj\Debug\CryptocurrencyPredictorAPI.csprojResolveAssemblyReference.cache
