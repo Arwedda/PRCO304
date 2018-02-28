@@ -23,6 +23,14 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return db.PRCO304_EXCHANGERATE;
         }
 
+        // GET: api/ExchangeRate/{currency_id}
+        [Route("api/ExchangeRate/{currency_id}")]
+        [ResponseType(typeof(PRCO304_EXCHANGERATE))]
+        public IQueryable<PRCO304_EXCHANGERATE> GetPRCO304_EXCHANGERATE(string currency_id)
+        {
+            return db.PRCO304_EXCHANGERATE.Where(b => b.currency_id.Equals(currency_id));
+        }
+
         // GET: api/ExchangeRate/{currency_id}/{timestamp}
         [Route("api/ExchangeRate/{currency_id}/{timestamp}")]
         [ResponseType(typeof(PRCO304_EXCHANGERATE))]
@@ -73,7 +81,7 @@ namespace CryptocurrencyPredictorAPI.Controllers
                 }
             }
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(pRCO304_EXCHANGERATE);
         }
 
         // POST: api/ExchangeRate

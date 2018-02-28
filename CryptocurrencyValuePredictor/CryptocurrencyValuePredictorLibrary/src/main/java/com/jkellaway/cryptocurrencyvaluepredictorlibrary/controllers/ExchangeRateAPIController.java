@@ -5,7 +5,6 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.StringHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import java.net.URLEncoder;
 
@@ -15,7 +14,7 @@ import java.net.URLEncoder;
  */
 public class ExchangeRateAPIController extends APIController {
     public ExchangeRate[] getExchangeRates(String url){
-        ExchangeRate[] rates = new ExchangeRate[0];
+        ExchangeRate[] rates;
         String json = get(url);
         rates = gson.fromJson(json, ExchangeRate[].class);
         return rates;
@@ -48,7 +47,7 @@ public class ExchangeRateAPIController extends APIController {
             try {
                 json = gson.toJson(rate, ExchangeRate.class);
                 query = "/" + rate.getCurrency_id() + "/" + rate.getTimestamp();
-                put(endpoint + query, json);
+                put(endpoint + URLEncoder.encode(query, "UTF-8"), json);
             } catch (Exception e) {
                 System.out.println("[INFO] Error: " + e);
             }

@@ -78,7 +78,9 @@ public class APIController implements IAPIController {
             try (OutputStreamWriter out = new OutputStreamWriter(http.getOutputStream())) {
                 out.write(json);
             }
-            if (http.getResponseCode() != 204){
+            
+            int response = http.getResponseCode();
+            if (response != 200 && response != 204){
                 System.out.println(http.getResponseCode());
             }
             http.disconnect();

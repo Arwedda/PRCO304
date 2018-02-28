@@ -5,7 +5,10 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +23,7 @@ public class Currency {
     private transient List<ExchangeRate> rates;
     private transient List<ExchangeRate> historicRates;
     private transient List<GDAXTrade> historicTrades;
+    private transient List<Gap> gaps;
     private transient boolean calculatingGOFAI;
     private transient boolean calculatingNN;
     private final String GDAXEndpoint;
@@ -30,6 +34,7 @@ public class Currency {
         this.rates = new ArrayList<>();
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
+        this.gaps = new ArrayList<>();
         this.calculatingGOFAI = false;
         this.calculatingNN = false;
         this.GDAXEndpoint = "unknown";
@@ -41,6 +46,7 @@ public class Currency {
         this.rates = new ArrayList<>();
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
+        this.gaps = new ArrayList<>();
         this.calculatingGOFAI = false;
         this.calculatingNN = false;
         this.GDAXEndpoint = GDAXEndpoint;
@@ -53,6 +59,7 @@ public class Currency {
         this.rates.add(rate);
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
+        this.gaps = new ArrayList<>();
         this.calculatingGOFAI = false;
         this.calculatingNN = false;
         this.GDAXEndpoint = GDAXEndpoint;
@@ -161,8 +168,17 @@ public class Currency {
     public void addHistoricTrade(GDAXTrade historicTrade) {
         this.historicTrades.add(historicTrade);
     }
+    
+    public List<Gap> getGaps(){
+        return gaps;
+    }
+    
+    public Gap getLastGap(){
+        return gaps.get(gaps.size() - 1);
+    }
 
-    public void initialMerge(){
+    public void initialMerge(LocalDateTime firstRelevantRate){
+        findGaps(firstRelevantRate);
         mergeRates();
     }
     
@@ -178,9 +194,12 @@ public class Currency {
         mergeRates();
     }
     
-    public void finalMerge(){
+    public void merge(){
         Collections.reverse(historicRates);
         mergeRates();
+        if (0 < gaps.size()){
+            gaps.remove(getLastGap());
+        }
     }
     
     public void dumpDuplicates(){
@@ -194,6 +213,32 @@ public class Currency {
             }
         }
         historicRates.removeAll(toRemove);
+    }
+    
+    private void findGaps(LocalDateTime firstMinute) {
+        int ratesRequired = 0;
+        int timeBetween;
+        ExchangeRate[] reqRates = new ExchangeRate[Globals.READINGSREQUIRED];
+        Gap gap;
+
+        for (ExchangeRate rate : historicRates) {
+            timeBetween = (int) ChronoUnit.MINUTES.between(firstMinute, rate.getLDTTimestamp());
+            reqRates[timeBetween] = rate;
+        }
+        
+        for (ExchangeRate reqRate : reqRates) {
+            if (reqRate != null && reqRate.getCurrency_id().equals(getID())) {
+                if (0 < ratesRequired){
+                    gap = new Gap(reqRate.getLastTrade(), ratesRequired);
+                    gaps.add(gap);
+                    ratesRequired = 0;
+                }
+            } else {
+                ratesRequired++;
+            }
+        }
+        gap = new Gap(0, ratesRequired);
+        gaps.add(gap);
     }
     
     private void mergeRates(){        
