@@ -152,10 +152,6 @@ public class Currency {
     public boolean isCalculatingNN() {
         return calculatingNN;
     }
-
-    private void setCalculatingNN() {
-        this.calculatingNN = true;
-    }
     
     public String getGDAXEndpoint() {
         return GDAXEndpoint;
@@ -193,13 +189,24 @@ public class Currency {
         Collections.reverse(historicRates);
         mergeRates();
     }
-    
+    /*
     public void merge(){
         Collections.reverse(historicRates);
         mergeRates();
         if (0 < gaps.size()){
             gaps.remove(getLastGap());
         }
+    }*/
+    
+    public void gradualMerge(){
+        this.rates.addAll(0, historicRates);
+        Gap gap = getLastGap();
+        gap.setRatesRequired(gap.getRatesRequired() - historicRates.size());
+        if (gap.getRatesRequired() < 1){
+            gaps.remove(gap);
+            historicTrades.clear();
+        }
+        historicRates.clear();
     }
     
     public void dumpDuplicates(){
@@ -207,7 +214,6 @@ public class Currency {
         for (ExchangeRate rate : getRates()){
             for (ExchangeRate rate2 : getHistoricRates()) {
                 if (rate.isSameMinute(rate2)){
-                    System.out.println("[INFO] Two prices from same time: " + rate.toString() + " & " + rate2.toString());
                     toRemove.add(rate2);
                 }
             }
@@ -241,7 +247,7 @@ public class Currency {
         gaps.add(gap);
     }
     
-    private void mergeRates(){        
+    public void mergeRates(){        
         this.rates.addAll(0, historicRates);
         Collections.sort(rates);
         historicRates.clear();
