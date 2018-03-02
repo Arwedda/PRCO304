@@ -8,6 +8,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PriceCollector;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PricePredictor;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 
 
 
@@ -19,11 +20,14 @@ public class CryptocurrencyValuePredictor {
     private static CryptocurrencyValuePredictor instance;
     private static Currency[] currencies;
     private PriceCollector priceCollector;
+    private Trader trader;
     
     /**
      * Default constructor for CryptocurrencyValuePredictor
      */
     protected CryptocurrencyValuePredictor(){
+        priceCollector = new PriceCollector();
+        trader = new Trader();
     }
 
     /**
@@ -37,10 +41,6 @@ public class CryptocurrencyValuePredictor {
             instance = new CryptocurrencyValuePredictor();
         }
         return instance;
-    }
-    
-    public void initialise(){
-        priceCollector = new PriceCollector();
     }
     
     public static void pricesCollected(Currency[] currencies){

@@ -15,7 +15,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame {
     public JFCryptocurrencyValuePredictor() {
         initComponents();
         cryptocurrencyValuePredictor = CryptocurrencyValuePredictor.getInstance();
-        cryptocurrencyValuePredictor.initialise();
     }
     
     /**

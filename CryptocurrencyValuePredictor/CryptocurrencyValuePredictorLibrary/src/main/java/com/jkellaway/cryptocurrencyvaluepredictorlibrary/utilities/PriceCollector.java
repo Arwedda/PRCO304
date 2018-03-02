@@ -18,7 +18,6 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Gap;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,6 @@ public class PriceCollector {
     private ScheduledExecutorService current;
     private ScheduledExecutorService historic;
     private LocalDateTime firstRelevantRate;
-    private int liveReadings;
     private int currentSecond;
     private boolean connectedToDatabase;
     
@@ -132,7 +130,6 @@ public class PriceCollector {
                 currentSecond++;
                 if (currentSecond == 60) {
                     currentSecond = 0;
-                    liveReadings++;
                     getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
                 }
             }
@@ -178,7 +175,6 @@ public class PriceCollector {
             }
         };
         currentSecond = LocalDateTime.now().getSecond();
-        liveReadings = 0;
         current.scheduleAtFixedRate(automatedCollection, 1, 1, TimeUnit.SECONDS);
     }
 
