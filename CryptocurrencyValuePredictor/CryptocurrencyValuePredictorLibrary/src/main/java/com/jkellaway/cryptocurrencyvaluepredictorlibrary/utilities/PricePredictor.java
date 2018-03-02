@@ -20,30 +20,36 @@ import java.util.List;
  * @author jkell
  */
 public class PricePredictor {
-    static final int numberOfPredictions = 20;
-    static final int numberOfReadingsPerPrediction = 20;
-    static Double[] meanPredictedChange = new Double [numberOfPredictions];
-    static int[] predictedChangeNo = new int[numberOfPredictions];
-    static Double[] meanDeltas = new Double[numberOfPredictions];
-    static int[] deltaNo = new int[numberOfPredictions];
-    static Double[] closest = new Double[numberOfPredictions];
-    static int totalReadings = 0;
+    private static final int numberOfPredictions = 20;
+    private static final int numberOfReadingsPerPrediction = 20;
+    private static Double[] meanPredictedChange = new Double [numberOfPredictions];
+    private static int[] predictedChangeNo = new int[numberOfPredictions];
+    private static Double[] meanDeltas = new Double[numberOfPredictions];
+    private static int[] deltaNo = new int[numberOfPredictions];
+    private static Double[] closest = new Double[numberOfPredictions];
+    private static int totalReadings = 0;
+    private static Currency[] currencies;
     
-    public static void gofaiTest(Currency[] currencies){
-        initialise();
-        for (Currency currency: currencies){
-            GOFAICalculations(currency);
-        }
-        GOFAIResults();
+    public static void makePredictions(Currency[] currencies){
+        initialiseTests();
+        GOFAI();
+        neuralNetwork();
     }
     
-    private static void initialise(){
+    private static void initialiseTests(){
         for (int i = 0; i < numberOfPredictions; i++){
             meanPredictedChange[i] = 0.0;
             predictedChangeNo[i] = 0;
             meanDeltas[i] = 0.0;
             deltaNo[i] = 0;
         }
+    }
+    
+    public static void GOFAI(){
+        for (Currency currency: currencies){
+            GOFAICalculations(currency);
+        }
+        GOFAIResults();
     }
     
     private static void GOFAICalculations(Currency currency){
@@ -57,7 +63,7 @@ public class PricePredictor {
 
         for (int i = 0; i < noOfPredictions; i++) {
             currentRates = Arrays.copyOfRange(rates, noOfPredictions - i, highestIndex - i);
-            predictions = makePredictions(currentRates);
+            predictions = predict(currentRates);
             
             /*
                 NEED TO ENSURE THAT NEXT GROWTH EXISTS~~
@@ -78,7 +84,7 @@ public class PricePredictor {
         }
     }
 
-    private static Double[] makePredictions(ExchangeRate[] rates){
+    private static Double[] predict(ExchangeRate[] rates){
         Double[] predictions = new Double[numberOfPredictions];
         List<Double> values = new ArrayList<>();
         for (int i = 0; i < numberOfPredictions; i++){
@@ -96,5 +102,25 @@ public class PricePredictor {
             System.out.println("Mean predicted change using " + (i+1) + " historic prices: " + meanPredictedChange[i]);
             System.out.println("Mean prediction error using " + (i+1) + " historic prices: " + meanDeltas[i]);
         }
+    }
+    
+    private static void neuralNetwork(){
+        trainNeuralNetwork();
+        for (Currency currency: currencies){
+            neuralNetworkCalculations(currency);
+        }
+        neuralNetworkResults();
+    }
+    
+    private static void trainNeuralNetwork(){
+        
+    }
+    
+    private static void neuralNetworkCalculations(Currency currency){
+        
+    }
+    
+    private static void neuralNetworkResults(){
+        
     }
 }

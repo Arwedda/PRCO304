@@ -23,8 +23,8 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     private transient LocalDateTime ldtTimestamp;
     
     public ExchangeRate() {
-        this.currency_id = null;
-        this.timestamp = null;
+        this.currency_id = "Unknown";
+        this.timestamp = "Unknown";
         this.value = 0.0;
         this.lastTrade = null;
         this.growth = null;

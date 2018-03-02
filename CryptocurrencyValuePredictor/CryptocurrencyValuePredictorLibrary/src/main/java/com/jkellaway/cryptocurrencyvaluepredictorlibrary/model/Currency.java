@@ -24,8 +24,6 @@ public class Currency {
     private transient List<ExchangeRate> historicRates;
     private transient List<GDAXTrade> historicTrades;
     private transient List<Gap> gaps;
-    private transient boolean calculatingGOFAI;
-    private transient boolean calculatingNN;
     private final String GDAXEndpoint;
 
     public Currency() {
@@ -35,8 +33,6 @@ public class Currency {
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
         this.gaps = new ArrayList<>();
-        this.calculatingGOFAI = false;
-        this.calculatingNN = false;
         this.GDAXEndpoint = "unknown";
     }
     
@@ -47,8 +43,6 @@ public class Currency {
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
         this.gaps = new ArrayList<>();
-        this.calculatingGOFAI = false;
-        this.calculatingNN = false;
         this.GDAXEndpoint = GDAXEndpoint;
     }
     
@@ -60,8 +54,6 @@ public class Currency {
         this.historicRates = new ArrayList<>();
         this.historicTrades = new ArrayList<>();
         this.gaps = new ArrayList<>();
-        this.calculatingGOFAI = false;
-        this.calculatingNN = false;
         this.GDAXEndpoint = GDAXEndpoint;
     }
 
@@ -145,14 +137,6 @@ public class Currency {
         return (0 < this.historicRates.size() || 0 < this.historicTrades.size());
     }
     
-    public boolean isCalculatingGOFAI() {
-        return calculatingGOFAI;
-    }
-
-    public boolean isCalculatingNN() {
-        return calculatingNN;
-    }
-    
     public String getGDAXEndpoint() {
         return GDAXEndpoint;
     }
@@ -172,31 +156,6 @@ public class Currency {
     public Gap getLastGap(){
         return gaps.get(gaps.size() - 1);
     }
-
-    public void initialMerge(LocalDateTime firstRelevantRate){
-        findGaps(firstRelevantRate);
-        mergeRates();
-    }
-    
-    public void GOFAIMerge(){
-        this.calculatingGOFAI = true;
-        Collections.reverse(historicRates);
-        mergeRates();
-    }
-    
-    public void NNMerge(){
-        this.calculatingNN = true;
-        Collections.reverse(historicRates);
-        mergeRates();
-    }
-    /*
-    public void merge(){
-        Collections.reverse(historicRates);
-        mergeRates();
-        if (0 < gaps.size()){
-            gaps.remove(getLastGap());
-        }
-    }*/
     
     public void gradualMerge(){
         this.rates.addAll(0, historicRates);
@@ -221,7 +180,7 @@ public class Currency {
         historicRates.removeAll(toRemove);
     }
     
-    private void findGaps(LocalDateTime firstMinute) {
+    public void findGaps(LocalDateTime firstMinute) {
         int ratesRequired = 0;
         int timeBetween;
         ExchangeRate[] reqRates = new ExchangeRate[Globals.READINGSREQUIRED];
