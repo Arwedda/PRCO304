@@ -168,7 +168,7 @@ public class Currency {
         historicRates.clear();
     }
     
-    public void dumpDuplicates(){
+    public boolean dumpDuplicates(){
         List<ExchangeRate> toRemove = new ArrayList<>();
         for (ExchangeRate rate : getRates()){
             for (ExchangeRate rate2 : getHistoricRates()) {
@@ -178,6 +178,7 @@ public class Currency {
             }
         }
         historicRates.removeAll(toRemove);
+        return (historicRates.isEmpty());
     }
     
     public void findGaps(LocalDateTime firstMinute) {
@@ -203,7 +204,9 @@ public class Currency {
             }
         }
         gap = new Gap(0, ratesRequired);
-        gaps.add(gap);
+        if (0 < gap.getRatesRequired()){
+            gaps.add(gap);
+        }
     }
     
     public void mergeRates(){        
@@ -212,7 +215,7 @@ public class Currency {
         historicRates.clear();
     }
     
-    public ExchangeRate[] calculateGrowth(){
+    public ExchangeRate[] calculateGrowth(boolean calculateChange){
         List<ExchangeRate> updatedRates = new ArrayList<>();
         for (int i = 1; i < rates.size(); i++){
             if (null == rates.get(i).getGrowth()) {
@@ -220,11 +223,48 @@ public class Currency {
                     rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
                     updatedRates.add(rates.get(i));
                 } else {
-                    System.out.println("Failed to get previous rate for " + rates.get(i).getTimestamp());
+                    if (calculateChange) {
+                        fillMissingData(i);
+                        rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
+                    }
                 }
             }
         }
         return SafeCastHelper.objectsToExchangeRates(updatedRates.toArray());
+    }
+    
+    private void fillMissingData(int i) {
+        ExchangeRate previous = null;
+        ExchangeRate next = null;
+        int after = rates.size() - i;
+        int gapsBefore = 0;
+        int gapsAfter = 0;
+        double change = 0.0;
+        
+        for (int j = 1; j < after; j++){
+            next = rates.get(i + j);
+            if (next.getValue() != 0.0){
+                break;
+            }
+            gapsAfter++;
+        }
+        for (int j = 1; j < i; j++){
+            previous = rates.get(i - j);
+            if (previous.getValue() != 0.0){
+                break;
+            }
+            gapsBefore++;
+        }
+        
+        if (next.getValue() != 0.0 && previous.getValue() != 0.0){
+            change = next.getValue() - previous.getValue();
+        }
+        
+        change /= (1 + gapsBefore + gapsAfter);
+        
+        for (int j = i - gapsBefore; j < i + gapsAfter; j++){
+            rates.get(j).setValue(previous.getValue() + change);
+        }
     }
     
     public int noOfHistoricRates(){

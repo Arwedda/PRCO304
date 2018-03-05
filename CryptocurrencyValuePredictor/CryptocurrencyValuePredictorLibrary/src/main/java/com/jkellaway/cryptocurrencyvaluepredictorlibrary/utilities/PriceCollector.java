@@ -40,6 +40,7 @@ public class PriceCollector {
     private LocalDateTime firstRelevantRate;
     private int currentSecond;
     private boolean connectedToDatabase;
+    private boolean firstLap;
     
     public PriceCollector() {
         try {
@@ -62,8 +63,9 @@ public class PriceCollector {
         exchangeRateAPIController = new ExchangeRateAPIController();
         current = Executors.newSingleThreadScheduledExecutor();
         historic = Executors.newSingleThreadScheduledExecutor();
-        connectedToDatabase = false;
         firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now().minusMinutes(Globals.READINGSREQUIRED));
+        connectedToDatabase = false;
+        firstLap = true;
     }
     
     private void initCurrencies(){
@@ -114,7 +116,7 @@ public class PriceCollector {
             }
             currency.findGaps(firstRelevantRate);
             currency.mergeRates();
-            updatedRates = currency.calculateGrowth();
+            updatedRates = currency.calculateGrowth(false);
             if (0 < updatedRates.length){
                 exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
             }
@@ -216,16 +218,25 @@ public class PriceCollector {
 
                         if (gapsFilled){
                             ExchangeRate[] updatedRates;
-                            for (Currency currency : currencies){
-                                currency.mergeRates();
-                                updatedRates = currency.calculateGrowth();
-                                if (connectedToDatabase){
-                                    exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                                for (Currency currency : currencies){
+                                    currency.mergeRates();
+                                    updatedRates = currency.calculateGrowth(!firstLap);
+                                    if (connectedToDatabase){
+                                        exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                                    }
                                 }
-                            }
-                            System.out.println("[INFO] Shutting down historic price collection thread.");
-                            CryptocurrencyValuePredictor.pricesCollected(currencies);
-                            historic.shutdownNow();
+                                if (firstLap){
+                                    for (Currency currency : currencies){
+                                        currency.findGaps(firstRelevantRate);
+                                    }
+                                    System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
+                                    firstLap = false;
+                                } else {
+                                    System.out.println("[INFO] Shutting down historic price collection thread.");
+                                    CryptocurrencyValuePredictor.pricesCollected(currencies);
+                                    historic.shutdownNow();
+                                }
+                            
                         }
 
                         while (readingsTaken < 4){
@@ -237,8 +248,12 @@ public class PriceCollector {
                                         trades = getHistoricTrades(currency, gap);
                                         calculateHistoricAverages(currency, trades, gap);
                                         if (connectedToDatabase){
-                                            currency.dumpDuplicates();
-                                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                            boolean noNewData = currency.dumpDuplicates();
+                                            if (noNewData) {
+                                                currency.getGaps().remove(gap);
+                                            } else {
+                                                exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                            }
                                         }
                                         currency.gradualMerge();
                                         readingsTaken++;

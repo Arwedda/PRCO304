@@ -22,37 +22,7 @@ public class MathsHelper {
             return null;
         }
     }
-    
-    public static Integer mode(int[] values){
-        try {
-            Integer maxValue = null;
-            int count;
-            int maxCount = 0;
-            for (int i = 0; i < values.length; ++i) {
-                count = 0;
-                for (int j = 0; j < values.length; ++j) {
-                    if (values[j] == values[i]) {
-                        count++;
-                    }
-                }
-                if (count > maxCount) {
-                    maxCount = count;
-                    maxValue = i;
-                }
-            }
-            return maxValue;
-        } catch (Exception e){
-            System.out.println("[INFO] Error: " + e);
-            return null;
-        }
-    }
-    
-    public static Integer[] modes(Double[] values){
-        Integer[] modeOrder = new Integer[values.length];
-        
-        return modeOrder;
-    }
-    
+
     public static Double[] deltas(Double actual, Double[] predictions){
         Double[] deltas = new Double[predictions.length];
         for (int i = 0; i < predictions.length; i++){

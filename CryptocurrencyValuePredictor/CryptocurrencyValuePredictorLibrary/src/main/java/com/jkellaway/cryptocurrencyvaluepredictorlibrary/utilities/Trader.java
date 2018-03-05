@@ -19,19 +19,21 @@ public class Trader {
     private GDAXAPIController gdaxAPIController;
     private Wallet wallet;
     private String tradeMode;
+    private String holdPreference;
     
     public Trader(){
         gdaxAPIController = new GDAXAPIController();
         wallet = new Wallet(Globals.STARTINGUNITS, Globals.STARTINGVALUE);
     }
     
-    public Trader(String currency, Double value, String tradeMode){
+    public Trader(String currency, Double value, String tradeMode, String holdPreference){
         wallet = new Wallet(currency, value);
         this.tradeMode = tradeMode;
+        this.holdPreference = holdPreference;
     }
     
     public void autoTrade(Currency[] currencies){
-        String desiredID = "USD";
+        String desiredID = holdPreference;
         Double growth = 0.0;
         Double predictedGrowth;
         ExchangeRate rate;
