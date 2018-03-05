@@ -18,15 +18,54 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Wallet;
 public class Trader {
     private GDAXAPIController gdaxAPIController;
     private Wallet wallet;
+    private String tradeMode;
     
     public Trader(){
         gdaxAPIController = new GDAXAPIController();
         wallet = new Wallet(Globals.STARTINGUNITS, Globals.STARTINGVALUE);
     }
     
-    public Trader(String currency, Double value){
+    public Trader(String currency, Double value, String tradeMode){
         wallet = new Wallet(currency, value);
+        this.tradeMode = tradeMode;
     }
+    
+    public void autoTrade(Currency[] currencies){
+        String desiredID = "USD";
+        Double growth = 0.0;
+        Double predictedGrowth;
+        ExchangeRate rate;
+        switch (tradeMode){
+            case "NeuralNetwork":
+                for (Currency currency : currencies) {
+                    rate = currency.getRate();
+                    predictedGrowth = rate.getNeuralNetworkNextGrowth();
+                    if (growth < predictedGrowth) {
+                        desiredID = rate.getCurrency_id();
+                        growth = predictedGrowth;
+                    }
+                }
+                trade(desiredID, currencies);
+                break;
+            case "GOFAI":
+                for (Currency currency : currencies) {
+                    rate = currency.getRate();
+                    predictedGrowth = rate.getGofaiNextGrowth();
+                    if (growth < predictedGrowth) {
+                        desiredID = rate.getCurrency_id();
+                        growth = predictedGrowth;
+                    }
+                }
+                trade(desiredID, currencies);
+                break;
+            case "Manual":
+                System.out.println("[INFO] Autotrade mode off...");
+                break;
+            default:
+                System.out.println("[INFO] Invalid trade mode...");
+        }
+    }
+    
     
     public void trade(String desiredID, Currency[] currencies) {
         String holdingID = wallet.getHoldingID();

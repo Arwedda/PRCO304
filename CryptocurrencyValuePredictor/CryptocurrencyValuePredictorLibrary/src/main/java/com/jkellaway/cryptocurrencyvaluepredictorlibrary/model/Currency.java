@@ -219,6 +219,8 @@ public class Currency {
                 if (rates.get(i).isMinuteAfter(rates.get(i - 1))){
                     rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
                     updatedRates.add(rates.get(i));
+                } else {
+                    System.out.println("Failed to get previous rate for " + rates.get(i).getTimestamp());
                 }
             }
         }

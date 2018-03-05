@@ -115,7 +115,9 @@ public class PriceCollector {
             currency.findGaps(firstRelevantRate);
             currency.mergeRates();
             updatedRates = currency.calculateGrowth();
-            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+            if (0 < updatedRates.length){
+                exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+            }
         }
     }
     
