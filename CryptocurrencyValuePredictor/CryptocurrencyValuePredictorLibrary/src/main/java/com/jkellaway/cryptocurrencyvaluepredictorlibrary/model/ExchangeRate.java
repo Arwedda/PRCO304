@@ -22,6 +22,8 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     private Integer lastTrade;
     private transient LocalDateTime ldtTimestamp;
     
+    public Double[] gofaiGrowth = new Double[20];
+    
     public ExchangeRate() {
         this.currency_id = "Unknown";
         this.timestamp = "Unknown";

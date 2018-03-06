@@ -6,6 +6,7 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
@@ -21,7 +22,6 @@ import java.util.List;
  */
 public class PricePredictor {
     private static final int numberOfPredictions = 20;
-    private static final int numberOfReadingsPerPrediction = 20;
     private static Double[] meanPredictedChange = new Double [numberOfPredictions];
     private static int[] predictedChangeNo = new int[numberOfPredictions];
     private static Double[] meanDeltas = new Double[numberOfPredictions];
@@ -29,15 +29,28 @@ public class PricePredictor {
     private static Double[] closest = new Double[numberOfPredictions];
     private static int totalReadings = 0;
     private static Currency[] currencies;
+    private static Trader best;
+    private static Trader worst;
+    private static Trader[] holders = new Trader[4];
+    private static Trader[] GOFAITradersUSD = new Trader[20];
+    private static Trader[] GOFAITradersHold = new Trader[20];
     
     public static void makePredictions(Currency[] currencies){
         initialiseTests();
         GOFAI();
         neuralNetwork();
     }
-    
+
     private static void initialiseTests(){
+        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BCH");
+        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BTC");
+        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "ETH");
+        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "LTC");
+        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BEST");
+        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "WORST");
         for (int i = 0; i < numberOfPredictions; i++){
+            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "USD");
+            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "HOLD");
             meanPredictedChange[i] = 0.0;
             predictedChangeNo[i] = 0;
             meanDeltas[i] = 0.0;
@@ -49,6 +62,15 @@ public class PricePredictor {
         for (Currency currency: currencies){
             GOFAICalculations(currency);
         }
+        best.tradeTest(currencies, numberOfPredictions, 1);
+        worst.tradeTest(currencies, numberOfPredictions, 1);
+        for (int i = 0; i < holders.length; i++){
+            holders[i].tradeTest(currencies, numberOfPredictions, 0);
+        }
+        for (int i = 0; i < GOFAITradersUSD.length; i++){
+            GOFAITradersUSD[i].tradeTest(currencies, numberOfPredictions, 0);
+            GOFAITradersHold[i].tradeTest(currencies, numberOfPredictions, 0);
+        }
         GOFAIResults();
     }
     
@@ -58,16 +80,13 @@ public class PricePredictor {
         ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
         ExchangeRate[] currentRates;
         int highestIndex = rates.length - 1;
-        int noOfPredictions = highestIndex - numberOfReadingsPerPrediction;
+        int noOfPredictions = highestIndex - numberOfPredictions;
         Double actualGrowth;
 
         for (int i = 0; i < noOfPredictions; i++) {
             currentRates = Arrays.copyOfRange(rates, noOfPredictions - i, highestIndex - i);
             predictions = predict(currentRates);
-            
-            /*
-                NEED TO ENSURE THAT NEXT GROWTH EXISTS~~
-            */
+            currency.getRates().get(highestIndex - i + 1).gofaiGrowth = predictions;
             try {
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
                 deltas = MathsHelper.deltas(actualGrowth, predictions);

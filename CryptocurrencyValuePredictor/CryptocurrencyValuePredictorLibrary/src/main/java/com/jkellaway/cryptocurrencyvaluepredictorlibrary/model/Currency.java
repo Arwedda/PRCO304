@@ -178,7 +178,11 @@ public class Currency {
             }
         }
         historicRates.removeAll(toRemove);
-        return (historicRates.isEmpty());
+        if (historicRates.isEmpty() && historicTrades.size() < 100){
+            historicTrades.clear();
+            return true;
+        }
+        return false;
     }
     
     public void findGaps(LocalDateTime firstMinute) {
@@ -204,9 +208,7 @@ public class Currency {
             }
         }
         gap = new Gap(0, ratesRequired);
-        if (0 < gap.getRatesRequired()){
-            gaps.add(gap);
-        }
+        gaps.add(gap);
     }
     
     public void mergeRates(){        

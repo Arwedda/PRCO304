@@ -17,11 +17,9 @@ public class Globals {
     public static final String ETH_TRADES = "https://api.gdax.com/products/ETH-USD/trades";
     public static final String LTC_TRADES = "https://api.gdax.com/products/LTC-USD/trades";
     
-    
-    
     public static final int STARTGOFAI = 21;
     public static final int STARTNN = 1001;
-    public static final int READINGSREQUIRED = 20001;
+    public static final int READINGSREQUIRED = 10001;
     public static final String STARTINGUNITS = "USD";
     public static final Double STARTINGVALUE = 100.00;
 }

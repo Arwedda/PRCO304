@@ -19,21 +19,25 @@ public class Trader {
     private GDAXAPIController gdaxAPIController;
     private Wallet wallet;
     private String tradeMode;
-    private String holdPreference;
+    private String holdMode;
+
+    
     
     public Trader(){
         gdaxAPIController = new GDAXAPIController();
         wallet = new Wallet(Globals.STARTINGUNITS, Globals.STARTINGVALUE);
+        this.tradeMode = "unknown";
+        this.holdMode = "unknown";
     }
     
-    public Trader(String currency, Double value, String tradeMode, String holdPreference){
+    public Trader(String currency, Double value, String tradeMode, String holdMode){
         wallet = new Wallet(currency, value);
         this.tradeMode = tradeMode;
-        this.holdPreference = holdPreference;
+        this.holdMode = holdMode;
     }
     
     public void autoTrade(Currency[] currencies){
-        String desiredID = holdPreference;
+        String desiredID = holdMode;
         Double growth = 0.0;
         Double predictedGrowth;
         ExchangeRate rate;
@@ -98,5 +102,43 @@ public class Trader {
         } else {
             System.out.println("[INFO] Holding desired currency - " + value + " " + holdingID);
         }
+    }
+    
+    public void tradeTest(Currency[] currencies, int numberOfPredictions, int futureReading){
+        ExchangeRate[] rates = new ExchangeRate[4];
+        String desiredID;
+        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++){
+            for (int j = 0; j < 4 ; j++) {
+                rates[j] = currencies[j].getRates().get(i + futureReading);
+            }
+            
+            switch (tradeMode) {
+                case "NeuralNetwork":
+                    break;
+                case "GOFAI":
+                    break;
+                case "Manual":
+                    if (holdMode.equals("BEST")){
+                        getHighestGrowth(rates);
+                    } else if (holdMode.equals("WORST")){
+                        
+                    } else {
+                        
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
+    private String getHighestGrowth(ExchangeRate[] rates){
+        String bestID = "USD";
+        
+        return bestID;
+    }
+    
+    private void tradeTestTrading(String desiredID, ExchangeRate[] rates){
+        
     }
 }

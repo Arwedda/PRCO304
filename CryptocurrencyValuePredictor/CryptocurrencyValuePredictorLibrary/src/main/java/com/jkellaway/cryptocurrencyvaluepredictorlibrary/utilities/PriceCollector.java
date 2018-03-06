@@ -253,9 +253,9 @@ public class PriceCollector {
                                                 currency.getGaps().remove(gap);
                                             } else {
                                                 exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                                currency.gradualMerge();
                                             }
                                         }
-                                        currency.gradualMerge();
                                         readingsTaken++;
                                     }
                                     if (readingsTaken == 4) {
