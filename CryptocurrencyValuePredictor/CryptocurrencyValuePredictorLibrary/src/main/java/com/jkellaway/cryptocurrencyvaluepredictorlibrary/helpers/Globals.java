@@ -19,7 +19,7 @@ public class Globals {
     
     public static final int STARTGOFAI = 21;
     public static final int STARTNN = 1001;
-    public static final int READINGSREQUIRED = 10001;
+    public static final int READINGSREQUIRED = 101;
     public static final String STARTINGUNITS = "USD";
     public static final Double STARTINGVALUE = 100.00;
 }

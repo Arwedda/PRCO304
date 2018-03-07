@@ -273,8 +273,13 @@ public class Currency {
         return this.historicRates.size();
     }
     
-    @Override
-    public String toString(){
-        return "id=" + id + " name=" + name + " value=" + rates.get(rates.size() - 1).toString();
+    public void pruneRates() {
+        int toPrune = rates.size() - Globals.READINGSREQUIRED;
+        List<ExchangeRate> toRemove = new ArrayList<>();
+        
+        for (int i = 0; i <= toPrune; i++){
+            toRemove.add(rates.get(i));
+        }
+        rates.removeAll(toRemove);
     }
 }

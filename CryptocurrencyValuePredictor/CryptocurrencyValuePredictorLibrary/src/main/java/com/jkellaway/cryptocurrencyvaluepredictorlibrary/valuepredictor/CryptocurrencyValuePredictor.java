@@ -5,7 +5,6 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor;
 
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PriceCollector;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PricePredictor;

@@ -28,7 +28,6 @@ public class PricePredictor {
     private static int[] deltaNo = new int[numberOfPredictions];
     private static Double[] closest = new Double[numberOfPredictions];
     private static int totalReadings = 0;
-    private static Currency[] currencies;
     private static Trader best;
     private static Trader worst;
     private static Trader[] holders = new Trader[4];
@@ -37,8 +36,8 @@ public class PricePredictor {
     
     public static void makePredictions(Currency[] currencies){
         initialiseTests();
-        GOFAI();
-        neuralNetwork();
+        GOFAI(currencies);
+        neuralNetwork(currencies);
     }
 
     private static void initialiseTests(){
@@ -58,9 +57,10 @@ public class PricePredictor {
         }
     }
     
-    public static void GOFAI(){
+    public static void GOFAI(Currency[] currencies){
         for (Currency currency: currencies){
             GOFAICalculations(currency);
+            currency.pruneRates();
         }
         best.tradeTest(currencies, numberOfPredictions, 1);
         worst.tradeTest(currencies, numberOfPredictions, 1);
@@ -86,7 +86,7 @@ public class PricePredictor {
         for (int i = 0; i < noOfPredictions; i++) {
             currentRates = Arrays.copyOfRange(rates, noOfPredictions - i, highestIndex - i);
             predictions = predict(currentRates);
-            currency.getRates().get(highestIndex - i + 1).gofaiGrowth = predictions;
+            currency.getRates().get(highestIndex - i).gofaiGrowth = predictions;
             try {
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
                 deltas = MathsHelper.deltas(actualGrowth, predictions);
@@ -123,7 +123,7 @@ public class PricePredictor {
         }
     }
     
-    private static void neuralNetwork(){
+    private static void neuralNetwork(Currency[] currencies){
         trainNeuralNetwork();
         for (Currency currency: currencies){
             neuralNetworkCalculations(currency);

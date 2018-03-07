@@ -43,18 +43,20 @@ public class ExchangeRateAPIController extends APIController {
     }
     
     public void put(String endpoint, ExchangeRate[] rates) {
-        String json;
-        String query;
-        System.out.println("[INFO] Starting PUT for " + rates[0].getCurrency_id());
-        for (ExchangeRate rate : rates){
-            try {
-                json = gson.toJson(rate, ExchangeRate.class);
-                query = "/" + rate.getCurrency_id() + "/" + rate.getTimestamp();
-                put(endpoint + URLEncoder.encode(query, "UTF-8"), json);
-            } catch (Exception e) {
-                System.out.println("[INFO] Error: " + e);
+        if (0 < rates.length){
+            String json;
+            String query;
+            System.out.println("[INFO] Starting PUT for " + rates[0].getCurrency_id());
+            for (ExchangeRate rate : rates){
+                try {
+                    json = gson.toJson(rate, ExchangeRate.class);
+                    query = "/" + rate.getCurrency_id() + "/" + rate.getTimestamp();
+                    put(endpoint + URLEncoder.encode(query, "UTF-8"), json);
+                } catch (Exception e) {
+                    System.out.println("[INFO] Error: " + e);
+                }
             }
+            System.out.println("[INFO] Finished PUT for " + rates[0].getCurrency_id());
         }
-        System.out.println("[INFO] Finished PUT for " + rates[0].getCurrency_id());
     }
 }

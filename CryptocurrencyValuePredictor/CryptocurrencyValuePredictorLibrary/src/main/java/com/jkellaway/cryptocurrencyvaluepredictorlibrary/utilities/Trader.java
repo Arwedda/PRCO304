@@ -37,7 +37,7 @@ public class Trader {
     }
     
     public void autoTrade(Currency[] currencies){
-        String desiredID = holdMode;
+        ExchangeRate desired = new ExchangeRate();
         Double growth = 0.0;
         Double predictedGrowth;
         ExchangeRate rate;
@@ -47,22 +47,22 @@ public class Trader {
                     rate = currency.getRate();
                     predictedGrowth = rate.getNeuralNetworkNextGrowth();
                     if (growth < predictedGrowth) {
-                        desiredID = rate.getCurrency_id();
+                        desired = rate;
                         growth = predictedGrowth;
                     }
                 }
-                trade(desiredID, currencies);
+                trade(desired, currencies);
                 break;
             case "GOFAI":
                 for (Currency currency : currencies) {
                     rate = currency.getRate();
                     predictedGrowth = rate.getGofaiNextGrowth();
                     if (growth < predictedGrowth) {
-                        desiredID = rate.getCurrency_id();
+                        desired = rate;
                         growth = predictedGrowth;
                     }
                 }
-                trade(desiredID, currencies);
+                trade(desired, currencies);
                 break;
             case "Manual":
                 System.out.println("[INFO] Autotrade mode off...");
@@ -72,73 +72,161 @@ public class Trader {
         }
     }
     
-    
-    public void trade(String desiredID, Currency[] currencies) {
+    public void trade(ExchangeRate desired, Currency[] currencies) {
         String holdingID = wallet.getHoldingID();
-        Double value = wallet.getValue();
-        if (!holdingID.equals(holdingID)) {
+        if (!holdingID.equals(desired.getCurrency_id())) {
             ExchangeRate current = new ExchangeRate();
-            ExchangeRate desired = new ExchangeRate();
             for (Currency currency : currencies){
                 String id = currency.getID();
                 if (id.equals(holdingID)) {
                     current = currency.getRate();
-                } else if (id.equals(desiredID)) {
-                    desired = currency.getRate();
+                    break;
                 }
             }
-            
-            if (desiredID.equals("USD")){
-                wallet.setValue(value * current.getValue());
-                wallet.setHoldingID("USD");
-            } else {
-                if (holdingID.equals("USD")){
-                    wallet.setValue(value / desired.getValue());
-                } else {
-                    wallet.setValue(value * current.getValue() / desired.getValue());
-                }
-                wallet.setHoldingID(desired.getCurrency_id());
-            }
+            makeTrade(current, desired);
         } else {
+            Double value = wallet.getValue();
             System.out.println("[INFO] Holding desired currency - " + value + " " + holdingID);
+        }
+    }
+    
+    private void makeTrade(ExchangeRate current, ExchangeRate desired){
+        Double value = wallet.getValue();
+        if (!current.getCurrency_id().equals("Unknown") && desired.getCurrency_id().equals("Unknown")){
+            wallet.setValue(value * current.getValue());
+            wallet.setHoldingID("USD");
+        } else {
+            if (wallet.getHoldingID().equals("USD")){
+                wallet.setValue(value / desired.getValue());
+            } else {
+                wallet.setValue(value * current.getValue() / desired.getValue());
+            }
+            wallet.setHoldingID(desired.getCurrency_id());
         }
     }
     
     public void tradeTest(Currency[] currencies, int numberOfPredictions, int futureReading){
         ExchangeRate[] rates = new ExchangeRate[4];
-        String desiredID;
-        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++){
+        ExchangeRate desired = new ExchangeRate();
+        Double growth;
+        Double predictedGrowth;
+        ExchangeRate rate;
+        
+        trading:
+        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++) {
             for (int j = 0; j < 4 ; j++) {
                 rates[j] = currencies[j].getRates().get(i + futureReading);
             }
             
             switch (tradeMode) {
                 case "NeuralNetwork":
+                    growth = 0.0;
+                    desired = new ExchangeRate();
+                    for (Currency currency : currencies) {
+                        rate = currency.getRate();
+                        predictedGrowth = rate.getNeuralNetworkNextGrowth();
+                        if (growth < predictedGrowth) {
+                            desired = rate;
+                            growth = predictedGrowth;
+                        }
+                    }
+                    trade(desired, currencies);
                     break;
                 case "GOFAI":
+                    growth = 0.0;
+                    desired = new ExchangeRate();
+                    for (Currency currency : currencies) {
+                        rate = currency.getRate();
+                        predictedGrowth = rate.getGofaiNextGrowth();
+                        if (growth < predictedGrowth) {
+                            desired = rate;
+                            growth = predictedGrowth;
+                        }
+                    }
+                    trade(desired, currencies);
                     break;
                 case "Manual":
                     if (holdMode.equals("BEST")){
-                        getHighestGrowth(rates);
+                        desired = getHighestGrowth(rates);
+                        trade(desired, rates);
                     } else if (holdMode.equals("WORST")){
-                        
+                        desired = getLowestGrowth(rates);
+                        trade(desired, rates);
                     } else {
-                        
+                        if (desired.getCurrency_id().equals("Unknown")){
+                            desired = getRate(rates);
+                            trade(desired, rates);
+                        } else {
+                            desired = new ExchangeRate();
+                            trade(desired, currencies);
+                            break trading;
+                        }
                     }
                     break;
                 default:
                     break;
             }
         }
+        
+        if (!wallet.getHoldingID().equals("USD")){
+            System.out.println("Finished holding " + wallet.getValue() + " " + wallet.getHoldingID());
+        }
+        System.out.println("$" + wallet.getUSDValue(currencies));
     }
     
-    private String getHighestGrowth(ExchangeRate[] rates){
-        String bestID = "USD";
+    private ExchangeRate getHighestGrowth(ExchangeRate[] rates){
+        ExchangeRate best = new ExchangeRate();
+        Double growth = 0.0;
         
-        return bestID;
+        for (ExchangeRate rate : rates){
+            if (growth < rate.getGrowth()) {
+                best = rate;
+                growth = rate.getGrowth();
+            }
+        }
+        return best;
     }
     
-    private void tradeTestTrading(String desiredID, ExchangeRate[] rates){
+    private ExchangeRate getLowestGrowth(ExchangeRate[] rates){
+        ExchangeRate worst = new ExchangeRate();
+        Double growth = 0.0;
         
+        for (ExchangeRate rate : rates){
+            if (rate.getGrowth() < growth){
+                worst = rate;
+                growth = rate.getGrowth();
+            }
+        }
+        return worst;
+    }
+    
+    private ExchangeRate getRate(ExchangeRate[] rates){
+        ExchangeRate desired = new ExchangeRate();
+        
+        for (ExchangeRate rate : rates){
+            if (rate.getCurrency_id().equals(holdMode)){
+                desired = rate;
+                break;
+            }
+        }
+        return desired;
+    }
+    
+    private void trade(ExchangeRate desired, ExchangeRate[] rates){
+        String holdingID = wallet.getHoldingID();
+        if (!holdingID.equals(desired.getCurrency_id())) {
+            ExchangeRate current = new ExchangeRate();
+            for (ExchangeRate rate : rates){
+                String id = rate.getCurrency_id();
+                if (id.equals(holdingID)) {
+                    current = rate;
+                    break;
+                }
+            }
+            makeTrade(current, desired);
+        } else {
+            Double value = wallet.getValue();
+            System.out.println("[INFO] Holding desired currency - " + value + " " + holdingID);
+        }
     }
 }

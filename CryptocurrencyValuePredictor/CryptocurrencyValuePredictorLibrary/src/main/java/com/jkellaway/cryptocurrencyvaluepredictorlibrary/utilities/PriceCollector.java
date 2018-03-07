@@ -43,11 +43,7 @@ public class PriceCollector {
     private boolean firstLap;
     
     public PriceCollector() {
-        try {
-            initialise();
-        } catch (Exception e){
-            System.out.println("[INFO] Error: " + e);
-        }
+        initialise();
     }
     
     private void initialise(){
@@ -117,9 +113,7 @@ public class PriceCollector {
             currency.findGaps(firstRelevantRate);
             currency.mergeRates();
             updatedRates = currency.calculateGrowth(false);
-            if (0 < updatedRates.length){
-                exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
-            }
+            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
         }
     }
     
