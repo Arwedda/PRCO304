@@ -228,6 +228,7 @@ public class Currency {
                     if (calculateChange) {
                         fillMissingData(i);
                         rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
+                        updatedRates.add(rates.get(i));
                     }
                 }
             }

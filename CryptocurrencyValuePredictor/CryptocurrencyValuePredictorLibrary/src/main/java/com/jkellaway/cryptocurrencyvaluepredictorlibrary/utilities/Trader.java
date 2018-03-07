@@ -105,7 +105,7 @@ public class Trader {
         }
     }
     
-    public void tradeTest(Currency[] currencies, int numberOfPredictions, int futureReading){
+    public void tradeTest(Currency[] currencies, int numberOfPredictions, int futureReading, int predictionIndex){
         ExchangeRate[] rates = new ExchangeRate[4];
         ExchangeRate desired = new ExchangeRate();
         Double growth;
@@ -137,7 +137,7 @@ public class Trader {
                     desired = new ExchangeRate();
                     for (Currency currency : currencies) {
                         rate = currency.getRate();
-                        predictedGrowth = rate.getGofaiNextGrowth();
+                        predictedGrowth = rate.gofaiGrowth[predictionIndex];
                         if (growth < predictedGrowth) {
                             desired = rate;
                             growth = predictedGrowth;

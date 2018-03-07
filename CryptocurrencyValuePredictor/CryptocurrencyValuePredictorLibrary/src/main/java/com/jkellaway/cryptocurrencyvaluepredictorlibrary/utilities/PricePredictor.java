@@ -62,14 +62,14 @@ public class PricePredictor {
             GOFAICalculations(currency);
             currency.pruneRates();
         }
-        best.tradeTest(currencies, numberOfPredictions, 1);
-        worst.tradeTest(currencies, numberOfPredictions, 1);
+        best.tradeTest(currencies, numberOfPredictions, 1, 0);
+        worst.tradeTest(currencies, numberOfPredictions, 1, 0);
         for (int i = 0; i < holders.length; i++){
-            holders[i].tradeTest(currencies, numberOfPredictions, 0);
+            holders[i].tradeTest(currencies, numberOfPredictions, 0, 0);
         }
         for (int i = 0; i < GOFAITradersUSD.length; i++){
-            GOFAITradersUSD[i].tradeTest(currencies, numberOfPredictions, 0);
-            GOFAITradersHold[i].tradeTest(currencies, numberOfPredictions, 0);
+            GOFAITradersUSD[i].tradeTest(currencies, numberOfPredictions, 0, i);
+            GOFAITradersHold[i].tradeTest(currencies, numberOfPredictions, 0, i);
         }
         GOFAIResults();
     }
