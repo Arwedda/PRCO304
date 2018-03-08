@@ -74,7 +74,8 @@ public class Trader {
     
     public void trade(ExchangeRate desired, Currency[] currencies) {
         String holdingID = wallet.getHoldingID();
-        if (!holdingID.equals(desired.getCurrency_id())) {
+        if (!holdingID.equals(desired.getCurrency_id()) && 
+                !(holdingID.equals("USD") && desired.getCurrency_id().equals("Unknown"))) {
             ExchangeRate current = new ExchangeRate();
             for (Currency currency : currencies){
                 String id = currency.getID();
@@ -84,10 +85,8 @@ public class Trader {
                 }
             }
             makeTrade(current, desired);
-        } else {
-            Double value = wallet.getValue();
-            System.out.println("[INFO] Holding desired currency - " + value + " " + holdingID);
         }
+        System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
     }
     
     private void makeTrade(ExchangeRate current, ExchangeRate desired){
@@ -113,7 +112,7 @@ public class Trader {
         ExchangeRate rate;
         
         trading:
-        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++) {
+        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - (1 + futureReading); i++) {
             for (int j = 0; j < 4 ; j++) {
                 rates[j] = currencies[j].getRates().get(i + futureReading);
             }
@@ -214,7 +213,8 @@ public class Trader {
     
     private void trade(ExchangeRate desired, ExchangeRate[] rates){
         String holdingID = wallet.getHoldingID();
-        if (!holdingID.equals(desired.getCurrency_id())) {
+        if (!holdingID.equals(desired.getCurrency_id()) && 
+                !(holdingID.equals("USD") && desired.getCurrency_id().equals("Unknown"))) {
             ExchangeRate current = new ExchangeRate();
             for (ExchangeRate rate : rates){
                 String id = rate.getCurrency_id();
@@ -224,9 +224,7 @@ public class Trader {
                 }
             }
             makeTrade(current, desired);
-        } else {
-            Double value = wallet.getValue();
-            System.out.println("[INFO] Holding desired currency - " + value + " " + holdingID);
         }
+        System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
     }
 }
