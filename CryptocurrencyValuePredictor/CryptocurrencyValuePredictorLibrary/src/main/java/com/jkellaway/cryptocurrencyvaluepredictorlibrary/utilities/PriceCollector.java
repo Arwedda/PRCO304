@@ -181,97 +181,102 @@ public class PriceCollector {
         historicPriceCollection = new Runnable() {
             @Override
             public void run() {
-                priceCollection();
-            }
-
-            private void priceCollection() {
-                try {
-                    if (permittedAPIAccess()){
-                        int readingsTaken = 0;
-                        GDAXTrade[] trades;
-                        int ratesRequired = 0;
-                        boolean gapsFilled = true;
-                        List<Gap> gaps, toRemove;
-
-                        for (Currency currency : currencies){
-                            gaps = currency.getGaps();
-                            toRemove = new ArrayList<>();
-                            for (Gap gap : gaps){
-                                ratesRequired = gap.getRatesRequired();
-                                if (ratesRequired == 0){
-                                    toRemove.add(gap);
-                                }
-                            }
-                            if (!toRemove.isEmpty()){
-                                gaps.removeAll(toRemove);
-                            }
-                            if (!gaps.isEmpty()) {
-                                gapsFilled = false;
-                            }
-                        }
-
-                        if (gapsFilled){
-                            ExchangeRate[] updatedRates;
-                                for (Currency currency : currencies){
-                                    currency.mergeRates();
-                                    updatedRates = currency.calculateGrowth(!firstLap);
-                                    if (connectedToDatabase){
-                                        exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
-                                    }
-                                }
-                                if (firstLap){
-                                    for (Currency currency : currencies){
-                                        currency.findGaps(firstRelevantRate);
-                                    }
-                                    System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
-                                    firstLap = false;
-                                } else {
-                                    System.out.println("[INFO] Shutting down historic price collection thread.");
-                                    CryptocurrencyValuePredictor.pricesCollected(currencies);
-                                    historic.shutdownNow();
-                                }
-                            
-                        }
-
-                        while (readingsTaken < 4){
-                            boolean needsMoreReadings = false;
-                            for (Currency currency : currencies){
-                                if (!currency.getGaps().isEmpty()){
-                                    Gap gap = currency.getLastGap();
-                                    if (!collectionCompleted(gap.getRatesRequired(), currency.noOfHistoricRates())){
-                                        trades = getHistoricTrades(currency, gap);
-                                        calculateHistoricAverages(currency, trades, gap);
-                                        if (connectedToDatabase){
-                                            boolean noNewData = currency.dumpDuplicates();
-                                            if (noNewData) {
-                                                currency.getGaps().remove(gap);
-                                            } else {
-                                                exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
-                                                currency.gradualMerge();
-                                            }
-                                        }
-                                        readingsTaken++;
-                                    }
-                                    if (readingsTaken == 4) {
-                                        System.out.println("[INFO] 4 readings taken. 1 second break for GDAX API.");
-                                        break;
-                                    } else if (!collectionCompleted(gap.getRatesRequired(), currency.noOfHistoricRates())){
-                                        needsMoreReadings = true;
-                                    }
-                                }
-                            }
-                            if (!needsMoreReadings){
-                                break;
-                            }
-                        }
+                if (permittedAPIAccess()){
+                    if (gapsFilled()){
+                        calculateHistoricGrowth();
+                    } else {
+                        priceCollection();
                     }
-                } catch (Exception e){
-                    System.out.println("[INFO] Error: " + e);
                 }
             }
             
             private boolean permittedAPIAccess(){
-                return (0 < currentSecond && currentSecond < 59);
+                return (1 < currentSecond && currentSecond < 58);
+            }
+            
+            private boolean gapsFilled(){
+                boolean filled = true;
+                int ratesRequired = 0;
+                List<Gap> gaps, toRemove;
+                for (Currency currency : currencies){
+                    gaps = currency.getGaps();
+                    toRemove = new ArrayList<>();
+                    for (Gap gap : gaps){
+                        ratesRequired = gap.getRatesRequired();
+                        if (ratesRequired == 0){
+                            toRemove.add(gap);
+                        }
+                    }
+                    if (!toRemove.isEmpty()){
+                        gaps.removeAll(toRemove);
+                    }
+                    if (!gaps.isEmpty()) {
+                        filled = false;
+                    }
+                }
+                return filled;
+            }
+            
+            private void calculateHistoricGrowth(){
+                ExchangeRate[] updatedRates;
+                for (Currency currency : currencies){
+                    currency.mergeRates();
+                    updatedRates = currency.calculateGrowth(!firstLap);
+                    if (connectedToDatabase){
+                        exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                    }
+                }
+                if (firstLap){
+                    for (Currency currency : currencies){
+                        currency.findGaps(firstRelevantRate);
+                    }
+                    System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
+                    firstLap = false;
+                } else {
+                    System.out.println("[INFO] Shutting down historic price collection thread.");
+                    CryptocurrencyValuePredictor.pricesCollected(currencies);
+                    historic.shutdownNow();
+                }
+            }
+            
+            private void priceCollection(){
+                int readingsTaken = 0;
+                GDAXTrade[] trades;
+                while (readingsTaken < 4){
+                    boolean needsMoreReadings = false;
+                    for (Currency currency : currencies){
+                        if (!currency.getGaps().isEmpty()){
+                            Gap gap = currency.getLastGap();
+                            if (!collectionCompleted(gap.getRatesRequired(), currency.noOfHistoricRates())){
+                                trades = getHistoricTrades(currency, gap);
+                                calculateHistoricAverages(currency, trades, gap);
+                                if (connectedToDatabase){
+                                    boolean noNewData = currency.dumpDuplicates();
+                                    if (noNewData) {
+                                        currency.getGaps().remove(gap);
+                                    } else {
+                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                        currency.gradualMerge();
+                                    }
+                                }
+                                readingsTaken++;
+                            }
+                            if (readingsTaken == 4) {
+                                System.out.println("[INFO] 4 readings taken. 1 second break for GDAX API.");
+                                break;
+                            } else if (!collectionCompleted(gap.getRatesRequired(), currency.noOfHistoricRates())){
+                                needsMoreReadings = true;
+                            }
+                        }
+                    }
+                    if (!needsMoreReadings){
+                        break;
+                    }
+                }
+            }
+            
+            private boolean collectionCompleted(int required, int collected){
+                return (required <= collected);
             }
             
             private GDAXTrade[] getHistoricTrades(Currency currency, Gap gap) {
@@ -285,21 +290,6 @@ public class PriceCollector {
                     }
                 }
                 return gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint() + pagination);
-            }
-
-            private boolean collectionCompleted(int required, int[] collected){
-                boolean completed = true;
-                for (int gathered : collected){
-                    if (!collectionCompleted(required, gathered)){
-                        completed = false;
-                        break;
-                    }
-                }
-                return completed;
-            }
-            
-            private boolean collectionCompleted(int required, int collected){
-                return (required <= collected);
             }
             
             private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades, Gap gap) {
@@ -316,7 +306,7 @@ public class PriceCollector {
                         tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
                         System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     } else {
-                        tradeTime = LocalDateTimeHelper.startOfMinute(trades[0].getTime()).plusMinutes(1);
+                        tradeTime = LocalDateTimeHelper.startOfMinute(trades[0].getTime().plusMinutes(1));
                     }
                 } else {
                     tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
