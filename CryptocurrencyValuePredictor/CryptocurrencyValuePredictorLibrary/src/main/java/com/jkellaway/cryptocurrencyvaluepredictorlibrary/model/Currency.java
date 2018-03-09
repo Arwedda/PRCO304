@@ -192,8 +192,12 @@ public class Currency {
         Gap gap;
 
         for (ExchangeRate rate : historicRates) {
-            timeBetween = (int) ChronoUnit.MINUTES.between(firstMinute, rate.getLDTTimestamp());
-            reqRates[timeBetween] = rate;
+            try {
+                timeBetween = (int) ChronoUnit.MINUTES.between(firstMinute, rate.getLDTTimestamp());
+                reqRates[timeBetween] = rate;
+            } catch (Exception e) {
+                System.out.println("Failed to get time between first minute and rate");
+            }
         }
         
         for (ExchangeRate reqRate : reqRates) {

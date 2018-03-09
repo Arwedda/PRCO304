@@ -104,7 +104,7 @@ public class Trader {
         }
     }
     
-    public void tradeTest(Currency[] currencies, int numberOfPredictions, int futureReading, int predictionIndex){
+    public void tradeTest(Currency[] currencies, int numberOfPredictions, int predictionIndex){
         ExchangeRate[] rates = new ExchangeRate[4];
         ExchangeRate desired = new ExchangeRate();
         Double growth;
@@ -112,9 +112,9 @@ public class Trader {
         ExchangeRate rate;
         
         trading:
-        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - (1 + futureReading); i++) {
+        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++) {
             for (int j = 0; j < 4 ; j++) {
-                rates[j] = currencies[j].getRates().get(i + futureReading);
+                rates[j] = currencies[j].getRates().get(i);
             }
             
             switch (tradeMode) {
@@ -145,11 +145,15 @@ public class Trader {
                     trade(desired, currencies);
                     break;
                 case "Manual":
+                    ExchangeRate[] nextRates = new ExchangeRate[4];
+                    for (int j = 0; j < 4 ; j++) {
+                        nextRates[j] = currencies[j].getRates().get(i+1);
+                    }
                     if (holdMode.equals("BEST")){
-                        desired = getHighestGrowth(rates);
+                        desired = getHighestGrowth(nextRates);
                         trade(desired, rates);
                     } else if (holdMode.equals("WORST")){
-                        desired = getLowestGrowth(rates);
+                        desired = getLowestGrowth(nextRates);
                         trade(desired, rates);
                     } else {
                         if (desired.getCurrency_id().equals("Unknown")){

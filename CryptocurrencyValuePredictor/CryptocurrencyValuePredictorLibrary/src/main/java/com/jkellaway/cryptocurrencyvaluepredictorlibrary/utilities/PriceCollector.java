@@ -306,7 +306,7 @@ public class PriceCollector {
                         tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
                         System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                     } else {
-                        tradeTime = LocalDateTimeHelper.startOfMinute(trades[0].getTime().plusMinutes(1));
+                        tradeTime = LocalDateTimeHelper.startOfMinute(trades[0].getTime());
                     }
                 } else {
                     tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
