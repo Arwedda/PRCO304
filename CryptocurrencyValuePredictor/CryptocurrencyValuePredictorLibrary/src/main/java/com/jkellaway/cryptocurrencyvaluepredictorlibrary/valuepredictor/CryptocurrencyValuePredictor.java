@@ -18,7 +18,7 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
  */
 public class CryptocurrencyValuePredictor {
     private static CryptocurrencyValuePredictor instance;
-    private static Currency[] currencies;
+    private Currency[] currencies;
     private PriceCollector priceCollector;
     private Trader trader;
     
@@ -42,9 +42,33 @@ public class CryptocurrencyValuePredictor {
         }
         return instance;
     }
+
+    public Currency[] getCurrencies() {
+        return currencies;
+    }
+
+    public void setCurrencies(Currency[] currencies) {
+        this.currencies = currencies;
+    }
+
+    public PriceCollector getPriceCollector() {
+        return priceCollector;
+    }
+
+    public void setPriceCollector(PriceCollector priceCollector) {
+        this.priceCollector = priceCollector;
+    }
+
+    public Trader getTrader() {
+        return trader;
+    }
+
+    public void setTrader(Trader trader) {
+        this.trader = trader;
+    }
     
-    public static void pricesCollected(Currency[] currencies){
-        CryptocurrencyValuePredictor.currencies = currencies;
+    public void pricesCollected(Currency[] currencies){
+        setCurrencies(currencies);
         PricePredictor.makePredictions(currencies);
         
         System.out.println("stop here..");

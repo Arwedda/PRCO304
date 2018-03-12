@@ -184,9 +184,8 @@ public class PriceCollector {
                 if (permittedAPIAccess()){
                     if (gapsFilled()){
                         calculateHistoricGrowth();
-                    } else {
-                        priceCollection();
                     }
+                    priceCollection();
                 }
             }
             
@@ -234,7 +233,7 @@ public class PriceCollector {
                     firstLap = false;
                 } else {
                     System.out.println("[INFO] Shutting down historic price collection thread.");
-                    CryptocurrencyValuePredictor.pricesCollected(currencies);
+                    CryptocurrencyValuePredictor.getInstance().setCurrencies(currencies);
                     historic.shutdownNow();
                 }
             }
@@ -250,13 +249,13 @@ public class PriceCollector {
                             if (!collectionCompleted(gap.getRatesRequired(), currency.noOfHistoricRates())){
                                 trades = getHistoricTrades(currency, gap);
                                 calculateHistoricAverages(currency, trades, gap);
-                                if (connectedToDatabase){
-                                    boolean noNewData = currency.dumpDuplicates();
-                                    if (noNewData) {
-                                        currency.getGaps().remove(gap);
-                                    } else {
+                                boolean noNewData = currency.dumpDuplicates();
+                                if (noNewData) {
+                                    currency.getGaps().remove(gap);
+                                } else {
+                                    currency.gradualMerge();
+                                    if (connectedToDatabase){
                                         exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
-                                        currency.gradualMerge();
                                     }
                                 }
                                 readingsTaken++;

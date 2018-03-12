@@ -190,13 +190,17 @@ public class Currency {
         int timeBetween;
         ExchangeRate[] reqRates = new ExchangeRate[Globals.READINGSREQUIRED];
         Gap gap;
+        
+        List<ExchangeRate> gatheredRates = new ArrayList<>();
+        gatheredRates.addAll(historicRates);
+        gatheredRates.addAll(rates);
 
-        for (ExchangeRate rate : historicRates) {
+        for (ExchangeRate rate : gatheredRates) {
             try {
                 timeBetween = (int) ChronoUnit.MINUTES.between(firstMinute, rate.getLDTTimestamp());
                 reqRates[timeBetween] = rate;
             } catch (Exception e) {
-                System.out.println("Failed to get time between first minute and rate");
+                System.out.println("[INFO] Failed finding gaps around " + rate.getTimestamp());
             }
         }
         
