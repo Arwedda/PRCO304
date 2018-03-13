@@ -60,12 +60,12 @@ public class PricePredictor {
     public static void GOFAI(Currency[] currencies){
         for (Currency currency: currencies){
             GOFAICalculations(currency);
-            currency.pruneRates();
+            //currency.pruneRates();
         }
         best.tradeTest(currencies, numberOfPredictions, 0);
         worst.tradeTest(currencies, numberOfPredictions, 0);
-        for (int i = 0; i < holders.length; i++){
-            holders[i].tradeTest(currencies, numberOfPredictions, 0);
+        for (Trader holder : holders) {
+            holder.tradeTest(currencies, numberOfPredictions, 0);
         }
         for (int i = 0; i < GOFAITradersUSD.length; i++){
             GOFAITradersUSD[i].tradeTest(currencies, numberOfPredictions, i);

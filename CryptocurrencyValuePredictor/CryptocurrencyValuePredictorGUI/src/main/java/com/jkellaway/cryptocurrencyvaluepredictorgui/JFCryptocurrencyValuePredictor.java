@@ -1,5 +1,6 @@
 package com.jkellaway.cryptocurrencyvaluepredictorgui;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
@@ -11,7 +12,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author jkell
  */
-public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame {
+public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implements IObserver {
     private CryptocurrencyValuePredictor cryptocurrencyValuePredictor;
             
     /**
@@ -24,6 +25,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame {
     
     private void initialise(){
         cryptocurrencyValuePredictor = CryptocurrencyValuePredictor.getInstance();
+        cryptocurrencyValuePredictor.registerObserver(this);
+    }
+    
+    @Override
+    public void update() {
         loadCurrencies();
     }
     

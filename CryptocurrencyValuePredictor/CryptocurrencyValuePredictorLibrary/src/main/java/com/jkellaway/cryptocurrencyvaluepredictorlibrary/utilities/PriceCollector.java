@@ -35,10 +35,8 @@ public class PriceCollector {
     private CurrencyAPIController currencyAPIController;
     private ExchangeRateAPIController exchangeRateAPIController;
     private Currency[] currencies;
-    private ScheduledExecutorService current;
-    private ScheduledExecutorService historic;
+    private ScheduledExecutorService collector;
     private LocalDateTime firstRelevantRate;
-    private int currentSecond;
     private boolean connectedToDatabase;
     private boolean firstLap;
     
@@ -49,16 +47,14 @@ public class PriceCollector {
     private void initialise(){
         initPriceCollector();
         initCurrencies();
-        initCurrentCollector();
-        initHistoricCollector();
+        initCollector();
     }
     
     private void initPriceCollector(){
         gdaxAPIController = new GDAXAPIController();
         currencyAPIController = new CurrencyAPIController();
         exchangeRateAPIController = new ExchangeRateAPIController();
-        current = Executors.newSingleThreadScheduledExecutor();
-        historic = Executors.newSingleThreadScheduledExecutor();
+        collector = Executors.newSingleThreadScheduledExecutor();
         firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now().minusMinutes(Globals.READINGSREQUIRED));
         connectedToDatabase = false;
         firstLap = true;
@@ -117,7 +113,7 @@ public class PriceCollector {
         }
     }
     
-    private void initCurrentCollector(){
+    private void initCollector(){
         Runnable automatedCollection = new Runnable() {
             @Override
             public void run() {
@@ -125,10 +121,21 @@ public class PriceCollector {
             }
 
             private void priceCollection() {
-                currentSecond++;
-                if (currentSecond == 60) {
-                    currentSecond = 0;
-                    getCurrentPrices(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
+                LocalDateTime currentTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+                LocalDateTime currentRateTime = null;
+                try {
+                    currentRateTime = currencies[0].getRate().getLDTTimestamp();
+                } catch (Exception e){
+                    //Protection from empty rate arraylist
+                }
+                
+                if (!currentTime.equals(currentRateTime)) {
+                    getCurrentPrices(currentTime);
+                } else {
+                    if (gapsFilled()){
+                        calculateHistoricGrowth();
+                    }
+                    getHistoricPrices();
                 }
             }
             
@@ -147,14 +154,14 @@ public class PriceCollector {
                         }
                         rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, trades[trades.length - 1].getTrade_id());
                         currency.setValue(rate);
-
                         if (connectedToDatabase){
                             exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
-                            if (currency.getLastGap().getPaginationStart() == 0){
+                            if (currency.getLastGap().getPaginationStart() == 0) {
                                 currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
                             }
                         }
                     }
+                    CryptocurrencyValuePredictor.getInstance().setCurrencies(currencies);
                 } catch (Exception e) {
                     System.out.println("[INFO] Error: " + e);
                 }
@@ -171,26 +178,17 @@ public class PriceCollector {
                 }
                 return SafeCastHelper.objectsToGDAXTrades(relevantTrades.toArray());
             }
-        };
-        currentSecond = LocalDateTime.now().getSecond();
-        current.scheduleAtFixedRate(automatedCollection, 1, 1, TimeUnit.SECONDS);
-    }
-
-    private void initHistoricCollector(){
-        Runnable historicPriceCollection;
-        historicPriceCollection = new Runnable() {
-            @Override
-            public void run() {
-                if (permittedAPIAccess()){
-                    if (gapsFilled()){
-                        calculateHistoricGrowth();
-                    }
-                    priceCollection();
-                }
-            }
             
-            private boolean permittedAPIAccess(){
-                return (1 < currentSecond && currentSecond < 58);
+            private Double calculateMeanPrice(GDAXTrade[] trades) {
+                List<Double> prices = new ArrayList<>();
+                Double meanPrice;
+
+                for (GDAXTrade trade : trades){
+                    prices.add(trade.getPrice());
+                }
+
+                meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(prices.toArray()));
+                return meanPrice;
             }
             
             private boolean gapsFilled(){
@@ -232,13 +230,14 @@ public class PriceCollector {
                     System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
                     firstLap = false;
                 } else {
-                    System.out.println("[INFO] Shutting down historic price collection thread.");
-                    CryptocurrencyValuePredictor.getInstance().setCurrencies(currencies);
-                    historic.shutdownNow();
+                    System.out.println("[INFO] Finished historic collection. Switching current price mode");
+                    CryptocurrencyValuePredictor.getInstance().pricesCollected(currencies);
+                    //collector.shutdownNow();
+                    //initCollector();
                 }
             }
             
-            private void priceCollection(){
+            private void getHistoricPrices(){
                 int readingsTaken = 0;
                 GDAXTrade[] trades;
                 while (readingsTaken < 4){
@@ -253,10 +252,10 @@ public class PriceCollector {
                                 if (noNewData) {
                                     currency.getGaps().remove(gap);
                                 } else {
-                                    currency.gradualMerge();
                                     if (connectedToDatabase){
                                         exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
                                     }
+                                    currency.gradualMerge();
                                 }
                                 readingsTaken++;
                             }
@@ -326,18 +325,14 @@ public class PriceCollector {
                 }
             }
         };
-        historic.scheduleWithFixedDelay(historicPriceCollection, 0, 1, TimeUnit.SECONDS);
-    }
-    
-    private Double calculateMeanPrice(GDAXTrade[] trades) {
-        List<Double> prices = new ArrayList<>();
-        Double meanPrice;
-        
-        for (GDAXTrade trade : trades){
-            prices.add(trade.getPrice());
+        if (firstLap) {
+            collector.scheduleWithFixedDelay(automatedCollection, 1, 1, TimeUnit.SECONDS);
+        } else {
+            int initDelay = 60 - LocalDateTime.now().getSecond();
+            if (initDelay == 60) {
+                initDelay = 1;
+            }
+            collector.scheduleAtFixedRate(automatedCollection, initDelay, 60, TimeUnit.SECONDS);
         }
-        
-        meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(prices.toArray()));
-        return meanPrice;
     }
 }

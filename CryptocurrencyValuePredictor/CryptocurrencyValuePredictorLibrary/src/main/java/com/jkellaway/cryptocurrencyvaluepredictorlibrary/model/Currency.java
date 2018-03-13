@@ -170,15 +170,15 @@ public class Currency {
     
     public boolean dumpDuplicates(){
         List<ExchangeRate> toRemove = new ArrayList<>();
-        for (ExchangeRate rate : getRates()){
-            for (ExchangeRate rate2 : getHistoricRates()) {
+        for (ExchangeRate rate : rates){
+            for (ExchangeRate rate2 : historicRates) {
                 if (rate.isSameMinute(rate2)){
                     toRemove.add(rate2);
                 }
             }
         }
         historicRates.removeAll(toRemove);
-        if (historicRates.isEmpty() && historicTrades.size() < 100){
+        if (historicRates.isEmpty() && !historicTrades.get(0).getTime().equals(historicTrades.get(historicTrades.size() - 1).getTime())){
             historicTrades.clear();
             return true;
         }
@@ -200,7 +200,10 @@ public class Currency {
                 timeBetween = (int) ChronoUnit.MINUTES.between(firstMinute, rate.getLDTTimestamp());
                 reqRates[timeBetween] = rate;
             } catch (Exception e) {
-                System.out.println("[INFO] Failed finding gaps around " + rate.getTimestamp());
+                /*
+                Prices outside of relevant price range
+                System.out.println(e);
+                */
             }
         }
         
