@@ -68,6 +68,18 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         pnlHome = new javax.swing.JPanel();
         jspValues = new javax.swing.JScrollPane();
         jtblValues = new javax.swing.JTable();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jpnlTrading = new javax.swing.JPanel();
+        jpnlInvestmentProtection = new javax.swing.JPanel();
+        jpnlGOFAI = new javax.swing.JPanel();
+        jpnlNeuralNetwork = new javax.swing.JPanel();
+        jpnlAbout = new javax.swing.JPanel();
+        lblDeveloper = new javax.swing.JLabel();
+        lblTitle = new javax.swing.JLabel();
+        lblLiability = new javax.swing.JLabel();
+        lblLiability2 = new javax.swing.JLabel();
+        lblCopyright = new javax.swing.JLabel();
+        lblDistribution = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMaximumSize(new java.awt.Dimension(800, 600));
@@ -106,17 +118,134 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         });
         jspValues.setViewportView(jtblValues);
 
+        javax.swing.GroupLayout jpnlTradingLayout = new javax.swing.GroupLayout(jpnlTrading);
+        jpnlTrading.setLayout(jpnlTradingLayout);
+        jpnlTradingLayout.setHorizontalGroup(
+            jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 795, Short.MAX_VALUE)
+        );
+        jpnlTradingLayout.setVerticalGroup(
+            jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 466, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Trading", jpnlTrading);
+
+        javax.swing.GroupLayout jpnlInvestmentProtectionLayout = new javax.swing.GroupLayout(jpnlInvestmentProtection);
+        jpnlInvestmentProtection.setLayout(jpnlInvestmentProtectionLayout);
+        jpnlInvestmentProtectionLayout.setHorizontalGroup(
+            jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 795, Short.MAX_VALUE)
+        );
+        jpnlInvestmentProtectionLayout.setVerticalGroup(
+            jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 466, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Investment Protection", jpnlInvestmentProtection);
+
+        javax.swing.GroupLayout jpnlGOFAILayout = new javax.swing.GroupLayout(jpnlGOFAI);
+        jpnlGOFAI.setLayout(jpnlGOFAILayout);
+        jpnlGOFAILayout.setHorizontalGroup(
+            jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 795, Short.MAX_VALUE)
+        );
+        jpnlGOFAILayout.setVerticalGroup(
+            jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 466, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("GOFAI", jpnlGOFAI);
+
+        javax.swing.GroupLayout jpnlNeuralNetworkLayout = new javax.swing.GroupLayout(jpnlNeuralNetwork);
+        jpnlNeuralNetwork.setLayout(jpnlNeuralNetworkLayout);
+        jpnlNeuralNetworkLayout.setHorizontalGroup(
+            jpnlNeuralNetworkLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 795, Short.MAX_VALUE)
+        );
+        jpnlNeuralNetworkLayout.setVerticalGroup(
+            jpnlNeuralNetworkLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 466, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Neural Network", jpnlNeuralNetwork);
+
+        lblDeveloper.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
+        lblDeveloper.setText("Developer: Joseph Kellaway");
+
+        lblTitle.setFont(new java.awt.Font("SimSun", 1, 15)); // NOI18N
+        lblTitle.setText("Cryptocurrency Value Predictor");
+        lblTitle.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        lblTitle.setFocusable(false);
+        lblTitle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        lblLiability.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
+        lblLiability.setText("Users of this program accept that they are doing so at their own risk. The developer and any distributor of this software will");
+
+        lblLiability2.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
+        lblLiability2.setText("accept neither responsibility, nor accountability for losses or damages experienced during use.");
+
+        lblCopyright.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
+        lblCopyright.setText("Copyright 2018 Joseph Kellaway. All rights reserved.");
+
+        lblDistribution.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
+        lblDistribution.setText("Before using, modifying or distributing this software written authorisation from the developer is required.");
+
+        javax.swing.GroupLayout jpnlAboutLayout = new javax.swing.GroupLayout(jpnlAbout);
+        jpnlAbout.setLayout(jpnlAboutLayout);
+        jpnlAboutLayout.setHorizontalGroup(
+            jpnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlAboutLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlAboutLayout.createSequentialGroup()
+                        .addGroup(jpnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblDeveloper)
+                            .addComponent(lblLiability)
+                            .addComponent(lblDistribution)
+                            .addComponent(lblLiability2))
+                        .addContainerGap(29, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlAboutLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lblTitle)
+                        .addGap(262, 262, 262))))
+            .addGroup(jpnlAboutLayout.createSequentialGroup()
+                .addGap(240, 240, 240)
+                .addComponent(lblCopyright)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+        jpnlAboutLayout.setVerticalGroup(
+            jpnlAboutLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlAboutLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblTitle)
+                .addGap(9, 9, 9)
+                .addComponent(lblDeveloper)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblLiability)
+                .addGap(1, 1, 1)
+                .addComponent(lblLiability2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblDistribution)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 335, Short.MAX_VALUE)
+                .addComponent(lblCopyright))
+        );
+
+        jTabbedPane1.addTab("About", jpnlAbout);
+
         javax.swing.GroupLayout pnlHomeLayout = new javax.swing.GroupLayout(pnlHome);
         pnlHome.setLayout(pnlHomeLayout);
         pnlHomeLayout.setHorizontalGroup(
             pnlHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jspValues, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+            .addComponent(jspValues)
+            .addComponent(jTabbedPane1)
         );
         pnlHomeLayout.setVerticalGroup(
             pnlHomeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnlHomeLayout.createSequentialGroup()
-                .addComponent(jspValues, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 475, Short.MAX_VALUE))
+                .addComponent(jspValues, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jTabbedPane1))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -169,8 +298,20 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JPanel jpnlAbout;
+    private javax.swing.JPanel jpnlGOFAI;
+    private javax.swing.JPanel jpnlInvestmentProtection;
+    private javax.swing.JPanel jpnlNeuralNetwork;
+    private javax.swing.JPanel jpnlTrading;
     private javax.swing.JScrollPane jspValues;
     private javax.swing.JTable jtblValues;
+    private javax.swing.JLabel lblCopyright;
+    private javax.swing.JLabel lblDeveloper;
+    private javax.swing.JLabel lblDistribution;
+    private javax.swing.JLabel lblLiability;
+    private javax.swing.JLabel lblLiability2;
+    private javax.swing.JLabel lblTitle;
     private javax.swing.JPanel pnlHome;
     // End of variables declaration//GEN-END:variables
 }

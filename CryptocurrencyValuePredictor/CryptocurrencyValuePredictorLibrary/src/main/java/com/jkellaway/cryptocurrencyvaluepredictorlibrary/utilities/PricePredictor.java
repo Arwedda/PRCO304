@@ -60,7 +60,6 @@ public class PricePredictor {
     public static void GOFAI(Currency[] currencies){
         for (Currency currency: currencies){
             GOFAICalculations(currency);
-            //currency.pruneRates();
         }
         best.tradeTest(currencies, numberOfPredictions, 0);
         worst.tradeTest(currencies, numberOfPredictions, 0);

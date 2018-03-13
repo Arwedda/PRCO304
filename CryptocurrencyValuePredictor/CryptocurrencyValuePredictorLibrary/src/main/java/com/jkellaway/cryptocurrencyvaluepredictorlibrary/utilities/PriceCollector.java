@@ -144,15 +144,21 @@ public class PriceCollector {
                 try {
                     GDAXTrade[] trades;
                     Double meanPrice;
+                    int tradeID;
                     ExchangeRate rate;
                     for (Currency currency : currencies){
                         trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
                         trades = getRelevantTrades(trades, postTime);
-                        meanPrice = calculateMeanPrice(trades);
-                        if (meanPrice == null){
+                        
+                        if (0 < trades.length){
+                            meanPrice = calculateMeanPrice(trades);
+                            tradeID = trades[trades.length - 1].getTrade_id();
+                        } else {
                             meanPrice = currency.getRate().getValue();
+                            tradeID = currency.getRate().getLastTrade();
                         }
-                        rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, trades[trades.length - 1].getTrade_id());
+                        
+                        rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, tradeID);
                         currency.setValue(rate);
                         if (connectedToDatabase){
                             exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
