@@ -5,6 +5,7 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.ISubject;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
@@ -25,6 +26,11 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     private Currency[] currencies;
     private PriceCollector priceCollector;
     private Trader trader;
+    private Trader best;
+    private Trader worst;
+    private Trader[] holders = new Trader[4];
+    private Trader[] GOFAITradersUSD = new Trader[20];
+    private Trader[] GOFAITradersHold = new Trader[20];
     
     /**
      * Default constructor for CryptocurrencyValuePredictor
@@ -33,6 +39,15 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         priceCollector = new PriceCollector();
         trader = new Trader();
         observers = new ArrayList<>();
+        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BCH");
+        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BTC");
+        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "ETH");
+        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "LTC");
+        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BEST");
+        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "WORST");
+        for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
+            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "USD");
+        }
     }
 
     /**
@@ -61,23 +76,49 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return priceCollector;
     }
 
-    public void setPriceCollector(PriceCollector priceCollector) {
-        this.priceCollector = priceCollector;
-    }
-
     public Trader getTrader() {
         return trader;
-    }
-
-    public void setTrader(Trader trader) {
-        this.trader = trader;
     }
     
     public void pricesCollected(Currency[] currencies){
         setCurrencies(currencies);
         PricePredictor.makePredictions(currencies);
-        
+        tradeTest();
         System.out.println("stop here..");
+    }
+    
+    private void tradeTest(){
+        best.tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, 0);
+        worst.tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, 0);
+        for (Trader holder : holders) {
+            holder.tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, 0);
+        }
+        notifyObservers();
+        for (int i = 0; i < GOFAITradersUSD.length; i++){
+            GOFAITradersUSD[i].tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, i);
+            GOFAITradersHold[i].tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, i);
+        }
+        notifyObservers();
+    }
+
+    public Trader getBest() {
+        return best;
+    }
+
+    public Trader getWorst() {
+        return worst;
+    }
+
+    public Trader[] getHolders() {
+        return holders;
+    }
+
+    public Trader[] getGOFAITradersUSD() {
+        return GOFAITradersUSD;
+    }
+
+    public Trader[] getGOFAITradersHold() {
+        return GOFAITradersHold;
     }
 
     @Override

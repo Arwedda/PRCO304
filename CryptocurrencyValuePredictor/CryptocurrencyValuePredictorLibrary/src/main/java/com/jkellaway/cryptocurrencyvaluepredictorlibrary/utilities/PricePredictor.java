@@ -21,18 +21,13 @@ import java.util.List;
  * @author jkell
  */
 public class PricePredictor {
-    private static final int numberOfPredictions = 20;
-    private static Double[] meanPredictedChange = new Double [numberOfPredictions];
-    private static int[] predictedChangeNo = new int[numberOfPredictions];
-    private static Double[] meanDeltas = new Double[numberOfPredictions];
-    private static int[] deltaNo = new int[numberOfPredictions];
-    private static Double[] closest = new Double[numberOfPredictions];
+    private static Double[] meanPredictedChange = new Double [Globals.NUMBEROFPREDICTIONS];
+    private static int[] predictedChangeNo = new int[Globals.NUMBEROFPREDICTIONS];
+    private static Double[] meanDeltas = new Double[Globals.NUMBEROFPREDICTIONS];
+    private static int[] deltaNo = new int[Globals.NUMBEROFPREDICTIONS];
+    private static Double[] closest = new Double[Globals.NUMBEROFPREDICTIONS];
     private static int totalReadings = 0;
-    private static Trader best;
-    private static Trader worst;
-    private static Trader[] holders = new Trader[4];
-    private static Trader[] GOFAITradersUSD = new Trader[20];
-    private static Trader[] GOFAITradersHold = new Trader[20];
+
     
     public static void makePredictions(Currency[] currencies){
         initialiseTests();
@@ -41,15 +36,7 @@ public class PricePredictor {
     }
 
     private static void initialiseTests(){
-        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BCH");
-        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BTC");
-        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "ETH");
-        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "LTC");
-        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BEST");
-        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "WORST");
-        for (int i = 0; i < numberOfPredictions; i++){
-            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "USD");
-            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "HOLD");
+        for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] = 0.0;
             predictedChangeNo[i] = 0;
             meanDeltas[i] = 0.0;
@@ -61,15 +48,6 @@ public class PricePredictor {
         for (Currency currency: currencies){
             GOFAICalculations(currency);
         }
-        best.tradeTest(currencies, numberOfPredictions, 0);
-        worst.tradeTest(currencies, numberOfPredictions, 0);
-        for (Trader holder : holders) {
-            holder.tradeTest(currencies, numberOfPredictions, 0);
-        }
-        for (int i = 0; i < GOFAITradersUSD.length; i++){
-            GOFAITradersUSD[i].tradeTest(currencies, numberOfPredictions, i);
-            GOFAITradersHold[i].tradeTest(currencies, numberOfPredictions, i);
-        }
         GOFAIResults();
     }
     
@@ -79,7 +57,7 @@ public class PricePredictor {
         ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
         ExchangeRate[] currentRates;
         int highestIndex = rates.length - 1;
-        int noOfPredictions = highestIndex - numberOfPredictions;
+        int noOfPredictions = highestIndex - Globals.NUMBEROFPREDICTIONS;
         Double actualGrowth;
 
         for (int i = 0; i < noOfPredictions; i++) {
@@ -89,7 +67,7 @@ public class PricePredictor {
             try {
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
                 deltas = MathsHelper.deltas(actualGrowth, predictions);
-                for (int j = 0; j < numberOfPredictions; j++){
+                for (int j = 0; j < Globals.NUMBEROFPREDICTIONS; j++){
                     meanPredictedChange[j] += Math.abs(predictions[j]);
                     predictedChangeNo[j]++;
                     meanDeltas[j] += deltas[j];
@@ -103,9 +81,9 @@ public class PricePredictor {
     }
 
     private static Double[] predict(ExchangeRate[] rates){
-        Double[] predictions = new Double[numberOfPredictions];
+        Double[] predictions = new Double[Globals.NUMBEROFPREDICTIONS];
         List<Double> values = new ArrayList<>();
-        for (int i = 0; i < numberOfPredictions; i++){
+        for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             values.add(rates[i].getGrowth());
             predictions[i] = MathsHelper.mean(SafeCastHelper.objectsToDoubles(values.toArray()));
         }
@@ -113,7 +91,7 @@ public class PricePredictor {
     }
     
     private static void GOFAIResults(){
-        for (int i = 0; i < numberOfPredictions; i++){
+        for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] /= predictedChangeNo[i];
             meanDeltas[i] /= deltaNo[i];
             

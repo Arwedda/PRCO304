@@ -22,4 +22,5 @@ public class Globals {
     public static final int READINGSREQUIRED = 101;
     public static final String STARTINGUNITS = "USD";
     public static final Double STARTINGVALUE = 100.00;
+    public static final int NUMBEROFPREDICTIONS = 20;
 }

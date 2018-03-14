@@ -35,6 +35,18 @@ public class Trader {
         this.tradeMode = tradeMode;
         this.holdMode = holdMode;
     }
+
+    public Wallet getWallet() {
+        return wallet;
+    }
+
+    public String getTradeMode() {
+        return tradeMode;
+    }
+
+    public String getHoldMode() {
+        return holdMode;
+    }
     
     public void autoTrade(Currency[] currencies){
         ExchangeRate desired = new ExchangeRate();
@@ -160,8 +172,6 @@ public class Trader {
                             desired = getRate(rates);
                             trade(desired, rates);
                         } else {
-                            desired = new ExchangeRate();
-                            trade(desired, currencies);
                             break trading;
                         }
                     }

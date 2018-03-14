@@ -15,4 +15,13 @@ public class StringHelper {
         string2 = string2.substring(0, Math.min(string2.length(), length));
         return string1.equals(string2);
     }
+    
+    public static String doubleToCurrencyString(Double dbl){
+        String value = String.valueOf(dbl);
+        String[] splitString = value.split("\\.");
+        if (1 < splitString[1].length()) {
+            return splitString[0] + "." + splitString[1].substring(0, 2);
+        }
+        return splitString[0] + "." + splitString[1] + "0";
+    }
 }

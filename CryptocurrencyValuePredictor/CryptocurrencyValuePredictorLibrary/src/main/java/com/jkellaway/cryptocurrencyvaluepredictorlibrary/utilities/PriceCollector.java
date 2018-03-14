@@ -338,4 +338,8 @@ public class PriceCollector {
             collector.scheduleAtFixedRate(automatedCollection, initDelay, 60, TimeUnit.SECONDS);
         }
     }
+
+    public LocalDateTime getFirstRelevantRate() {
+        return firstRelevantRate;
+    }
 }

@@ -1,6 +1,9 @@
 package com.jkellaway.cryptocurrencyvaluepredictorgui;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.StringHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
@@ -9,6 +12,7 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
@@ -29,7 +33,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         initialise();
     }
     
-    private void initialise(){
+    private void initialise() {
         cryptocurrencyValuePredictor = CryptocurrencyValuePredictor.getInstance();
         cryptocurrencyValuePredictor.registerObserver(this);
     }
@@ -37,11 +41,44 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     @Override
     public void update() {
         loadCurrencies();
+        loadPredictions();
     }
     
-    private void loadCurrencies(){
+    private void loadCurrencies() {
         try {
             String col[] = {"Currency", "Value ($)", "Change (%)", "GOFAI Prediction (%)", "Neural Network Prediction (%)"};
+            DefaultTableModel tableModel = new DefaultTableModel(col, 0);
+            JTable table = new JTable(tableModel);
+
+            for (Currency currency : cryptocurrencyValuePredictor.getCurrencies()){
+                String name = currency.getName();
+                ExchangeRate rate = currency.getRate();
+                Double value = rate.getValue();
+                Double change = rate.getGrowth();
+                Double GOFAI = rate.getGofaiNextGrowth();
+                Double neuralNetwork = rate.getNeuralNetworkNextGrowth();
+                Object[] row = {name, value, change, GOFAI, neuralNetwork};
+                tableModel.addRow(row);
+            }
+            this.jtblValues.setModel(table.getModel());
+            TableConfigurer.configureTable(this.jtblValues);
+        } catch (Exception e) {
+            System.out.println("[INFO] Error " + e);
+        }
+    }
+    
+    private void loadPredictions() {
+        try {
+            LocalDateTime startTime = cryptocurrencyValuePredictor.getPriceCollector().getFirstRelevantRate();
+            int maxTrades = Globals.READINGSREQUIRED - Globals.NUMBEROFPREDICTIONS;
+            double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies());
+            double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies());
+            this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime));
+            this.jlblMaxTrades.setText(String.valueOf(maxTrades));
+            this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
+            this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst));
+            
+            String col[] = {"Strategy", "Final Value ($)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
 
@@ -78,7 +115,16 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         jpnlTrading = new javax.swing.JPanel();
         jpnlInvestmentProtection = new javax.swing.JPanel();
         jpnlGOFAI = new javax.swing.JPanel();
-        jpnlNeuralNetwork = new javax.swing.JPanel();
+        jspGOFAI = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+        jlblFirst = new javax.swing.JLabel();
+        jlblFirstTradeTime = new javax.swing.JLabel();
+        jlblMax = new javax.swing.JLabel();
+        jlblMaxTrades = new javax.swing.JLabel();
+        jlblBest = new javax.swing.JLabel();
+        jlblWorst = new javax.swing.JLabel();
+        jlblWorstPerformance = new javax.swing.JLabel();
+        jlblBestPerformance = new javax.swing.JLabel();
         jpnlAbout = new javax.swing.JPanel();
         lblDeveloper = new javax.swing.JLabel();
         lblTitle = new javax.swing.JLabel();
@@ -92,7 +138,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblContactDetails4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(new java.awt.Dimension(800, 600));
         setMinimumSize(new java.awt.Dimension(800, 600));
         setSize(new java.awt.Dimension(800, 600));
 
@@ -154,31 +199,105 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         jTabbedPane1.addTab("Investment Protection", jpnlInvestmentProtection);
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "Strategy", "Final Value"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                true, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jspGOFAI.setViewportView(jTable1);
+
+        jlblFirst.setText("First Trade Time:");
+
+        jlblFirstTradeTime.setText("jlblFirstTradeTime");
+
+        jlblMax.setText("Maximum Trades:");
+
+        jlblMaxTrades.setText("jlblMaxTrades");
+
+        jlblBest.setText("Best Performance:");
+
+        jlblWorst.setText("Worst Performance:");
+
+        jlblWorstPerformance.setText("jlblWorstPerformance");
+
+        jlblBestPerformance.setText("jlblBestPerformance");
+
         javax.swing.GroupLayout jpnlGOFAILayout = new javax.swing.GroupLayout(jpnlGOFAI);
         jpnlGOFAI.setLayout(jpnlGOFAILayout);
         jpnlGOFAILayout.setHorizontalGroup(
             jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 795, Short.MAX_VALUE)
+            .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jspGOFAI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                        .addComponent(jlblFirst)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jlblFirstTradeTime))
+                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                        .addComponent(jlblMax)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jlblMaxTrades))
+                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlblBest)
+                            .addComponent(jlblWorst))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlblBestPerformance, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jlblWorstPerformance, javax.swing.GroupLayout.Alignment.TRAILING))))
+                .addContainerGap())
         );
         jpnlGOFAILayout.setVerticalGroup(
             jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlGOFAILayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblFirst)
+                            .addComponent(jlblFirstTradeTime))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblMax)
+                            .addComponent(jlblMaxTrades))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                                .addComponent(jlblBest)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jlblWorst))
+                            .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                                .addComponent(jlblBestPerformance)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jlblWorstPerformance))))
+                    .addComponent(jspGOFAI, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(78, 78, 78))
         );
 
-        jTabbedPane1.addTab("GOFAI", jpnlGOFAI);
-
-        javax.swing.GroupLayout jpnlNeuralNetworkLayout = new javax.swing.GroupLayout(jpnlNeuralNetwork);
-        jpnlNeuralNetwork.setLayout(jpnlNeuralNetworkLayout);
-        jpnlNeuralNetworkLayout.setHorizontalGroup(
-            jpnlNeuralNetworkLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 795, Short.MAX_VALUE)
-        );
-        jpnlNeuralNetworkLayout.setVerticalGroup(
-            jpnlNeuralNetworkLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
-        );
-
-        jTabbedPane1.addTab("Neural Network", jpnlNeuralNetwork);
+        jTabbedPane1.addTab("Predictions", jpnlGOFAI);
 
         lblDeveloper.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
         lblDeveloper.setText("Developer: Joseph Kellaway");
@@ -394,11 +513,20 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JLabel jlblBest;
+    private javax.swing.JLabel jlblBestPerformance;
+    private javax.swing.JLabel jlblFirst;
+    private javax.swing.JLabel jlblFirstTradeTime;
+    private javax.swing.JLabel jlblMax;
+    private javax.swing.JLabel jlblMaxTrades;
+    private javax.swing.JLabel jlblWorst;
+    private javax.swing.JLabel jlblWorstPerformance;
     private javax.swing.JPanel jpnlAbout;
     private javax.swing.JPanel jpnlGOFAI;
     private javax.swing.JPanel jpnlInvestmentProtection;
-    private javax.swing.JPanel jpnlNeuralNetwork;
     private javax.swing.JPanel jpnlTrading;
+    private javax.swing.JScrollPane jspGOFAI;
     private javax.swing.JScrollPane jspValues;
     private javax.swing.JTable jtblValues;
     private javax.swing.JLabel lblContactDetails;
