@@ -6,6 +6,7 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -164,6 +165,9 @@ public class Currency {
         if (gap.getRatesRequired() < 1){
             gaps.remove(gap);
             historicTrades.clear();
+        } else {
+            gap.setStartTime(gap.getStartTime().minusMinutes(historicRates.size()));
+            gap.setPaginationStart(gap.getPaginationStart() - 100);
         }
         historicRates.clear();
     }
@@ -178,9 +182,16 @@ public class Currency {
             }
         }
         historicRates.removeAll(toRemove);
-        if (historicRates.isEmpty() && !historicTrades.get(0).getTime().equals(historicTrades.get(historicTrades.size() - 1).getTime())){
-            historicTrades.clear();
-            return true;
+        if (historicRates.isEmpty()){
+            if (historicTrades.isEmpty()){
+                getLastGap().setPaginationStart(getLastGap().getPaginationStart() - 100);
+                return false;
+            }
+            if (historicTrades.get(0).getTime().isBefore(getLastGap().getStartTime().minusMinutes(historicRates.size() + 1))){
+                historicTrades.clear();
+                return true;
+            }
+            getLastGap().setPaginationStart(getLastHistoricTrade().getTrade_id());
         }
         return false;
     }
@@ -210,7 +221,7 @@ public class Currency {
         for (ExchangeRate reqRate : reqRates) {
             if (reqRate != null && reqRate.getCurrency_id().equals(getID())) {
                 if (0 < ratesRequired){
-                    gap = new Gap(reqRate.getLastTrade(), ratesRequired);
+                    gap = new Gap(reqRate.getLastTrade(), reqRate.getLDTTimestamp().minusMinutes(1), ratesRequired);
                     gaps.add(gap);
                     ratesRequired = 0;
                 }
@@ -218,7 +229,7 @@ public class Currency {
                 ratesRequired++;
             }
         }
-        gap = new Gap(0, ratesRequired);
+        gap = new Gap(0, LocalDateTimeHelper.startOfMinute(LocalDateTime.now()), ratesRequired);
         gaps.add(gap);
     }
     

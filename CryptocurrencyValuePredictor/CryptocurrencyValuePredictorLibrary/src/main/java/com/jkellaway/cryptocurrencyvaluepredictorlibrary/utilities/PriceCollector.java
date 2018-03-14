@@ -44,13 +44,13 @@ public class PriceCollector {
         initialise();
     }
     
-    private void initialise(){
+    private void initialise() {
         initPriceCollector();
         initCurrencies();
         initCollector();
     }
     
-    private void initPriceCollector(){
+    private void initPriceCollector() {
         gdaxAPIController = new GDAXAPIController();
         currencyAPIController = new CurrencyAPIController();
         exchangeRateAPIController = new ExchangeRateAPIController();
@@ -60,7 +60,7 @@ public class PriceCollector {
         firstLap = true;
     }
     
-    private void initCurrencies(){
+    private void initCurrencies() {
         try {    
             currencies = currencyAPIController.getCurrencies(Globals.API_ENDPOINT + "/currency");
             if (currencies.length == 0){
@@ -75,7 +75,7 @@ public class PriceCollector {
         }
     }
     
-    private void storageFreeMode(){
+    private void storageFreeMode() {
         /*
             Not intended for project - only as failsafe. Once tested can use rate
             number to run GOFAI and NN mode after project
@@ -96,7 +96,7 @@ public class PriceCollector {
         }
     }
     
-    private void sortRelevantRates(){
+    private void sortRelevantRates() {
         ExchangeRate[] rates, updatedRates;
         for (Currency currency : currencies){
             rates = exchangeRateAPIController.getExchangeRates(Globals.API_ENDPOINT + "/exchangerate/" + currency.getID());
@@ -113,7 +113,7 @@ public class PriceCollector {
         }
     }
     
-    private void initCollector(){
+    private void initCollector() {
         Runnable automatedCollection = new Runnable() {
             @Override
             public void run() {
@@ -139,7 +139,7 @@ public class PriceCollector {
                 }
             }
             
-            private void getCurrentPrices(LocalDateTime postTime){
+            private void getCurrentPrices(LocalDateTime postTime) {
                 System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
                 try {
                     GDAXTrade[] trades;
@@ -164,6 +164,7 @@ public class PriceCollector {
                             exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
                             if (currency.getLastGap().getPaginationStart() == 0) {
                                 currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
+                                currency.getLastGap().setStartTime(currency.getLastGap().getStartTime().minusMinutes(1));
                             }
                         }
                     }
@@ -173,7 +174,7 @@ public class PriceCollector {
                 }
             }
             
-            private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime){
+            private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime) {
                 ArrayList<GDAXTrade> relevantTrades = new ArrayList<>();
                 boolean foundStart = false;
                 for (GDAXTrade trade : trades){
@@ -197,7 +198,7 @@ public class PriceCollector {
                 return meanPrice;
             }
             
-            private boolean gapsFilled(){
+            private boolean gapsFilled() {
                 boolean filled = true;
                 int ratesRequired = 0;
                 List<Gap> gaps, toRemove;
@@ -220,7 +221,7 @@ public class PriceCollector {
                 return filled;
             }
             
-            private void calculateHistoricGrowth(){
+            private void calculateHistoricGrowth() {
                 ExchangeRate[] updatedRates;
                 for (Currency currency : currencies){
                     currency.mergeRates();
@@ -243,7 +244,7 @@ public class PriceCollector {
                 }
             }
             
-            private void getHistoricPrices(){
+            private void getHistoricPrices() {
                 int readingsTaken = 0;
                 GDAXTrade[] trades;
                 while (readingsTaken < 4){
@@ -279,7 +280,7 @@ public class PriceCollector {
                 }
             }
             
-            private boolean collectionCompleted(int required, int collected){
+            private boolean collectionCompleted(int required, int collected) {
                 return (required <= collected);
             }
             
@@ -305,15 +306,11 @@ public class PriceCollector {
                 Double meanPrice;
                 LocalDateTime tradeTime;
 
-                if (!currency.hasFoundPosition()) {
-                    if (gap == null){
-                        tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
-                        System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
-                    } else {
-                        tradeTime = LocalDateTimeHelper.startOfMinute(trades[0].getTime());
-                    }
+                if (gap == null){
+                    tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+                    System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                 } else {
-                    tradeTime = currency.getLastHistoricTrade().getTime().plusMinutes(1);
+                    tradeTime = gap.getStartTime();
                 }
 
                 for (GDAXTrade trade : trades){

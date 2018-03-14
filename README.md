@@ -6,8 +6,8 @@ whether to trade holdings into another currency.
 Known Issues:
 
 PriceCollector
-Found condition where a single currency was being ignored - it had its gaps cleared erroneously
 Gaps not clearing properly (database free mode)
+Need to switch off historic collection after lap 2
 
 Currency
 Issue with findGaps (first loop) - seems to occur with 0 gaps

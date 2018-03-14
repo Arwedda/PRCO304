@@ -5,19 +5,23 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
+import java.time.LocalDateTime;
+
 /**
  *
  * @author jkell
  */
 public class Gap {
     private Integer paginationStart;
+    private LocalDateTime startTime;
     private int ratesRequired;
 
     public Gap() {
     }
     
-    public Gap(Integer paginationStart, int ratesRequired) {
+    public Gap(Integer paginationStart, LocalDateTime startTime, int ratesRequired) {
         this.paginationStart = paginationStart;
+        this.startTime = startTime;
         this.ratesRequired = ratesRequired;
     }
 
@@ -27,6 +31,14 @@ public class Gap {
 
     public void setPaginationStart(Integer paginationStart) {
         this.paginationStart = paginationStart;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
     public int getRatesRequired() {
