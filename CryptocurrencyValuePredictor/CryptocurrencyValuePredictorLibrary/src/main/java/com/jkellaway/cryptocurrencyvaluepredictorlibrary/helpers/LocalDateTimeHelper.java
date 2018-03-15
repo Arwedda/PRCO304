@@ -35,11 +35,15 @@ public class LocalDateTimeHelper {
     
     public static String toString(LocalDateTime datetime){
         String mins = ":";
-        if (datetime.getMinute() < 10){
+        String hours = String.valueOf(datetime.getHour());
+        if (hours.length() == 1) {
+            hours = "0" + hours;
+        }
+        if (datetime.getMinute() < 10) {
             mins += "0";
         }
         String timestamp = String.valueOf(datetime.getDayOfMonth()) + "/" + datetime.getMonthValue() 
-                + "/" + datetime.getYear() + " " + datetime.getHour() + mins + datetime.getMinute();
+                + "/" + datetime.getYear() + " " + hours + mins + datetime.getMinute();
         return timestamp;
     }
 }

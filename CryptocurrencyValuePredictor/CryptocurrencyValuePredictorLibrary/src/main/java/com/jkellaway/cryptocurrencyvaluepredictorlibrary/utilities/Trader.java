@@ -139,6 +139,9 @@ public class Trader {
                             growth = predictedGrowth;
                         }
                     }
+                    if (growth == 0.0 && holdMode.equals("Crypto")){
+                        break;
+                    }
                     trade(desired, rates);
                     break;
                 case "GOFAI":
@@ -150,6 +153,9 @@ public class Trader {
                             desired = rate;
                             growth = predictedGrowth;
                         }
+                    }
+                    if (growth == 0.0 && holdMode.equals("Crypto")){
+                        break;
                     }
                     trade(desired, rates);
                     break;

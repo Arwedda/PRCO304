@@ -75,6 +75,23 @@ public class PriceCollector {
         }
     }
     
+    private void sortRelevantRates() {
+        ExchangeRate[] rates, updatedRates;
+        for (Currency currency : currencies){
+            rates = exchangeRateAPIController.getExchangeRates(Globals.API_ENDPOINT + "/exchangerate/" + currency.getID());
+            for (ExchangeRate rate : rates){
+                rate.setTimestamp(rate.getTimestamp());
+                if (!rate.getLDTTimestamp().isBefore(firstRelevantRate)){
+                    currency.addHistoricRate(rate);
+                }
+            }
+            currency.findGaps(firstRelevantRate);
+            currency.mergeRates();
+            updatedRates = currency.calculateGrowth(false);
+            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+        }
+    }
+    
     private void storageFreeMode() {
         /*
             Not intended for project - only as failsafe. Once tested can use rate
@@ -93,23 +110,6 @@ public class PriceCollector {
         
         for (Currency currency : currencies){
             currency.findGaps(firstRelevantRate);
-        }
-    }
-    
-    private void sortRelevantRates() {
-        ExchangeRate[] rates, updatedRates;
-        for (Currency currency : currencies){
-            rates = exchangeRateAPIController.getExchangeRates(Globals.API_ENDPOINT + "/exchangerate/" + currency.getID());
-            for (ExchangeRate rate : rates){
-                rate.setTimestamp(rate.getTimestamp());
-                if (!rate.getLDTTimestamp().isBefore(firstRelevantRate)){
-                    currency.addHistoricRate(rate);
-                }
-            }
-            currency.findGaps(firstRelevantRate);
-            currency.mergeRates();
-            updatedRates = currency.calculateGrowth(false);
-            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
         }
     }
     
