@@ -38,7 +38,7 @@ public class PriceCollector {
     private ScheduledExecutorService collector;
     private LocalDateTime firstRelevantRate;
     private boolean connectedToDatabase;
-    private boolean firstLap;
+    private int lap;
     
     public PriceCollector() {
         initialise();
@@ -57,7 +57,7 @@ public class PriceCollector {
         collector = Executors.newSingleThreadScheduledExecutor();
         firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now().minusMinutes(Globals.READINGSREQUIRED));
         connectedToDatabase = false;
-        firstLap = true;
+        lap = 1;
     }
     
     private void initCurrencies() {
@@ -225,20 +225,21 @@ public class PriceCollector {
                 ExchangeRate[] updatedRates;
                 for (Currency currency : currencies){
                     currency.mergeRates();
-                    updatedRates = currency.calculateGrowth(!firstLap);
+                    updatedRates = currency.calculateGrowth((lap == 2));
                     if (connectedToDatabase){
                         exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
                     }
                 }
-                if (firstLap){
+                if (lap == 1){
                     for (Currency currency : currencies){
                         currency.findGaps(firstRelevantRate);
                     }
                     System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
-                    firstLap = false;
-                } else {
+                    lap = 2;
+                } else if (lap ==2) {
                     System.out.println("[INFO] Finished historic collection. Switching current price mode");
                     CryptocurrencyValuePredictor.getInstance().pricesCollected(currencies);
+                    lap = -1;
                     //collector.shutdownNow();
                     //initCollector();
                 }
@@ -328,15 +329,15 @@ public class PriceCollector {
                 }
             }
         };
-        if (firstLap) {
+        if (lap == 1) {
             collector.scheduleWithFixedDelay(automatedCollection, 1, 1, TimeUnit.SECONDS);
-        } else {
+        }/* else {
             int initDelay = 60 - LocalDateTime.now().getSecond();
             if (initDelay == 60) {
                 initDelay = 1;
             }
             collector.scheduleAtFixedRate(automatedCollection, initDelay, 60, TimeUnit.SECONDS);
-        }
+        }*/
     }
 
     public LocalDateTime getFirstRelevantRate() {

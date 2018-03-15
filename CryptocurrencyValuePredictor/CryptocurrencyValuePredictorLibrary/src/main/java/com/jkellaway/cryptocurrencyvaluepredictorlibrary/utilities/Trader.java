@@ -121,7 +121,6 @@ public class Trader {
         ExchangeRate desired = new ExchangeRate();
         Double growth;
         Double predictedGrowth;
-        ExchangeRate rate;
         
         trading:
         for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++) {
@@ -133,28 +132,26 @@ public class Trader {
                 case "NeuralNetwork":
                     growth = 0.0;
                     desired = new ExchangeRate();
-                    for (Currency currency : currencies) {
-                        rate = currency.getRate();
+                    for (ExchangeRate rate : rates) {
                         predictedGrowth = rate.getNeuralNetworkNextGrowth();
                         if (growth < predictedGrowth) {
                             desired = rate;
                             growth = predictedGrowth;
                         }
                     }
-                    trade(desired, currencies);
+                    trade(desired, rates);
                     break;
                 case "GOFAI":
                     growth = 0.0;
                     desired = new ExchangeRate();
-                    for (Currency currency : currencies) {
-                        rate = currency.getRate();
+                    for (ExchangeRate rate : rates) {
                         predictedGrowth = rate.gofaiGrowth[predictionIndex];
                         if (growth < predictedGrowth) {
                             desired = rate;
                             growth = predictedGrowth;
                         }
                     }
-                    trade(desired, currencies);
+                    trade(desired, rates);
                     break;
                 case "Manual":
                     ExchangeRate[] nextRates = new ExchangeRate[4];

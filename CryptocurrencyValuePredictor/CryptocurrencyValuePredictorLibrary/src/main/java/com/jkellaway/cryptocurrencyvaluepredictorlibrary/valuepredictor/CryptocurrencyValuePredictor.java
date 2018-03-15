@@ -46,6 +46,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BEST");
         worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "WORST");
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
+            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "Crypto");
             GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "USD");
         }
     }
@@ -93,7 +94,6 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         for (Trader holder : holders) {
             holder.tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, 0);
         }
-        notifyObservers();
         for (int i = 0; i < GOFAITradersUSD.length; i++){
             GOFAITradersUSD[i].tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, i);
             GOFAITradersHold[i].tradeTest(currencies, Globals.NUMBEROFPREDICTIONS, i);

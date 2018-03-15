@@ -1,11 +1,13 @@
 package com.jkellaway.cryptocurrencyvaluepredictorgui;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.ArrayHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.StringHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
 import com.jkellaway.guihelpers.TableConfigurer;
 import java.awt.Desktop;
@@ -69,10 +71,12 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     
     private void loadPredictions() {
         try {
+            Currency[] currencies = cryptocurrencyValuePredictor.getCurrencies();
+            Trader[] gofaiTraders = ArrayHelper.merge(cryptocurrencyValuePredictor.getGOFAITradersHold(), cryptocurrencyValuePredictor.getGOFAITradersUSD());
             LocalDateTime startTime = cryptocurrencyValuePredictor.getPriceCollector().getFirstRelevantRate();
             int maxTrades = Globals.READINGSREQUIRED - Globals.NUMBEROFPREDICTIONS;
-            double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies());
-            double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies());
+            double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(currencies);
+            double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(currencies);
             this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime));
             this.jlblMaxTrades.setText(String.valueOf(maxTrades));
             this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
@@ -82,18 +86,22 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
 
-            for (Currency currency : cryptocurrencyValuePredictor.getCurrencies()){
-                String name = currency.getName();
-                ExchangeRate rate = currency.getRate();
-                Double value = rate.getValue();
-                Double change = rate.getGrowth();
-                Double GOFAI = rate.getGofaiNextGrowth();
-                Double neuralNetwork = rate.getNeuralNetworkNextGrowth();
-                Object[] row = {name, value, change, GOFAI, neuralNetwork};
+            for (Trader trader : cryptocurrencyValuePredictor.getHolders()){
+                String strategy = "Hold " + trader.getHoldMode();
+                Double finalValue = trader.getWallet().getUSDValue(currencies);
+                Object[] row = {strategy, finalValue};
                 tableModel.addRow(row);
             }
-            this.jtblValues.setModel(table.getModel());
-            TableConfigurer.configureTable(this.jtblValues);
+            
+            for (int i = 0; i < gofaiTraders.length; i++) {
+                String strategy = "GOFAI " + ((i % 20) + 1) + " Trades & Hold " + gofaiTraders[i].getHoldMode();
+                Double finalValue = gofaiTraders[i].getWallet().getUSDValue(currencies);
+                Object[] row = {strategy, finalValue};
+                tableModel.addRow(row);
+            }
+            
+            this.jtblPredictions.setModel(table.getModel());
+            TableConfigurer.configureTable(this.jtblPredictions);
         } catch (Exception e) {
             System.out.println("[INFO] Error " + e);
         }
@@ -113,10 +121,12 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         jtblValues = new javax.swing.JTable();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jpnlTrading = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         jpnlInvestmentProtection = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
         jpnlGOFAI = new javax.swing.JPanel();
-        jspGOFAI = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jspPredictions = new javax.swing.JScrollPane();
+        jtblPredictions = new javax.swing.JTable();
         jlblFirst = new javax.swing.JLabel();
         jlblFirstTradeTime = new javax.swing.JLabel();
         jlblMax = new javax.swing.JLabel();
@@ -138,6 +148,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblContactDetails4 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Cryptocurrency Value Predictor");
         setMinimumSize(new java.awt.Dimension(800, 600));
         setSize(new java.awt.Dimension(800, 600));
 
@@ -173,33 +184,49 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         });
         jspValues.setViewportView(jtblValues);
 
+        jLabel1.setText("Coming Soon...");
+
         javax.swing.GroupLayout jpnlTradingLayout = new javax.swing.GroupLayout(jpnlTrading);
         jpnlTrading.setLayout(jpnlTradingLayout);
         jpnlTradingLayout.setHorizontalGroup(
             jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 795, Short.MAX_VALUE)
+            .addGroup(jpnlTradingLayout.createSequentialGroup()
+                .addGap(329, 329, 329)
+                .addComponent(jLabel1)
+                .addContainerGap(392, Short.MAX_VALUE))
         );
         jpnlTradingLayout.setVerticalGroup(
             jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
+            .addGroup(jpnlTradingLayout.createSequentialGroup()
+                .addGap(208, 208, 208)
+                .addComponent(jLabel1)
+                .addContainerGap(244, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Trading", jpnlTrading);
+
+        jLabel2.setText("Coming Soon...");
 
         javax.swing.GroupLayout jpnlInvestmentProtectionLayout = new javax.swing.GroupLayout(jpnlInvestmentProtection);
         jpnlInvestmentProtection.setLayout(jpnlInvestmentProtectionLayout);
         jpnlInvestmentProtectionLayout.setHorizontalGroup(
             jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 795, Short.MAX_VALUE)
+            .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
+                .addGap(338, 338, 338)
+                .addComponent(jLabel2)
+                .addContainerGap(383, Short.MAX_VALUE))
         );
         jpnlInvestmentProtectionLayout.setVerticalGroup(
             jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 466, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlInvestmentProtectionLayout.createSequentialGroup()
+                .addContainerGap(236, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(216, 216, 216))
         );
 
         jTabbedPane1.addTab("Investment Protection", jpnlInvestmentProtection);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jtblPredictions.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -225,7 +252,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 return canEdit [columnIndex];
             }
         });
-        jspGOFAI.setViewportView(jTable1);
+        jspPredictions.setViewportView(jtblPredictions);
 
         jlblFirst.setText("First Trade Time:");
 
@@ -249,7 +276,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlGOFAILayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jspGOFAI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jspPredictions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlGOFAILayout.createSequentialGroup()
@@ -293,7 +320,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                                 .addComponent(jlblBestPerformance)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jlblWorstPerformance))))
-                    .addComponent(jspGOFAI, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jspPredictions, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(78, 78, 78))
         );
 
@@ -512,8 +539,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel jlblBest;
     private javax.swing.JLabel jlblBestPerformance;
     private javax.swing.JLabel jlblFirst;
@@ -526,8 +554,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.JPanel jpnlGOFAI;
     private javax.swing.JPanel jpnlInvestmentProtection;
     private javax.swing.JPanel jpnlTrading;
-    private javax.swing.JScrollPane jspGOFAI;
+    private javax.swing.JScrollPane jspPredictions;
     private javax.swing.JScrollPane jspValues;
+    private javax.swing.JTable jtblPredictions;
     private javax.swing.JTable jtblValues;
     private javax.swing.JLabel lblContactDetails;
     private javax.swing.JLabel lblContactDetails2;
