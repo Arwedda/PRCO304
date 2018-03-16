@@ -17,10 +17,10 @@ public class Globals {
     public static final String ETH_TRADES = "https://api.gdax.com/products/ETH-USD/trades";
     public static final String LTC_TRADES = "https://api.gdax.com/products/LTC-USD/trades";
     public static final Double BTC_TAKER_FEE = 0.25;
-    public static final Double ALT_TAKER_FEE = 0.30;
+    public static final Double TAKER_FEE = 0.30;
     
     public static final int NUMBEROFPREDICTIONS = 20;
-    public static final int READINGSREQUIRED = 1000 + NUMBEROFPREDICTIONS;
+    public static final int READINGSREQUIRED = 15000 + NUMBEROFPREDICTIONS;
     public static final String STARTINGUNITS = "USD";
     public static final Double STARTINGVALUE = 100.00;
 }

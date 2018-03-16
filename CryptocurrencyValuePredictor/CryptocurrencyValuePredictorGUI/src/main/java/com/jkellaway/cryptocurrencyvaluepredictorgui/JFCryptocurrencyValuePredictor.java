@@ -11,12 +11,9 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
 import com.jkellaway.guihelpers.TableConfigurer;
 import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -25,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
  * @author jkell
  */
 public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implements IObserver {
-    private CryptocurrencyValuePredictor cryptocurrencyValuePredictor;
+    private static CryptocurrencyValuePredictor cryptocurrencyValuePredictor;
             
     /**
      * Creates new form CryptocurrencyValuePredictor
@@ -33,6 +30,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     public JFCryptocurrencyValuePredictor() {
         initComponents();
         initialise();
+        JOptionPane.showMessageDialog(this, "Loading trading data from database. This may take several minutes.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
     }
     
     private void initialise() {
@@ -48,14 +46,14 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     
     private void loadCurrencies() {
         try {
-            String col[] = {"Currency", "Value ($)", "Change (%)", "GOFAI Prediction (%)", "Neural Network Prediction (%)"};
+            String col[] = {"Currency", "Value (USD)", "Change (%)", "GOFAI Prediction (%)", "Neural Network Prediction (%)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
 
             for (Currency currency : cryptocurrencyValuePredictor.getCurrencies()){
                 String name = currency.getName();
                 ExchangeRate rate = currency.getRate();
-                Double value = rate.getValue();
+                String value = StringHelper.doubleToCurrencyString(rate.getValue());
                 Double change = rate.getGrowth();
                 Double GOFAI = rate.getGofaiNextGrowth();
                 Double neuralNetwork = rate.getNeuralNetworkNextGrowth();
@@ -82,20 +80,20 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
             this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst));
             
-            String col[] = {"Strategy", "Final Value ($)"};
+            String col[] = {"Strategy", "Final Value (USD)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
 
             for (Trader trader : cryptocurrencyValuePredictor.getHolders()){
                 String strategy = "Hold " + trader.getHoldMode();
-                Double finalValue = trader.getWallet().getUSDValue(currencies);
+                String finalValue = StringHelper.doubleToCurrencyString(trader.getWallet().getUSDValue(currencies));
                 Object[] row = {strategy, finalValue};
                 tableModel.addRow(row);
             }
             
             for (int i = 0; i < gofaiTraders.length; i++) {
                 String strategy = "GOFAI " + ((i % 20) + 1) + " Trades & Hold " + gofaiTraders[i].getHoldMode();
-                Double finalValue = gofaiTraders[i].getWallet().getUSDValue(currencies);
+                String finalValue = StringHelper.doubleToCurrencyString(gofaiTraders[i].getWallet().getUSDValue(currencies));
                 Object[] row = {strategy, finalValue};
                 tableModel.addRow(row);
             }
@@ -116,12 +114,23 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btngrpTradeMode = new javax.swing.ButtonGroup();
+        btngrpHoldMode = new javax.swing.ButtonGroup();
         pnlHome = new javax.swing.JPanel();
         jspValues = new javax.swing.JScrollPane();
         jtblValues = new javax.swing.JTable();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jpnlTrading = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        jpnlTradeMode = new javax.swing.JPanel();
+        rdbtnOff = new javax.swing.JRadioButton();
+        rdbtnGOFAI = new javax.swing.JRadioButton();
+        rdbtnNeuralNetwork = new javax.swing.JRadioButton();
+        lblTradeAmount = new javax.swing.JLabel();
+        txtStartAmount = new javax.swing.JTextField();
+        jpnlHoldMode = new javax.swing.JPanel();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jRadioButton2 = new javax.swing.JRadioButton();
+        tglbtnTrade = new javax.swing.JToggleButton();
         jpnlInvestmentProtection = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jpnlGOFAI = new javax.swing.JPanel();
@@ -171,7 +180,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 java.lang.String.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false
+                false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -184,23 +193,112 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         });
         jspValues.setViewportView(jtblValues);
 
-        jLabel1.setText("Coming Soon...");
+        jpnlTradeMode.setBorder(javax.swing.BorderFactory.createTitledBorder("Trade Mode"));
+
+        btngrpTradeMode.add(rdbtnOff);
+        rdbtnOff.setSelected(true);
+        rdbtnOff.setText("Off");
+
+        btngrpTradeMode.add(rdbtnGOFAI);
+        rdbtnGOFAI.setText("GOFAI");
+
+        rdbtnNeuralNetwork.setText("Neural Network");
+        rdbtnNeuralNetwork.setEnabled(false);
+
+        javax.swing.GroupLayout jpnlTradeModeLayout = new javax.swing.GroupLayout(jpnlTradeMode);
+        jpnlTradeMode.setLayout(jpnlTradeModeLayout);
+        jpnlTradeModeLayout.setHorizontalGroup(
+            jpnlTradeModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlTradeModeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(rdbtnOff)
+                .addGap(18, 18, 18)
+                .addComponent(rdbtnGOFAI)
+                .addGap(18, 18, 18)
+                .addComponent(rdbtnNeuralNetwork)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jpnlTradeModeLayout.setVerticalGroup(
+            jpnlTradeModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlTradeModeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnlTradeModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rdbtnOff)
+                    .addComponent(rdbtnGOFAI)
+                    .addComponent(rdbtnNeuralNetwork))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        lblTradeAmount.setText("Start Amount:");
+
+        txtStartAmount.setText("0.00");
+
+        jpnlHoldMode.setBorder(javax.swing.BorderFactory.createTitledBorder("Hold Mode"));
+
+        btngrpHoldMode.add(jRadioButton1);
+        jRadioButton1.setSelected(true);
+        jRadioButton1.setText("USD");
+
+        btngrpHoldMode.add(jRadioButton2);
+        jRadioButton2.setText("Cryptocurrency");
+
+        javax.swing.GroupLayout jpnlHoldModeLayout = new javax.swing.GroupLayout(jpnlHoldMode);
+        jpnlHoldMode.setLayout(jpnlHoldModeLayout);
+        jpnlHoldModeLayout.setHorizontalGroup(
+            jpnlHoldModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlHoldModeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jRadioButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jRadioButton2)
+                .addContainerGap())
+        );
+        jpnlHoldModeLayout.setVerticalGroup(
+            jpnlHoldModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlHoldModeLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jpnlHoldModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRadioButton1)
+                    .addComponent(jRadioButton2))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        tglbtnTrade.setText("Start Trading");
 
         javax.swing.GroupLayout jpnlTradingLayout = new javax.swing.GroupLayout(jpnlTrading);
         jpnlTrading.setLayout(jpnlTradingLayout);
         jpnlTradingLayout.setHorizontalGroup(
             jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlTradingLayout.createSequentialGroup()
-                .addGap(329, 329, 329)
-                .addComponent(jLabel1)
-                .addContainerGap(392, Short.MAX_VALUE))
+                .addGroup(jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jpnlTradingLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jpnlHoldMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jpnlTradeMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jpnlTradingLayout.createSequentialGroup()
+                                .addComponent(lblTradeAmount)
+                                .addGap(18, 18, 18)
+                                .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jpnlTradingLayout.createSequentialGroup()
+                        .addGap(66, 66, 66)
+                        .addComponent(tglbtnTrade)))
+                .addContainerGap(528, Short.MAX_VALUE))
         );
         jpnlTradingLayout.setVerticalGroup(
             jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlTradingLayout.createSequentialGroup()
-                .addGap(208, 208, 208)
-                .addComponent(jLabel1)
-                .addContainerGap(244, Short.MAX_VALUE))
+                .addContainerGap()
+                .addComponent(jpnlTradeMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblTradeAmount)
+                    .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jpnlHoldMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(tglbtnTrade)
+                .addContainerGap(238, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Trading", jpnlTrading);
@@ -228,9 +326,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         jtblPredictions.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
                 {null, null}
             },
             new String [] {
@@ -241,7 +336,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 java.lang.String.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                true, false
+                false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -539,8 +634,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.ButtonGroup btngrpHoldMode;
+    private javax.swing.ButtonGroup btngrpTradeMode;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JRadioButton jRadioButton1;
+    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel jlblBest;
     private javax.swing.JLabel jlblBestPerformance;
@@ -552,7 +650,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.JLabel jlblWorstPerformance;
     private javax.swing.JPanel jpnlAbout;
     private javax.swing.JPanel jpnlGOFAI;
+    private javax.swing.JPanel jpnlHoldMode;
     private javax.swing.JPanel jpnlInvestmentProtection;
+    private javax.swing.JPanel jpnlTradeMode;
     private javax.swing.JPanel jpnlTrading;
     private javax.swing.JScrollPane jspPredictions;
     private javax.swing.JScrollPane jspValues;
@@ -568,6 +668,12 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.JLabel lblLiability;
     private javax.swing.JLabel lblLiability2;
     private javax.swing.JLabel lblTitle;
+    private javax.swing.JLabel lblTradeAmount;
     private javax.swing.JPanel pnlHome;
+    private javax.swing.JRadioButton rdbtnGOFAI;
+    private javax.swing.JRadioButton rdbtnNeuralNetwork;
+    private javax.swing.JRadioButton rdbtnOff;
+    private javax.swing.JToggleButton tglbtnTrade;
+    private javax.swing.JTextField txtStartAmount;
     // End of variables declaration//GEN-END:variables
 }

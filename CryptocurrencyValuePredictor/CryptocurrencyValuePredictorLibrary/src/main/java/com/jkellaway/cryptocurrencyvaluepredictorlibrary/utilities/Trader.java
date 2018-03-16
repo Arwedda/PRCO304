@@ -102,6 +102,7 @@ public class Trader {
     }
     
     private void makeTrade(ExchangeRate current, ExchangeRate desired){
+        Double feeMultiplier = ((100 - Globals.TAKER_FEE) / 100);
         Double value = wallet.getValue();
         if (!current.getCurrency_id().equals("Unknown") && desired.getCurrency_id().equals("Unknown")){
             wallet.setValue(value * current.getValue());
@@ -171,6 +172,7 @@ public class Trader {
                         desired = getLowestGrowth(nextRates);
                         trade(desired, rates);
                     } else {
+                        //HOLD
                         if (desired.getCurrency_id().equals("Unknown")){
                             desired = getRate(rates);
                             trade(desired, rates);

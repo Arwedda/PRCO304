@@ -162,9 +162,11 @@ public class PriceCollector {
                         currency.setValue(rate);
                         if (connectedToDatabase){
                             exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
-                            if (currency.getLastGap().getPaginationStart() == 0) {
-                                currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
-                                currency.getLastGap().setStartTime(currency.getLastGap().getStartTime().minusMinutes(1));
+                            if (0 < currency.getGaps().size()) {
+                                if (currency.getLastGap().getPaginationStart() == 0) {
+                                    currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
+                                    currency.getLastGap().setStartTime(currency.getLastGap().getStartTime().minusMinutes(1));
+                                }
                             }
                         }
                     }
