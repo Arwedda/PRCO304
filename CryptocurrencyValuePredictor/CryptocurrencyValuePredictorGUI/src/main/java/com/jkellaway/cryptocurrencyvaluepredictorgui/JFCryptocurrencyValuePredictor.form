@@ -321,6 +321,9 @@
                   <Properties>
                     <Property name="text" type="java.lang.String" value="Start Trading"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="tglbtnTradeActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -364,8 +367,8 @@
             <Container class="javax.swing.JPanel" name="jpnlGOFAI">
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Predictions">
-                    <Property name="tabTitle" type="java.lang.String" value="Predictions"/>
+                  <JTabbedPaneConstraints tabName="Benchmarking">
+                    <Property name="tabTitle" type="java.lang.String" value="Benchmarking"/>
                   </JTabbedPaneConstraints>
                 </Constraint>
               </Constraints>

@@ -12,15 +12,21 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 public class Wallet {
     private String holdingID;
     private Double value;
+    private Double[] startingValues;
+    private Double startingUSD;
     
     public Wallet(){
         this.holdingID = "Unknown";
         this.value = null;
+        this.startingValues = new Double[4];
+        this.startingUSD = null;
     }
     
     public Wallet(String holdingID, Double value){
         this.holdingID = holdingID;
         this.value = value;
+        this.startingValues = new Double[4];
+        this.startingUSD = value;
     }
 
     public String getHoldingID() {
@@ -37,6 +43,18 @@ public class Wallet {
 
     public Double getValue() {
         return value;
+    }
+    
+    public void setStartingValue(Double value, int index){
+        this.startingValues[index] = value;
+    }
+    
+    public Double[] getStartingValues(){
+        return startingValues;
+    }
+    
+    public Double getStartingUSD(){
+        return startingUSD;
     }
     
     public Double getUSDValue(Currency[] currencies) {

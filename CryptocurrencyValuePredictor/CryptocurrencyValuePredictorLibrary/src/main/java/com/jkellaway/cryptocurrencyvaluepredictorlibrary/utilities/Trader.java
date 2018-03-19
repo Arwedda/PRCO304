@@ -122,10 +122,17 @@ public class Trader {
         ExchangeRate desired = new ExchangeRate();
         Double growth;
         Double predictedGrowth;
+        int noOfCurrencies = currencies.length;
         
+        for (int i = 0; i < noOfCurrencies; i++) {
+            Double starting = 100 / currencies[i].getRates().get(numberOfPredictions).getValue();
+            wallet.setStartingValue(starting, i);
+        }
+
         trading:
-        for (int i = numberOfPredictions + 1; i < Globals.READINGSREQUIRED - 1; i++) {
-            for (int j = 0; j < 4 ; j++) {
+        for (int i = numberOfPredictions; i < Globals.READINGSREQUIRED - 1; i++) {
+            
+            for (int j = 0; j < noOfCurrencies ; j++) {
                 rates[j] = currencies[j].getRates().get(i);
             }
             
@@ -162,7 +169,7 @@ public class Trader {
                     break;
                 case "Manual":
                     ExchangeRate[] nextRates = new ExchangeRate[4];
-                    for (int j = 0; j < 4 ; j++) {
+                    for (int j = 0; j < noOfCurrencies ; j++) {
                         nextRates[j] = currencies[j].getRates().get(i+1);
                     }
                     if (holdMode.equals("BEST")){

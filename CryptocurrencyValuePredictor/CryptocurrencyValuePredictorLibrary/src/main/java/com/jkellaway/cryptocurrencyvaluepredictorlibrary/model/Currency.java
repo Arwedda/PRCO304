@@ -197,6 +197,9 @@ public class Currency {
     }
     
     public void findGaps(LocalDateTime firstMinute) {
+        if (0 < gaps.size()) {
+            gaps.clear();
+        }
         int ratesRequired = 0;
         int timeBetween;
         ExchangeRate[] reqRates = new ExchangeRate[Globals.READINGSREQUIRED];
@@ -294,15 +297,5 @@ public class Currency {
     
     public int noOfHistoricRates(){
         return this.historicRates.size();
-    }
-    
-    public void pruneRates() {
-        int toPrune = rates.size() - Globals.READINGSREQUIRED;
-        List<ExchangeRate> toRemove = new ArrayList<>();
-        
-        for (int i = 0; i <= toPrune; i++){
-            toRemove.add(rates.get(i));
-        }
-        rates.removeAll(toRemove);
     }
 }

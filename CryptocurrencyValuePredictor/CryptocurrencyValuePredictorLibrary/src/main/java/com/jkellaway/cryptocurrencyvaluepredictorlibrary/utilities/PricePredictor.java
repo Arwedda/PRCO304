@@ -45,7 +45,7 @@ public class PricePredictor {
     }
     
     public static void GOFAI(Currency[] currencies){
-        for (Currency currency: currencies){
+        for (Currency currency : currencies){
             GOFAICalculations(currency);
         }
         GOFAIResults();

@@ -7,6 +7,7 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHe
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.StringHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Wallet;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
 import com.jkellaway.guihelpers.TableConfigurer;
@@ -30,7 +31,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     public JFCryptocurrencyValuePredictor() {
         initComponents();
         initialise();
-        JOptionPane.showMessageDialog(this, "Loading trading data from database. This may take several minutes.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
     }
     
     private void initialise() {
@@ -80,21 +80,63 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
             this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst));
             
-            String col[] = {"Strategy", "Final Value (USD)"};
+            String col[] = {"Strategy", "Final Value (USD)", "Starting", "Final Holding"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
 
             for (Trader trader : cryptocurrencyValuePredictor.getHolders()){
+                Wallet wallet = trader.getWallet();
                 String strategy = "Hold " + trader.getHoldMode();
-                String finalValue = StringHelper.doubleToCurrencyString(trader.getWallet().getUSDValue(currencies));
-                Object[] row = {strategy, finalValue};
+                String finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies));
+                String starting;
+                String finalHolding = wallet.getValue() + " " + wallet.getHoldingID();
+                switch (wallet.getHoldingID()) {
+                    case "BCH":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[0]) + " BCH";
+                        break;
+                    case "BTC":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[1]) + " BTC";
+                        break;
+                    case "ETH":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[2]) + " ETH";
+                        break;
+                    case "LTC":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[3]) + " LTC";
+                        break;
+                    default:
+                        starting = "100.00 USD";
+                        break;
+                }
+                
+                Object[] row = {strategy, finalValue, starting, finalHolding};
                 tableModel.addRow(row);
             }
             
             for (int i = 0; i < gofaiTraders.length; i++) {
+                Wallet wallet = gofaiTraders[i].getWallet();
                 String strategy = "GOFAI " + ((i % 20) + 1) + " Trades & Hold " + gofaiTraders[i].getHoldMode();
-                String finalValue = StringHelper.doubleToCurrencyString(gofaiTraders[i].getWallet().getUSDValue(currencies));
-                Object[] row = {strategy, finalValue};
+                String finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies));
+                String starting;
+                String finalHolding = wallet.getValue() + " " + wallet.getHoldingID();
+                switch (wallet.getHoldingID()) {
+                    case "BCH":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[0]) + " BCH";
+                        break;
+                    case "BTC":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[1]) + " BTC";
+                        break;
+                    case "ETH":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[2]) + " ETH";
+                        break;
+                    case "LTC":
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[3]) + " LTC";
+                        break;
+                    default:
+                        starting = "100.00 USD";
+                        break;
+                }
+                
+                Object[] row = {strategy, finalValue, starting, finalHolding};
                 tableModel.addRow(row);
             }
             
@@ -264,6 +306,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         );
 
         tglbtnTrade.setText("Start Trading");
+        tglbtnTrade.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tglbtnTradeActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jpnlTradingLayout = new javax.swing.GroupLayout(jpnlTrading);
         jpnlTrading.setLayout(jpnlTradingLayout);
@@ -419,7 +466,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addGap(78, 78, 78))
         );
 
-        jTabbedPane1.addTab("Predictions", jpnlGOFAI);
+        jTabbedPane1.addTab("Benchmarking", jpnlGOFAI);
 
         lblDeveloper.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
         lblDeveloper.setText("Developer: Joseph Kellaway");
@@ -577,6 +624,14 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private void lblContactDetails2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblContactDetails2MouseDragged
         writeEmail(lblContactDetails2.getText());
     }//GEN-LAST:event_lblContactDetails2MouseDragged
+
+    private void tglbtnTradeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tglbtnTradeActionPerformed
+        if (tglbtnTrade.isSelected()){
+            JOptionPane.showMessageDialog(this, "Trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Not trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_tglbtnTradeActionPerformed
 
     private void openWebpage(String url) {
         if (Desktop.isDesktopSupported()) {

@@ -308,6 +308,7 @@ public class PriceCollector {
                 ExchangeRate rate;
                 Double meanPrice;
                 LocalDateTime tradeTime;
+                int missingReadings = 0;
 
                 if (gap == null){
                     tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
@@ -315,6 +316,13 @@ public class PriceCollector {
                 } else {
                     tradeTime = gap.getStartTime();
                 }
+                
+                while (tradeTime.isAfter(trades[0].getTime().plusMinutes(1))) {
+                    tradeTime = tradeTime.minusMinutes(1);
+                    missingReadings++;
+                }
+                gap.setStartTime(tradeTime);
+                gap.setRatesRequired(gap.getRatesRequired() - missingReadings);
 
                 for (GDAXTrade trade : trades){
                     if (trade.getTime().equals(tradeTime.minusMinutes(1))) {
