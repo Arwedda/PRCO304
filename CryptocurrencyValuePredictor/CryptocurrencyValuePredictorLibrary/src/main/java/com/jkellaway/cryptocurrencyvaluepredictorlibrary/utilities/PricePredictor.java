@@ -29,10 +29,11 @@ public class PricePredictor {
     private static int totalReadings = 0;
 
     
-    public static void makePredictions(Currency[] currencies){
+    public static Currency[] makePredictions(Currency[] currencies){
         initialiseTests();
         GOFAI(currencies);
         neuralNetwork(currencies);
+        return currencies;
     }
 
     private static void initialiseTests(){
@@ -60,7 +61,7 @@ public class PricePredictor {
         int noOfPredictions = highestIndex - Globals.NUMBEROFPREDICTIONS;
         Double actualGrowth;
 
-        for (int i = 0; i < noOfPredictions; i++) {
+        for (int i = 0; i <= noOfPredictions; i++) {
             currentRates = Arrays.copyOfRange(rates, noOfPredictions - i, highestIndex - i);
             predictions = predict(currentRates);
             currency.getRates().get(highestIndex - i).gofaiGrowth = predictions;

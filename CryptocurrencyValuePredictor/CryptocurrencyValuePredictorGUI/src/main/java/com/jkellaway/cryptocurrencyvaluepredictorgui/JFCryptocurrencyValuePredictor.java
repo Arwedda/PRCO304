@@ -80,7 +80,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
             this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst));
             
-            String col[] = {"Strategy", "Final Value (USD)", "Starting", "Final Holding"};
+            String col[] = {"Strategy", "Starting", "Final Holding", "Final Value (USD)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
 
@@ -92,23 +92,23 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 String finalHolding = wallet.getValue() + " " + wallet.getHoldingID();
                 switch (wallet.getHoldingID()) {
                     case "BCH":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[0]) + " BCH";
+                        starting = wallet.getStartingValues()[0] + " BCH";
                         break;
                     case "BTC":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[1]) + " BTC";
+                        starting = wallet.getStartingValues()[1] + " BTC";
                         break;
                     case "ETH":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[2]) + " ETH";
+                        starting = wallet.getStartingValues()[2] + " ETH";
                         break;
                     case "LTC":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[3]) + " LTC";
+                        starting = wallet.getStartingValues()[3] + " LTC";
                         break;
                     default:
                         starting = "100.00 USD";
                         break;
                 }
                 
-                Object[] row = {strategy, finalValue, starting, finalHolding};
+                Object[] row = {strategy, starting, finalHolding, finalValue};
                 tableModel.addRow(row);
             }
             
@@ -120,23 +120,23 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 String finalHolding = wallet.getValue() + " " + wallet.getHoldingID();
                 switch (wallet.getHoldingID()) {
                     case "BCH":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[0]) + " BCH";
+                        starting = wallet.getStartingValues()[0] + " BCH";
                         break;
                     case "BTC":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[1]) + " BTC";
+                        starting = wallet.getStartingValues()[1] + " BTC";
                         break;
                     case "ETH":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[2]) + " ETH";
+                        starting = wallet.getStartingValues()[2] + " ETH";
                         break;
                     case "LTC":
-                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[3]) + " LTC";
+                        starting = wallet.getStartingValues()[3] + " LTC";
                         break;
                     default:
                         starting = "100.00 USD";
                         break;
                 }
                 
-                Object[] row = {strategy, finalValue, starting, finalHolding};
+                Object[] row = {strategy, starting, finalHolding, finalValue};
                 tableModel.addRow(row);
             }
             
@@ -373,17 +373,17 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         jtblPredictions.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null}
+                {null, null, null, null}
             },
             new String [] {
-                "Strategy", "Final Value"
+                "Strategy", "Starting", "Final Holding", "Final Value"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Double.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -418,25 +418,26 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlGOFAILayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jspPredictions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
                 .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jpnlGOFAILayout.createSequentialGroup()
-                        .addComponent(jlblFirst)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jlblFirstTradeTime))
-                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
-                        .addComponent(jlblMax)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jlblMaxTrades))
-                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlblFirst)
+                            .addComponent(jlblMax))
+                        .addGap(18, 18, 18)
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jlblFirstTradeTime)
+                            .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(jlblMaxTrades)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 305, Short.MAX_VALUE)
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlblBest)
                             .addComponent(jlblWorst))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 105, Short.MAX_VALUE)
+                        .addGap(84, 84, 84)
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlblBestPerformance, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jlblWorstPerformance, javax.swing.GroupLayout.Alignment.TRAILING))))
+                            .addComponent(jlblWorstPerformance, javax.swing.GroupLayout.Alignment.TRAILING)))
+                    .addComponent(jspPredictions))
                 .addContainerGap())
         );
         jpnlGOFAILayout.setVerticalGroup(
@@ -451,18 +452,17 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jlblMax)
-                            .addComponent(jlblMaxTrades))
+                            .addComponent(jlblMaxTrades)))
+                    .addGroup(jpnlGOFAILayout.createSequentialGroup()
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblBestPerformance)
+                            .addComponent(jlblBest))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jpnlGOFAILayout.createSequentialGroup()
-                                .addComponent(jlblBest)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jlblWorst))
-                            .addGroup(jpnlGOFAILayout.createSequentialGroup()
-                                .addComponent(jlblBestPerformance)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jlblWorstPerformance))))
-                    .addComponent(jspPredictions, javax.swing.GroupLayout.PREFERRED_SIZE, 377, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jlblWorstPerformance)
+                            .addComponent(jlblWorst))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jspPredictions, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(78, 78, 78))
         );
 

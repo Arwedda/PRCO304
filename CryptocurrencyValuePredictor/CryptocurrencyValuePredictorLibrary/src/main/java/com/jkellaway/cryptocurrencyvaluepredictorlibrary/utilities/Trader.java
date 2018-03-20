@@ -118,11 +118,11 @@ public class Trader {
     }
     
     public void tradeTest(Currency[] currencies, int numberOfPredictions, int predictionIndex){
-        ExchangeRate[] rates = new ExchangeRate[4];
+        int noOfCurrencies = currencies.length;
+        ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
         Double growth;
         Double predictedGrowth;
-        int noOfCurrencies = currencies.length;
         
         for (int i = 0; i < noOfCurrencies; i++) {
             Double starting = 100 / currencies[i].getRates().get(numberOfPredictions).getValue();

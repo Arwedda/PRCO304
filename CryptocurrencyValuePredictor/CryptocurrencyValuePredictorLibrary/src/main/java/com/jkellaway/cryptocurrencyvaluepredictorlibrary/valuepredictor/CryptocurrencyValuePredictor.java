@@ -82,8 +82,8 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     }
     
     public void pricesCollected(Currency[] currencies){
+        currencies = PricePredictor.makePredictions(currencies);
         setCurrencies(currencies);
-        PricePredictor.makePredictions(currencies);
         tradeTest();
         System.out.println("stop here..");
     }

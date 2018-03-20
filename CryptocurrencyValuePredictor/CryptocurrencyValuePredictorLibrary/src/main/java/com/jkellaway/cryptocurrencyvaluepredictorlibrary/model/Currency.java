@@ -245,53 +245,34 @@ public class Currency {
     public ExchangeRate[] calculateGrowth(boolean calculateChange){
         List<ExchangeRate> updatedRates = new ArrayList<>();
         for (int i = 1; i < rates.size(); i++){
-            if (null == rates.get(i).getGrowth()) {
-                if (rates.get(i).isMinuteAfter(rates.get(i - 1))){
+            if (rates.get(i).isMinuteAfter(rates.get(i - 1))){
+                if (rates.get(i).getGrowth() == null) {
                     rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
                     updatedRates.add(rates.get(i));
-                } else {
-                    if (calculateChange) {
-                        fillMissingData(i);
-                        rates.get(i).calculateGrowth(rates.get(i - 1).getValue());
-                        updatedRates.add(rates.get(i));
-                    }
                 }
+            } else if (calculateChange) {
+                fillMissingData(i);
             }
         }
         return SafeCastHelper.objectsToExchangeRates(updatedRates.toArray());
     }
     
     private void fillMissingData(int i) {
-        ExchangeRate previous = null;
-        ExchangeRate next = null;
-        int after = rates.size() - i;
-        int gapsBefore = 0;
-        int gapsAfter = 0;
+        ExchangeRate previous = rates.get(i - 1);
+        ExchangeRate next = rates.get(i);
+        ExchangeRate rate = null;
+        int gapsSize = (int) ChronoUnit.MINUTES.between(previous.getLDTTimestamp(), next.getLDTTimestamp()) - 1;
         double change = 0.0;
-        
-        for (int j = 1; j < after; j++){
-            next = rates.get(i + j);
-            if (next.getValue() != 0.0){
-                break;
-            }
-            gapsAfter++;
-        }
-        for (int j = 1; j < i; j++){
-            previous = rates.get(i - j);
-            if (previous.getValue() != 0.0){
-                break;
-            }
-            gapsBefore++;
-        }
         
         if (next.getValue() != 0.0 && previous.getValue() != 0.0){
             change = next.getValue() - previous.getValue();
         }
         
-        change /= (1 + gapsBefore + gapsAfter);
+        change /= (gapsSize + 1);
         
-        for (int j = i - gapsBefore; j < i + gapsAfter; j++){
-            rates.get(j).setValue(previous.getValue() + change);
+        for (int j = 1; j <= gapsSize; j++){
+            rate = new ExchangeRate(id, previous.getLDTTimestamp().plusMinutes(j), previous.getValue() + change, null, null, null, next.getLastTrade());
+            historicRates.add(rate);
         }
     }
     

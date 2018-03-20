@@ -94,8 +94,7 @@ public class PriceCollector {
     
     private void storageFreeMode() {
         /*
-            Not intended for project - only as failsafe. Once tested can use rate
-            number to run GOFAI and NN mode after project
+            Not intended for project - only as failsafe.
         */
         System.out.println("[INFO] Failed to connect to Oracle database. Initialising local mode.");
         currencies = new Currency[4];
@@ -230,6 +229,13 @@ public class PriceCollector {
                     updatedRates = currency.calculateGrowth((lap == 2));
                     if (connectedToDatabase){
                         exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                    }
+                    if (!currency.getHistoricRates().isEmpty()) {
+                        currency.mergeRates();
+                        updatedRates = currency.calculateGrowth((lap == 2));
+                        if (connectedToDatabase){
+                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                        }
                     }
                 }
                 if (lap == 1){
