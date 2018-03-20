@@ -10,6 +10,8 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers.CurrencyAPI
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers.ExchangeRateAPIController;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers.GDAXAPIController;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.ISubject;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
@@ -17,7 +19,6 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Gap;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,27 +31,24 @@ import java.util.concurrent.TimeUnit;
  *
  * @author jkell
  */
-public class PriceCollector {
-    private GDAXAPIController gdaxAPIController;
+public class PriceCollector implements ISubject {
+    private boolean connectedToDatabase;
+    private Currency[] currencies;
     private CurrencyAPIController currencyAPIController;
     private ExchangeRateAPIController exchangeRateAPIController;
-    private Currency[] currencies;
-    private ScheduledExecutorService collector;
-    private LocalDateTime firstRelevantRate;
-    private boolean connectedToDatabase;
+    private GDAXAPIController gdaxAPIController;
     private int lap;
+    private transient List<IObserver> observers;
+    private LocalDateTime firstRelevantRate;
+    private ScheduledExecutorService collector;
     
     public PriceCollector() {
         initialise();
-    }
-    
-    private void initialise() {
-        initPriceCollector();
         initCurrencies();
         initCollector();
     }
     
-    private void initPriceCollector() {
+    private void initialise() {
         gdaxAPIController = new GDAXAPIController();
         currencyAPIController = new CurrencyAPIController();
         exchangeRateAPIController = new ExchangeRateAPIController();
@@ -169,7 +167,7 @@ public class PriceCollector {
                             }
                         }
                     }
-                    CryptocurrencyValuePredictor.getInstance().setCurrencies(currencies);
+                    notifyObservers();
                 } catch (Exception e) {
                     System.out.println("[INFO] Error: " + e);
                 }
@@ -244,12 +242,11 @@ public class PriceCollector {
                     }
                     System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
                     lap = 2;
-                } else if (lap ==2) {
+                } else if (lap == 2) {
                     System.out.println("[INFO] Finished historic collection. Switching current price mode");
-                    CryptocurrencyValuePredictor.getInstance().pricesCollected(currencies);
-                    lap = -1;
-                    //collector.shutdownNow();
-                    //initCollector();
+                    notifyObservers();
+                    lap = 3;
+                    collector.shutdownNow();
                 }
             }
             
@@ -347,16 +344,68 @@ public class PriceCollector {
         };
         if (lap == 1) {
             collector.scheduleWithFixedDelay(automatedCollection, 1, 1, TimeUnit.SECONDS);
-        }/* else {
+        } else {
             int initDelay = 60 - LocalDateTime.now().getSecond();
             if (initDelay == 60) {
                 initDelay = 1;
             }
             collector.scheduleAtFixedRate(automatedCollection, initDelay, 60, TimeUnit.SECONDS);
-        }*/
+        }
     }
 
     public LocalDateTime getFirstRelevantRate() {
         return firstRelevantRate;
+    }
+    
+    public void benchmarkComplete(Currency[] currencies) {
+        this.currencies = currencies;
+        lap = -1;
+        initCollector();
+    }
+    
+    public int getLap(){
+        return lap;
+    }
+
+    public Currency[] getCurrencies() {
+        return currencies;
+    }
+
+    public void setCurrencies(Currency[] currencies) {
+        this.currencies = currencies;
+    }
+
+    @Override
+    public Boolean registerObserver(IObserver o) {
+        Boolean blnAdded = false;
+        if (o != null) {
+            if (this.observers == null) {
+                this.observers = new ArrayList<>();
+            }
+            if (!this.observers.contains(o)) {
+                blnAdded = this.observers.add(o);
+            }
+        }
+        return blnAdded;
+    }
+
+    @Override
+    public Boolean removeObserver(IObserver o) {
+        Boolean blnRemoved = false;
+        if (o != null) {
+            if (this.observers != null && 0 < this.observers.size()) {
+                blnRemoved = this.observers.remove(o);
+            }
+        }
+        return blnRemoved;
+    }
+
+    @Override
+    public void notifyObservers() {
+        if (this.observers != null && 0 < this.observers.size()) {
+            for (IObserver currentObserver : this.observers) {
+                currentObserver.update();
+            }
+        }    
     }
 }

@@ -117,7 +117,7 @@ public class Trader {
         }
     }
     
-    public void tradeTest(Currency[] currencies, int numberOfPredictions, int predictionIndex){
+    public void tradeBenchmark(Currency[] currencies, int numberOfPredictions, int predictionIndex){
         int noOfCurrencies = currencies.length;
         ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
@@ -197,6 +197,16 @@ public class Trader {
             System.out.println("Finished holding " + wallet.getValue() + " " + wallet.getHoldingID());
         }
         System.out.println("$" + wallet.getUSDValue(currencies));
+    }
+    
+    private void tradeBenchmark(Currency[] currencies, int predictionIndex) {
+        int noOfCurrencies = currencies.length;
+        ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
+        ExchangeRate desired = new ExchangeRate();
+        Double growth;
+        Double predictedGrowth;
+        
+        
     }
     
     private ExchangeRate getHighestGrowth(ExchangeRate[] rates){
