@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jkellaway.guihelpers;
+package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

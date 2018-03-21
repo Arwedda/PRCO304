@@ -10,7 +10,8 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Wallet;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.valuepredictor.CryptocurrencyValuePredictor;
-import com.jkellaway.guihelpers.TableConfigurer;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.TableConfigurer;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.TextBoxHelper;
 import java.awt.Desktop;
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -275,6 +276,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblTradeAmount.setText("Start Amount:");
 
         txtStartAmount.setText("0.00");
+        txtStartAmount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                txtStartAmountKeyTyped(evt);
+            }
+        });
 
         jpnlHoldMode.setBorder(javax.swing.BorderFactory.createTitledBorder("Hold Mode"));
 
@@ -358,16 +364,16 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         jpnlInvestmentProtectionLayout.setHorizontalGroup(
             jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
-                .addGap(338, 338, 338)
+                .addGap(326, 326, 326)
                 .addComponent(jLabel2)
-                .addContainerGap(383, Short.MAX_VALUE))
+                .addContainerGap(395, Short.MAX_VALUE))
         );
         jpnlInvestmentProtectionLayout.setVerticalGroup(
             jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jpnlInvestmentProtectionLayout.createSequentialGroup()
-                .addContainerGap(236, Short.MAX_VALUE)
+            .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
+                .addGap(200, 200, 200)
                 .addComponent(jLabel2)
-                .addGap(216, 216, 216))
+                .addContainerGap(252, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Investment Protection", jpnlInvestmentProtection);
@@ -629,21 +635,45 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             JOptionPane.showMessageDialog(this, "Please select a trade mode.", "Cryptocurrency Value Predictor", JOptionPane.WARNING_MESSAGE);
             tglbtnTrade.setSelected(false);
         } else {
-            if (tglbtnTrade.isSelected()){
-                boolean gofai = rdbtnGOFAI.isSelected();
+            try {
                 Double tradeAmount = Double.parseDouble(txtStartAmount.getText());
-                boolean holdUSD = rdbtnUSD.isSelected();
-                cryptocurrencyValuePredictor.startTrading(gofai, tradeAmount, holdUSD);
-                tglbtnTrade.setText("Stop Trading");
-                JOptionPane.showMessageDialog(this, "Trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                cryptocurrencyValuePredictor.stopTrading();
-                tglbtnTrade.setText("Start Trading");
-                JOptionPane.showMessageDialog(this, "Not trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+                if (tradeAmount < Globals.MINIMUM_INVESTMENT) {
+                    JOptionPane.showMessageDialog(this, "Starting trade value too low.", "Invalid Request!", JOptionPane.WARNING_MESSAGE);
+                    tglbtnTrade.setSelected(false);
+                } else {
+                    if (tglbtnTrade.isSelected()){
+                        boolean gofai = rdbtnGOFAI.isSelected();
+                        boolean holdUSD = rdbtnUSD.isSelected();
+                        cryptocurrencyValuePredictor.startTrading(gofai, tradeAmount, holdUSD);
+                        toggleEnabled();
+                        tglbtnTrade.setText("Stop Trading");
+                        JOptionPane.showMessageDialog(this, "Trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        cryptocurrencyValuePredictor.stopTrading();
+                        toggleEnabled();
+                        tglbtnTrade.setText("Start Trading");
+                        JOptionPane.showMessageDialog(this, "Not trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Invalid starting trade value", "Invalid Request!", JOptionPane.WARNING_MESSAGE);
+                tglbtnTrade.setSelected(false);
             }
         }
     }//GEN-LAST:event_tglbtnTradeActionPerformed
 
+    private void txtStartAmountKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtStartAmountKeyTyped
+        TextBoxHelper.forceNumeric(evt);
+    }//GEN-LAST:event_txtStartAmountKeyTyped
+
+    private void toggleEnabled() {
+        rdbtnOff.setEnabled(!rdbtnOff.isEnabled());
+        rdbtnGOFAI.setEnabled(!rdbtnGOFAI.isEnabled());
+        txtStartAmount.setEnabled(!txtStartAmount.isEnabled());
+        rdbtnUSD.setEnabled(!rdbtnUSD.isEnabled());
+        rdbtnCrypto.setEnabled(!rdbtnCrypto.isEnabled());
+    }
+    
     private void openWebpage(String url) {
         if (Desktop.isDesktopSupported()) {
             try {

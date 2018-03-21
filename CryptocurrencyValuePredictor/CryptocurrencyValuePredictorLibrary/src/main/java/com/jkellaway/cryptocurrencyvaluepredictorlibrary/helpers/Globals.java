@@ -18,6 +18,7 @@ public class Globals {
     public static final String LTC_TRADES = "https://api.gdax.com/products/LTC-USD/trades";
     public static final Double BTC_TAKER_FEE = 0.25;
     public static final Double TAKER_FEE = 0.30;
+    public static final Double MINIMUM_INVESTMENT = 0.01;
     
     public static final int NUMBEROFPREDICTIONS = 20;
     public static final int READINGSREQUIRED = 15000 + NUMBEROFPREDICTIONS;
