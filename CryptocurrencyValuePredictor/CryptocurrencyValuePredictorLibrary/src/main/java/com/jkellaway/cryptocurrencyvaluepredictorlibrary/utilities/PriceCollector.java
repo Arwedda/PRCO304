@@ -244,9 +244,11 @@ public class PriceCollector implements ISubject {
                     lap = 2;
                 } else if (lap == 2) {
                     System.out.println("[INFO] Finished historic collection. Switching current price mode");
-                    notifyObservers();
                     lap = 3;
+                    /*
                     collector.shutdownNow();
+                    */
+                    notifyObservers();
                 }
             }
             
@@ -261,7 +263,7 @@ public class PriceCollector implements ISubject {
                             if (!collectionCompleted(gap.getRatesRequired(), currency.noOfHistoricRates())){
                                 trades = getHistoricTrades(currency, gap);
                                 calculateHistoricAverages(currency, trades, gap);
-                                boolean noNewData = currency.dumpDuplicates();
+                                boolean noNewData = currency.dumpDuplicates(trades[trades.length - 1].getTime().isBefore(gap.getStartTime().minusMinutes(gap.getRatesRequired())));
                                 if (noNewData) {
                                     currency.getGaps().remove(gap);
                                 } else {
@@ -328,6 +330,9 @@ public class PriceCollector implements ISubject {
                 gap.setRatesRequired(gap.getRatesRequired() - missingReadings);
 
                 for (GDAXTrade trade : trades){
+                    if (currency.getHistoricRates().size() == gap.getRatesRequired()) {
+                        break;
+                    }
                     if (trade.getTime().equals(tradeTime.minusMinutes(1))) {
                         currency.addHistoricTrade(trade);
                     } else {
@@ -344,13 +349,13 @@ public class PriceCollector implements ISubject {
         };
         if (lap == 1) {
             collector.scheduleWithFixedDelay(automatedCollection, 1, 1, TimeUnit.SECONDS);
-        } else {
+        }/* else {
             int initDelay = 60 - LocalDateTime.now().getSecond();
             if (initDelay == 60) {
                 initDelay = 1;
             }
             collector.scheduleAtFixedRate(automatedCollection, initDelay, 60, TimeUnit.SECONDS);
-        }
+        }*/
     }
 
     public LocalDateTime getFirstRelevantRate() {
@@ -360,7 +365,9 @@ public class PriceCollector implements ISubject {
     public void benchmarkComplete(Currency[] currencies) {
         this.currencies = currencies;
         lap = -1;
+        /*
         initCollector();
+        */
     }
     
     public int getLap(){

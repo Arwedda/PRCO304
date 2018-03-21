@@ -29,7 +29,7 @@ public class PricePredictor {
     private static int totalReadings = 0;
 
     
-    public static Currency[] makePredictions(Currency[] currencies){
+    public static Currency[] initialPredictions(Currency[] currencies){
         initialiseTests();
         GOFAI(currencies);
         neuralNetwork(currencies);
@@ -55,15 +55,15 @@ public class PricePredictor {
     private static void GOFAICalculations(Currency currency){
         Double[] predictions;
         Double[] deltas;
-        ExchangeRate[] rates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
-        ExchangeRate[] currentRates;
-        int highestIndex = rates.length - 1;
+        ExchangeRate[] allRates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
+        ExchangeRate[] relevantRates;
+        int highestIndex = allRates.length - 1;
         int noOfPredictions = highestIndex - Globals.NUMBEROFPREDICTIONS;
         Double actualGrowth;
 
         for (int i = 0; i <= noOfPredictions; i++) {
-            currentRates = Arrays.copyOfRange(rates, noOfPredictions - i, highestIndex - i);
-            predictions = predict(currentRates);
+            relevantRates = Arrays.copyOfRange(allRates, noOfPredictions - i, highestIndex - i);
+            predictions = predict(relevantRates);
             currency.getRates().get(highestIndex - i).gofaiGrowth = predictions;
             try {
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
@@ -118,6 +118,27 @@ public class PricePredictor {
     }
     
     private static void neuralNetworkResults(){
+        
+    }
+    
+    public static Currency[] singlePrediction(Currency[] currencies) {
+        for (Currency currency : currencies){
+            GOFAICalculation(currency);
+            neuralNetworkCalculation(currency);
+        }
+        return currencies;
+    }
+    
+    private static void GOFAICalculation(Currency currency) {
+        Double[] predictions;
+        ExchangeRate[] allRates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
+        int highestIndex = allRates.length - 1;
+        ExchangeRate[] relevantRates = Arrays.copyOfRange(allRates, highestIndex - Globals.NUMBEROFPREDICTIONS, highestIndex);
+        predictions = predict(relevantRates);
+        currency.getRates().get(highestIndex).gofaiGrowth = predictions;
+    }
+    
+    private static void neuralNetworkCalculation(Currency currency) {
         
     }
 }

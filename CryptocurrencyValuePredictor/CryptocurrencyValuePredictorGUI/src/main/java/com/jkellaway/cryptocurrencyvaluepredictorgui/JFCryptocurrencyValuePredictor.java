@@ -14,6 +14,7 @@ import com.jkellaway.guihelpers.TableConfigurer;
 import java.awt.Desktop;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -72,7 +73,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             Currency[] currencies = cryptocurrencyValuePredictor.getCurrencies();
             Trader[] gofaiTraders = ArrayHelper.merge(cryptocurrencyValuePredictor.getGOFAITradersHold(), cryptocurrencyValuePredictor.getGOFAITradersUSD());
             LocalDateTime startTime = cryptocurrencyValuePredictor.getPriceCollector().getFirstRelevantRate();
-            int maxTrades = Globals.READINGSREQUIRED - Globals.NUMBEROFPREDICTIONS;
+            int maxTrades = (int) ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()) - Globals.NUMBEROFPREDICTIONS;
             double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(currencies);
             double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(currencies);
             this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime));
@@ -170,8 +171,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblTradeAmount = new javax.swing.JLabel();
         txtStartAmount = new javax.swing.JTextField();
         jpnlHoldMode = new javax.swing.JPanel();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
+        rdbtnUSD = new javax.swing.JRadioButton();
+        rdbtnCrypto = new javax.swing.JRadioButton();
         tglbtnTrade = new javax.swing.JToggleButton();
         jpnlInvestmentProtection = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -277,12 +278,12 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         jpnlHoldMode.setBorder(javax.swing.BorderFactory.createTitledBorder("Hold Mode"));
 
-        btngrpHoldMode.add(jRadioButton1);
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("USD");
+        btngrpHoldMode.add(rdbtnUSD);
+        rdbtnUSD.setSelected(true);
+        rdbtnUSD.setText("USD");
 
-        btngrpHoldMode.add(jRadioButton2);
-        jRadioButton2.setText("Cryptocurrency");
+        btngrpHoldMode.add(rdbtnCrypto);
+        rdbtnCrypto.setText("Cryptocurrency");
 
         javax.swing.GroupLayout jpnlHoldModeLayout = new javax.swing.GroupLayout(jpnlHoldMode);
         jpnlHoldMode.setLayout(jpnlHoldModeLayout);
@@ -290,9 +291,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             jpnlHoldModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jpnlHoldModeLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jRadioButton1)
+                .addComponent(rdbtnUSD)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jRadioButton2)
+                .addComponent(rdbtnCrypto)
                 .addContainerGap())
         );
         jpnlHoldModeLayout.setVerticalGroup(
@@ -300,8 +301,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             .addGroup(jpnlHoldModeLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jpnlHoldModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jRadioButton1)
-                    .addComponent(jRadioButton2))
+                    .addComponent(rdbtnUSD)
+                    .addComponent(rdbtnCrypto))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -426,9 +427,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                         .addGap(18, 18, 18)
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlblFirstTradeTime)
-                            .addGroup(jpnlGOFAILayout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jlblMaxTrades)))
+                            .addComponent(jlblMaxTrades))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 305, Short.MAX_VALUE)
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlblBest)
@@ -626,10 +625,22 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     }//GEN-LAST:event_lblContactDetails2MouseDragged
 
     private void tglbtnTradeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tglbtnTradeActionPerformed
-        if (tglbtnTrade.isSelected()){
-            JOptionPane.showMessageDialog(this, "Trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+        if (rdbtnOff.isSelected()){
+            JOptionPane.showMessageDialog(this, "Please select a trade mode.", "Cryptocurrency Value Predictor", JOptionPane.WARNING_MESSAGE);
+            tglbtnTrade.setSelected(false);
         } else {
-            JOptionPane.showMessageDialog(this, "Not trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+            if (tglbtnTrade.isSelected()){
+                boolean gofai = rdbtnGOFAI.isSelected();
+                Double tradeAmount = Double.parseDouble(txtStartAmount.getText());
+                boolean holdUSD = rdbtnUSD.isSelected();
+                cryptocurrencyValuePredictor.startTrading(gofai, tradeAmount, holdUSD);
+                tglbtnTrade.setText("Stop Trading");
+                JOptionPane.showMessageDialog(this, "Trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                cryptocurrencyValuePredictor.stopTrading();
+                tglbtnTrade.setText("Start Trading");
+                JOptionPane.showMessageDialog(this, "Not trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+            }
         }
     }//GEN-LAST:event_tglbtnTradeActionPerformed
 
@@ -692,8 +703,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.ButtonGroup btngrpHoldMode;
     private javax.swing.ButtonGroup btngrpTradeMode;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel jlblBest;
     private javax.swing.JLabel jlblBestPerformance;
@@ -725,9 +734,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblTradeAmount;
     private javax.swing.JPanel pnlHome;
+    private javax.swing.JRadioButton rdbtnCrypto;
     private javax.swing.JRadioButton rdbtnGOFAI;
     private javax.swing.JRadioButton rdbtnNeuralNetwork;
     private javax.swing.JRadioButton rdbtnOff;
+    private javax.swing.JRadioButton rdbtnUSD;
     private javax.swing.JToggleButton tglbtnTrade;
     private javax.swing.JTextField txtStartAmount;
     // End of variables declaration//GEN-END:variables

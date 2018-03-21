@@ -172,7 +172,7 @@ public class Currency {
         historicRates.clear();
     }
     
-    public boolean dumpDuplicates(){
+    public boolean dumpDuplicates(boolean passedGap){
         List<ExchangeRate> toRemove = new ArrayList<>();
         for (ExchangeRate rate : rates){
             for (ExchangeRate rate2 : historicRates) {
@@ -182,13 +182,9 @@ public class Currency {
             }
         }
         historicRates.removeAll(toRemove);
-        if (historicRates.isEmpty()){
-            if (historicTrades.isEmpty()){
-                getLastGap().setPaginationStart(getLastGap().getPaginationStart() - 100);
-                return false;
-            }
-            if (historicTrades.get(0).getTime().isBefore(getLastGap().getStartTime().minusMinutes(historicRates.size() + 1))){
-                historicTrades.clear();
+        
+        if (historicRates.isEmpty()) {
+            if (historicTrades.isEmpty() && passedGap) {
                 return true;
             }
             getLastGap().setPaginationStart(getLastHistoricTrade().getTrade_id());

@@ -44,6 +44,10 @@ public class Trader {
         return tradeMode;
     }
 
+    public void setTradeMode(String tradeMode) {
+        this.tradeMode = tradeMode;
+    }
+
     public String getHoldMode() {
         return holdMode;
     }
@@ -199,14 +203,71 @@ public class Trader {
         System.out.println("$" + wallet.getUSDValue(currencies));
     }
     
-    private void tradeBenchmark(Currency[] currencies, int predictionIndex) {
+    public void tradeBenchmark(Currency[] currencies, int predictionIndex) {
         int noOfCurrencies = currencies.length;
         ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
         Double growth;
         Double predictedGrowth;
         
+        for (int i = 0; i < noOfCurrencies; i++) {
+            int index = currencies[i].getRates().size() - 2;
+            rates[i] = currencies[i].getRates().get(index);
+        }
         
+        switch (tradeMode) {
+            case "NeuralNetwork":
+                growth = 0.0;
+                desired = new ExchangeRate();
+                for (ExchangeRate rate : rates) {
+                    predictedGrowth = rate.getNeuralNetworkNextGrowth();
+                    if (growth < predictedGrowth) {
+                        desired = rate;
+                        growth = predictedGrowth;
+                    }
+                }
+                if (growth == 0.0 && holdMode.equals("Crypto")){
+                    break;
+                }
+                trade(desired, rates);
+                break;
+            case "GOFAI":
+                growth = 0.0;
+                desired = new ExchangeRate();
+                for (ExchangeRate rate : rates) {
+                    predictedGrowth = rate.gofaiGrowth[predictionIndex];
+                    if (growth < predictedGrowth) {
+                        desired = rate;
+                        growth = predictedGrowth;
+                    }
+                }
+                if (growth == 0.0 && holdMode.equals("Crypto")){
+                    break;
+                }
+                trade(desired, rates);
+                break;
+            case "Manual":
+                ExchangeRate[] nextRates = new ExchangeRate[4];
+                for (int j = 0; j < noOfCurrencies ; j++) {
+                    nextRates[j] = currencies[j].getRate();
+                }
+                if (holdMode.equals("BEST")){
+                    desired = getHighestGrowth(nextRates);
+                    trade(desired, rates);
+                } else if (holdMode.equals("WORST")){
+                    desired = getLowestGrowth(nextRates);
+                    trade(desired, rates);
+                } else {
+                    //HOLD
+                    if (desired.getCurrency_id().equals("Unknown")){
+                        desired = getRate(rates);
+                        trade(desired, rates);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
     }
     
     private ExchangeRate getHighestGrowth(ExchangeRate[] rates){

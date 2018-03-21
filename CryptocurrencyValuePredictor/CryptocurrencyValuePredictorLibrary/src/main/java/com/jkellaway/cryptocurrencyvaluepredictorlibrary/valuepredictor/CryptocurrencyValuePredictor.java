@@ -124,6 +124,16 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     public Trader[] getGOFAITradersHold() {
         return GOFAITradersHold;
     }
+    
+    public void startTrading(boolean gofai, Double startValue, boolean holdUSD) {
+        String tradeMode = (gofai ? "GOFAI" : "NeuralNetwork");
+        String holdMode =  (holdUSD ? "USD" : "Crypto");
+        trader = new Trader("USD", startValue, tradeMode, holdMode);
+    }
+    
+    public void stopTrading() {
+        trader.setTradeMode("Manual");
+    }
 
     @Override
     public Boolean registerObserver(IObserver o) {
@@ -162,12 +172,12 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     @Override
     public void update() {
         currencies = priceCollector.getCurrencies();
-        if (priceCollector.getLap() == 2) {
-            currencies = PricePredictor.makePredictions(currencies);
+        if (priceCollector.getLap() == 3) {
+            currencies = PricePredictor.initialPredictions(currencies);
             priceCollector.benchmarkComplete(currencies);
             tradeTest();
         } else if (priceCollector.getLap() == -1) {
-            currencies = PricePredictor.makePredictions(Currencies);
+            currencies = PricePredictor.singlePrediction(currencies);
             priceCollector.setCurrencies(currencies);
             trade();
         }
