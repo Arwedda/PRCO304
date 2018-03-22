@@ -19,20 +19,21 @@ public class Trader {
     private GDAXAPIController gdaxAPIController;
     private Wallet wallet;
     private String tradeMode;
+    private int tradeModeIndex;
     private String holdMode;
-
-    
     
     public Trader(){
         gdaxAPIController = new GDAXAPIController();
         wallet = new Wallet(Globals.STARTINGUNITS, Globals.STARTINGVALUE);
         this.tradeMode = "unknown";
+        this.tradeModeIndex = -1;
         this.holdMode = "unknown";
     }
     
-    public Trader(String currency, Double value, String tradeMode, String holdMode){
+    public Trader(String currency, Double value, String tradeMode, int tradeModeIndex, String holdMode){
         wallet = new Wallet(currency, value);
         this.tradeMode = tradeMode;
+        this.tradeModeIndex = tradeModeIndex;
         this.holdMode = holdMode;
     }
 
@@ -48,6 +49,18 @@ public class Trader {
         this.tradeMode = tradeMode;
     }
 
+    public int getTradeModeIndex() {
+        return tradeModeIndex;
+    }
+
+    public void setTradeModeIndex(int tradeModeIndex) {
+        this.tradeModeIndex = tradeModeIndex - 1;
+    }
+
+    public void setHoldMode(String holdMode) {
+        this.holdMode = holdMode;
+    }
+
     public String getHoldMode() {
         return holdMode;
     }
@@ -61,7 +74,7 @@ public class Trader {
             case "NeuralNetwork":
                 for (Currency currency : currencies) {
                     rate = currency.getRate();
-                    predictedGrowth = rate.getNeuralNetworkNextGrowth();
+                    predictedGrowth = rate.getNeuralNetworkNextGrowth()[tradeModeIndex];
                     if (growth < predictedGrowth) {
                         desired = rate;
                         growth = predictedGrowth;
@@ -72,7 +85,7 @@ public class Trader {
             case "GOFAI":
                 for (Currency currency : currencies) {
                     rate = currency.getRate();
-                    predictedGrowth = rate.getGofaiNextGrowth();
+                    predictedGrowth = rate.getGofaiNextGrowth()[tradeModeIndex];
                     if (growth < predictedGrowth) {
                         desired = rate;
                         growth = predictedGrowth;
@@ -106,7 +119,6 @@ public class Trader {
     }
     
     private void makeTrade(ExchangeRate current, ExchangeRate desired){
-        Double feeMultiplier = ((100 - Globals.TAKER_FEE) / 100);
         Double value = wallet.getValue();
         if (!current.getCurrency_id().equals("Unknown") && desired.getCurrency_id().equals("Unknown")){
             wallet.setValue(value * current.getValue());
@@ -121,7 +133,7 @@ public class Trader {
         }
     }
     
-    public void tradeBenchmark(Currency[] currencies, int numberOfPredictions, int predictionIndex){
+    public void tradeBenchmark(Currency[] currencies, int numberOfPredictions){
         int noOfCurrencies = currencies.length;
         ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
@@ -145,7 +157,7 @@ public class Trader {
                     growth = 0.0;
                     desired = new ExchangeRate();
                     for (ExchangeRate rate : rates) {
-                        predictedGrowth = rate.getNeuralNetworkNextGrowth();
+                        predictedGrowth = rate.getNeuralNetworkNextGrowth()[tradeModeIndex];
                         if (growth < predictedGrowth) {
                             desired = rate;
                             growth = predictedGrowth;
@@ -160,7 +172,7 @@ public class Trader {
                     growth = 0.0;
                     desired = new ExchangeRate();
                     for (ExchangeRate rate : rates) {
-                        predictedGrowth = rate.gofaiGrowth[predictionIndex];
+                        predictedGrowth = rate.getGofaiNextGrowth()[tradeModeIndex];
                         if (growth < predictedGrowth) {
                             desired = rate;
                             growth = predictedGrowth;
@@ -203,7 +215,7 @@ public class Trader {
         System.out.println("$" + wallet.getUSDValue(currencies));
     }
     
-    public void tradeBenchmark(Currency[] currencies, int predictionIndex) {
+    public void tradeBenchmark(Currency[] currencies) {
         int noOfCurrencies = currencies.length;
         ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
@@ -220,7 +232,7 @@ public class Trader {
                 growth = 0.0;
                 desired = new ExchangeRate();
                 for (ExchangeRate rate : rates) {
-                    predictedGrowth = rate.getNeuralNetworkNextGrowth();
+                    predictedGrowth = rate.getNeuralNetworkNextGrowth()[tradeModeIndex];
                     if (growth < predictedGrowth) {
                         desired = rate;
                         growth = predictedGrowth;
@@ -235,7 +247,7 @@ public class Trader {
                 growth = 0.0;
                 desired = new ExchangeRate();
                 for (ExchangeRate rate : rates) {
-                    predictedGrowth = rate.gofaiGrowth[predictionIndex];
+                    predictedGrowth = rate.getGofaiNextGrowth()[tradeModeIndex];
                     if (growth < predictedGrowth) {
                         desired = rate;
                         growth = predictedGrowth;

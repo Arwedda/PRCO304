@@ -17,12 +17,10 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     private String timestamp;
     private Double value;
     private Double growth;
-    private Double gofaiNextGrowth;
-    private Double neuralNetworkNextGrowth;
+    private transient Double[] gofaiNextGrowth;
+    private transient Double[] neuralNetworkNextGrowth;
     private Integer lastTrade;
     private transient LocalDateTime ldtTimestamp;
-    
-    public Double[] gofaiGrowth = new Double[20];
     
     public ExchangeRate() {
         this.currency_id = "Unknown";
@@ -30,29 +28,45 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         this.value = 0.0;
         this.lastTrade = null;
         this.growth = null;
-        this.gofaiNextGrowth = null;
-        this.neuralNetworkNextGrowth = null;
+        this.gofaiNextGrowth = new Double[20];
+        this.neuralNetworkNextGrowth = new Double[20];
         this.ldtTimestamp = null;
     }
 
-    public ExchangeRate(String currency_id, LocalDateTime timestamp, Double value, Double growth, Double gofaiNextGrowth, Double neuralNetworkNextGrowth, Integer lastTrade) {
+    public ExchangeRate(String currency_id, LocalDateTime timestamp, Double value, Double growth, Double[] gofaiNextGrowth, Double[] neuralNetworkNextGrowth, Integer lastTrade) {
         this.currency_id = currency_id;
         this.timestamp = timestamp.toString();
         this.value = value;
         this.growth = growth;
-        this.gofaiNextGrowth = gofaiNextGrowth;
-        this.neuralNetworkNextGrowth = neuralNetworkNextGrowth;
+        try {
+            this.gofaiNextGrowth = (gofaiNextGrowth.length < 1) ? new Double[20] : gofaiNextGrowth;
+        } catch (Exception e) {
+            this.gofaiNextGrowth = new Double[20];
+        }
+        try {
+            this.neuralNetworkNextGrowth = (neuralNetworkNextGrowth.length < 1) ? new Double[20] : neuralNetworkNextGrowth;
+        } catch (Exception e) {
+            this.neuralNetworkNextGrowth = new Double[20];
+        }
         this.lastTrade = lastTrade;
         this.ldtTimestamp = timestamp;
     }
 
-    public ExchangeRate(String currency_id, String timestamp, Double value, Double growth, Double gofaiNextGrowth, Double neuralNetworkNextGrowth, Integer lastTrade) {
+    public ExchangeRate(String currency_id, String timestamp, Double value, Double growth, Double[] gofaiNextGrowth, Double[] neuralNetworkNextGrowth, Integer lastTrade) {
         this.currency_id = currency_id;
         this.timestamp = timestamp;
         this.value = value;
         this.growth = growth;
-        this.gofaiNextGrowth = gofaiNextGrowth;
-        this.neuralNetworkNextGrowth = neuralNetworkNextGrowth;
+        try {
+            this.gofaiNextGrowth = (gofaiNextGrowth.length < 1) ? new Double[20] : gofaiNextGrowth;
+        } catch (Exception e) {
+            this.gofaiNextGrowth = new Double[20];
+        }
+        try {
+            this.neuralNetworkNextGrowth = (neuralNetworkNextGrowth.length < 1) ? new Double[20] : neuralNetworkNextGrowth;
+        } catch (Exception e) {
+            this.neuralNetworkNextGrowth = new Double[20];
+        }
         this.lastTrade = lastTrade;
         this.ldtTimestamp = LocalDateTimeHelper.localDateTimeParser(timestamp);
     }
@@ -103,19 +117,19 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         this.lastTrade = lastTrade;
     }
 
-    public Double getGofaiNextGrowth() {
+    public Double[] getGofaiNextGrowth() {
         return gofaiNextGrowth;
     }
 
-    public void setGofaiNextGrowth(Double gofaiNextGrowth) {
+    public void setGofaiNextGrowth(Double[] gofaiNextGrowth) {
         this.gofaiNextGrowth = gofaiNextGrowth;
     }
 
-    public Double getNeuralNetworkNextGrowth() {
+    public Double[] getNeuralNetworkNextGrowth() {
         return neuralNetworkNextGrowth;
     }
 
-    public void setNeuralNetworkNextGrowth(Double neuralNetworkNextGrowth) {
+    public void setNeuralNetworkNextGrowth(Double[] neuralNetworkNextGrowth) {
         this.neuralNetworkNextGrowth = neuralNetworkNextGrowth;
     }
 

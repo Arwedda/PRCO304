@@ -16,8 +16,8 @@ public class Globals {
     public static final String BTC_TRADES = "https://api.gdax.com/products/BTC-USD/trades";
     public static final String ETH_TRADES = "https://api.gdax.com/products/ETH-USD/trades";
     public static final String LTC_TRADES = "https://api.gdax.com/products/LTC-USD/trades";
-    public static final Double BTC_TAKER_FEE = 0.25;
-    public static final Double TAKER_FEE = 0.30;
+    public static final Double BTC_TAKER_FEE_MULTIPLIER = 0.9975;
+    public static final Double TAKER_FEE_MULTIPLIER = 0.997;
     public static final Double MINIMUM_INVESTMENT = 0.01;
     
     public static final int NUMBEROFPREDICTIONS = 20;

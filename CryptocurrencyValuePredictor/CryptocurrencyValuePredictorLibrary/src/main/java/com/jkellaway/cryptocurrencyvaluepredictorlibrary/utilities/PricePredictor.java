@@ -64,7 +64,7 @@ public class PricePredictor {
         for (int i = 0; i <= noOfPredictions; i++) {
             relevantRates = Arrays.copyOfRange(allRates, noOfPredictions - i, highestIndex - i);
             predictions = predict(relevantRates);
-            currency.getRates().get(highestIndex - i).gofaiGrowth = predictions;
+            currency.getRates().get(highestIndex - i).setGofaiNextGrowth(predictions);
             try {
                 actualGrowth = currency.getRates().get(highestIndex - i + 1).getGrowth();
                 deltas = MathsHelper.deltas(actualGrowth, predictions);
@@ -135,7 +135,7 @@ public class PricePredictor {
         int highestIndex = allRates.length - 1;
         ExchangeRate[] relevantRates = Arrays.copyOfRange(allRates, highestIndex - Globals.NUMBEROFPREDICTIONS, highestIndex);
         predictions = predict(relevantRates);
-        currency.getRates().get(highestIndex).gofaiGrowth = predictions;
+        currency.getRates().get(highestIndex).setGofaiNextGrowth(predictions);
     }
     
     private static void neuralNetworkCalculation(Currency currency) {

@@ -187,7 +187,7 @@ public class Currency {
             if (historicTrades.isEmpty() && passedGap) {
                 return true;
             }
-            getLastGap().setPaginationStart(getLastHistoricTrade().getTrade_id());
+            getLastGap().setPaginationStart(getLastGap().getPaginationStart() - 100);
         }
         return false;
     }

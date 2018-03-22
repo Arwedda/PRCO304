@@ -159,7 +159,7 @@ public class PriceCollector implements ISubject {
                         currency.setValue(rate);
                         if (connectedToDatabase){
                             exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
-                            if (0 < currency.getGaps().size()) {
+                            if (0 < currency.getGaps().size() && 0 < trades.length) {
                                 if (currency.getLastGap().getPaginationStart() == 0) {
                                     currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
                                     currency.getLastGap().setStartTime(currency.getLastGap().getStartTime().minusMinutes(1));
@@ -264,7 +264,7 @@ public class PriceCollector implements ISubject {
                                 trades = getHistoricTrades(currency, gap);
                                 calculateHistoricAverages(currency, trades, gap);
                                 boolean noNewData = currency.dumpDuplicates(trades[trades.length - 1].getTime().isBefore(gap.getStartTime().minusMinutes(gap.getRatesRequired())));
-                                if (noNewData) {
+                                if (noNewData || gap.getPaginationStart() < 0) {
                                     currency.getGaps().remove(gap);
                                 } else {
                                     if (connectedToDatabase){

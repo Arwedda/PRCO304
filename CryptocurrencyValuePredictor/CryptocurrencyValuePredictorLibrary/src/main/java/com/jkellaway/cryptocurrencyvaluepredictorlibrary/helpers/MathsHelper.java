@@ -30,4 +30,26 @@ public class MathsHelper {
         }
         return deltas;
     }
+    
+    public static Double max(Double[] array) {
+        if (0 < array.length) {
+            Double max = array[0];
+            for (Double dbl : array) {
+                max = (max < dbl) ? dbl : max;
+            }
+            return max;
+        }
+        return null;
+    }
+    
+    public static Double min(Double[] array) {
+        if (0 < array.length) {
+            Double min = array[0];
+            for (Double dbl : array) {
+                min = (min < dbl) ? min : dbl;
+            }
+            return min;
+        }
+        return null;
+    }
 }

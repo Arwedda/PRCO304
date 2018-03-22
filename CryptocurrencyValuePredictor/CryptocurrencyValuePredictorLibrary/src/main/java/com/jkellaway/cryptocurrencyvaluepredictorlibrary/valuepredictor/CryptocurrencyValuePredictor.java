@@ -40,15 +40,15 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         priceCollector.registerObserver(this);
         trader = new Trader();
         observers = new ArrayList<>();
-        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BCH");
-        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BTC");
-        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "ETH");
-        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "LTC");
-        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "BEST");
-        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", "WORST");
+        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "BCH");
+        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "BTC");
+        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "ETH");
+        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "LTC");
+        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "BEST");
+        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "WORST");
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
-            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "Crypto");
-            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", "USD");
+            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", i, "Crypto");
+            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", i, "USD");
         }
     }
 
@@ -82,26 +82,27 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     }
     
     private void tradeTest(){
-        best.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS, 0);
-        worst.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS, 0);
+        best.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
+        worst.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
         for (Trader holder : holders) {
-            holder.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS, 0);
+            holder.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
         }
         for (int i = 0; i < GOFAITradersUSD.length; i++){
-            GOFAITradersUSD[i].tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS, i);
-            GOFAITradersHold[i].tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS, i);
+            GOFAITradersUSD[i].tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
+            GOFAITradersHold[i].tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
         }
     }
     
     private void trade() {
-        best.tradeBenchmark(currencies, 0);
-        worst.tradeBenchmark(currencies, 0);
+        //trader.autoTrade(currencies);
+        best.tradeBenchmark(currencies);
+        worst.tradeBenchmark(currencies);
         for (Trader holder : holders) {
-            holder.tradeBenchmark(currencies, 0);
+            holder.tradeBenchmark(currencies);
         }
         for (int i = 0; i < GOFAITradersUSD.length; i++){
-            GOFAITradersUSD[i].tradeBenchmark(currencies, i);
-            GOFAITradersHold[i].tradeBenchmark(currencies, i);
+            GOFAITradersUSD[i].tradeBenchmark(currencies);
+            GOFAITradersHold[i].tradeBenchmark(currencies);
         }
     }
     
@@ -125,10 +126,10 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return GOFAITradersHold;
     }
     
-    public void startTrading(boolean gofai, Double startValue, boolean holdUSD) {
+    public void startTrading(boolean gofai, int tradeModeIndex, Double startValue, boolean holdUSD) {
         String tradeMode = (gofai ? "GOFAI" : "NeuralNetwork");
         String holdMode =  (holdUSD ? "USD" : "Crypto");
-        trader = new Trader("USD", startValue, tradeMode, holdMode);
+        trader = new Trader("USD", startValue, tradeMode, tradeModeIndex, holdMode);
     }
     
     public void stopTrading() {
