@@ -17,6 +17,7 @@ import java.awt.Desktop;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -198,10 +199,12 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         cbStrategy = new javax.swing.JComboBox<>();
         lblTradeAmount = new javax.swing.JLabel();
         txtStartAmount = new javax.swing.JTextField();
+        tglbtnTrade = new javax.swing.JToggleButton();
+        lblAPIKey = new javax.swing.JLabel();
+        pwdAPIKey = new javax.swing.JPasswordField();
         jpnlHoldMode = new javax.swing.JPanel();
         rdbtnUSD = new javax.swing.JRadioButton();
         rdbtnCrypto = new javax.swing.JRadioButton();
-        tglbtnTrade = new javax.swing.JToggleButton();
         pnlRight = new javax.swing.JPanel();
         lblStartTime = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -332,11 +335,26 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblTradeAmount.setText("Start Amount:");
 
         txtStartAmount.setText("0.00");
+        txtStartAmount.setMaximumSize(new java.awt.Dimension(28, 20));
+        txtStartAmount.setMinimumSize(new java.awt.Dimension(28, 20));
         txtStartAmount.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtStartAmountKeyTyped(evt);
             }
         });
+
+        tglbtnTrade.setText("Start Trading");
+        tglbtnTrade.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tglbtnTradeActionPerformed(evt);
+            }
+        });
+
+        lblAPIKey.setText("GDAX API Key:");
+
+        pwdAPIKey.setMaximumSize(new java.awt.Dimension(150, 25));
+        pwdAPIKey.setMinimumSize(new java.awt.Dimension(150, 25));
+        pwdAPIKey.setPreferredSize(new java.awt.Dimension(150, 25));
 
         jpnlHoldMode.setBorder(javax.swing.BorderFactory.createTitledBorder("Hold Mode"));
         jpnlHoldMode.setMaximumSize(new java.awt.Dimension(170, 60));
@@ -369,13 +387,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addContainerGap())
         );
 
-        tglbtnTrade.setText("Start Trading");
-        tglbtnTrade.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tglbtnTradeActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout pnlLeftLayout = new javax.swing.GroupLayout(pnlLeft);
         pnlLeft.setLayout(pnlLeftLayout);
         pnlLeftLayout.setHorizontalGroup(
@@ -383,22 +394,25 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             .addGroup(pnlLeftLayout.createSequentialGroup()
                 .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlLeftLayout.createSequentialGroup()
+                        .addGap(96, 96, 96)
+                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(lblAPIKey)
+                            .addComponent(lblTradeAmount))
+                        .addGap(18, 18, 18)
+                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(pwdAPIKey, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(pnlLeftLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jpnlTradeMode, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jpnlHoldMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(pnlLeftLayout.createSequentialGroup()
-                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlLeftLayout.createSequentialGroup()
-                                .addGap(100, 100, 100)
-                                .addComponent(lblTradeAmount)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(pnlLeftLayout.createSequentialGroup()
-                                .addGap(153, 153, 153)
-                                .addComponent(tglbtnTrade)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                            .addComponent(jpnlTradeMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jpnlHoldMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
+            .addGroup(pnlLeftLayout.createSequentialGroup()
+                .addGap(141, 141, 141)
+                .addComponent(tglbtnTrade)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         pnlLeftLayout.setVerticalGroup(
             pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -409,11 +423,15 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblTradeAmount)
                     .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jpnlHoldMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(19, 19, 19)
+                .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblAPIKey)
+                    .addComponent(pwdAPIKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(tglbtnTrade)
-                .addContainerGap(214, Short.MAX_VALUE))
+                .addContainerGap(177, Short.MAX_VALUE))
         );
 
         pnlRight.setBorder(javax.swing.BorderFactory.createTitledBorder("Current Trading"));
@@ -494,12 +512,14 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addComponent(pnlLeft, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnlRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         jpnlTradingLayout.setVerticalGroup(
             jpnlTradingLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(pnlLeft, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(pnlRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jpnlTradingLayout.createSequentialGroup()
+                .addComponent(pnlRight, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Trading", jpnlTrading);
@@ -748,7 +768,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             .addGroup(pnlHomeLayout.createSequentialGroup()
                 .addComponent(jspValues, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -824,7 +844,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         boolean gofai = rdbtnGOFAI.isSelected();
         int tradeModeIndex = cbStrategy.getSelectedIndex() + 1;
         boolean holdUSD = rdbtnUSD.isSelected();
-        cryptocurrencyValuePredictor.startTrading(gofai, tradeModeIndex, tradeAmount, holdUSD);
+        String apiKey = Arrays.toString(pwdAPIKey.getPassword());
+        cryptocurrencyValuePredictor.startTrading(gofai, tradeModeIndex, tradeAmount, holdUSD, apiKey);
     }
     
     private void tradingInterface() {
@@ -953,6 +974,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.JScrollPane jspValues;
     private javax.swing.JTable jtblPredictions;
     private javax.swing.JTable jtblValues;
+    private javax.swing.JLabel lblAPIKey;
     private javax.swing.JLabel lblContactDetails;
     private javax.swing.JLabel lblContactDetails2;
     private javax.swing.JLabel lblContactDetails3;
@@ -974,6 +996,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private javax.swing.JPanel pnlHome;
     private javax.swing.JPanel pnlLeft;
     private javax.swing.JPanel pnlRight;
+    private javax.swing.JPasswordField pwdAPIKey;
     private javax.swing.JRadioButton rdbtnCrypto;
     private javax.swing.JRadioButton rdbtnGOFAI;
     private javax.swing.JRadioButton rdbtnNeuralNetwork;

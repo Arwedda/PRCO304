@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author jkell
  */
-public class APIController implements IAPIController {
+public abstract class APIController implements IAPIController {
     Gson gson;
     
     public APIController() {

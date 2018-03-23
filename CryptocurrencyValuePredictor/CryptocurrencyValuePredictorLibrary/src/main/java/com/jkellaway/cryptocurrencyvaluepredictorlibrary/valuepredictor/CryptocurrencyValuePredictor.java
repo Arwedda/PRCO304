@@ -130,9 +130,10 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return priceCollector.getLap();
     }
     
-    public void startTrading(boolean gofai, int tradeModeIndex, Double startValue, boolean holdUSD) {
+    public void startTrading(boolean gofai, int tradeModeIndex, Double startValue, boolean holdUSD, String apiKey) {
         String tradeMode = (gofai ? "GOFAI" : "NeuralNetwork");
         String holdMode =  (holdUSD ? "USD" : "Crypto");
+        System.out.println(apiKey);
         trader = new Trader("USD", startValue, tradeMode, tradeModeIndex, holdMode);
     }
     
