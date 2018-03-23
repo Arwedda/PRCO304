@@ -101,23 +101,6 @@ public class Trader {
         }
     }
     
-    public void trade(ExchangeRate desired, Currency[] currencies) {
-        String holdingID = wallet.getHoldingID();
-        if (!holdingID.equals(desired.getCurrency_id()) && 
-                !(holdingID.equals("USD") && desired.getCurrency_id().equals("Unknown"))) {
-            ExchangeRate current = new ExchangeRate();
-            for (Currency currency : currencies){
-                String id = currency.getID();
-                if (id.equals(holdingID)) {
-                    current = currency.getRate();
-                    break;
-                }
-            }
-            makeTrade(current, desired);
-        }
-        System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
-    }
-    
     private void makeTrade(ExchangeRate current, ExchangeRate desired){
         Double value = wallet.getValue();
         if (!current.getCurrency_id().equals("Unknown") && desired.getCurrency_id().equals("Unknown")){
@@ -334,6 +317,23 @@ public class Trader {
             }
             makeTrade(current, desired);
         }
-        System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
+        //System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
+    }
+    
+    public void trade(ExchangeRate desired, Currency[] currencies) {
+        String holdingID = wallet.getHoldingID();
+        if (!holdingID.equals(desired.getCurrency_id()) && 
+                !(holdingID.equals("USD") && desired.getCurrency_id().equals("Unknown"))) {
+            ExchangeRate current = new ExchangeRate();
+            for (Currency currency : currencies){
+                String id = currency.getID();
+                if (id.equals(holdingID)) {
+                    current = currency.getRate();
+                    break;
+                }
+            }
+            makeTrade(current, desired);
+        }
+        //System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
     }
 }

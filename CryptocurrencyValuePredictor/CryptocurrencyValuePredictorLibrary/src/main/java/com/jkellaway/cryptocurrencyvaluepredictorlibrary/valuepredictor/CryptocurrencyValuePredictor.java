@@ -94,7 +94,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     }
     
     private void trade() {
-        //trader.autoTrade(currencies);
+        trader.autoTrade(currencies);
         best.tradeBenchmark(currencies);
         worst.tradeBenchmark(currencies);
         for (Trader holder : holders) {
@@ -124,6 +124,10 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
 
     public Trader[] getGOFAITradersHold() {
         return GOFAITradersHold;
+    }
+    
+    public int getLap() {
+        return priceCollector.getLap();
     }
     
     public void startTrading(boolean gofai, int tradeModeIndex, Double startValue, boolean holdUSD) {
