@@ -8,6 +8,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
@@ -47,14 +48,20 @@ public class MathsHelperTest {
 
     @Test
     public void testDeltas() {
-        
+        Double[] manualDeltas = new Double[doubles.length];
+        for (int i = 0; i < doubles.length; i++) {
+            manualDeltas[i] = doubles[i] - TestGlobals.ONE;
+        }
+        Assert.assertArrayEquals(manualDeltas, MathsHelper.deltas(TestGlobals.ONE, doubles));
     }
 
     @Test
     public void testMax() {
+        assertEquals(9.9, MathsHelper.max(doubles), TestGlobals.DELTA);
     }
 
     @Test
     public void testMin() {
+        assertEquals(1.1, MathsHelper.min(doubles), TestGlobals.DELTA);
     }
 }

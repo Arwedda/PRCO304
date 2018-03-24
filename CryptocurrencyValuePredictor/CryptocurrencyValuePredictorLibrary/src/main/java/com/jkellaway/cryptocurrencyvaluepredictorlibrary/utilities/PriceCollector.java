@@ -14,7 +14,6 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.ISubject;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
@@ -182,7 +181,7 @@ public class PriceCollector implements ISubject {
                     foundStart = true;
                     } else if (foundStart) break;
                 }
-                return SafeCastHelper.objectsToGDAXTrades(relevantTrades.toArray());
+                return relevantTrades.toArray(new GDAXTrade[relevantTrades.size()]);
             }
             
             private Double calculateMeanPrice(GDAXTrade[] trades) {
@@ -193,7 +192,7 @@ public class PriceCollector implements ISubject {
                     prices.add(trade.getPrice());
                 }
 
-                meanPrice = MathsHelper.mean(SafeCastHelper.objectsToDoubles(prices.toArray()));
+                meanPrice = MathsHelper.mean(prices.toArray(new Double[prices.size()]));
                 return meanPrice;
             }
             
@@ -268,7 +267,7 @@ public class PriceCollector implements ISubject {
                                     currency.getGaps().remove(gap);
                                 } else {
                                     if (connectedToDatabase){
-                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", SafeCastHelper.objectsToExchangeRates(currency.getHistoricRates().toArray()));
+                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", currency.getHistoricRates().toArray(new ExchangeRate[currency.getHistoricRates().size()]));
                                     }
                                     currency.gradualMerge();
                                 }
@@ -337,7 +336,7 @@ public class PriceCollector implements ISubject {
                         currency.addHistoricTrade(trade);
                     } else {
                         if (currency.hasFoundPosition()) {
-                            meanPrice = calculateMeanPrice(SafeCastHelper.objectsToGDAXTrades(currency.getHistoricTrades().toArray()));
+                            meanPrice = calculateMeanPrice(currency.getHistoricTrades().toArray(new GDAXTrade[currency.getHistoricTrades().size()]));
                             rate = new ExchangeRate(currency.getID(), tradeTime.toString(), meanPrice, null, null, null, trade.getTrade_id());
                             currency.addHistoricRate(rate);
                             tradeTime = tradeTime.minusMinutes(1);

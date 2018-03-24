@@ -6,7 +6,6 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class JSONParser {
             trades.add(trade);
         }
         
-        array = SafeCastHelper.objectsToGDAXTrades(trades.toArray());
+        array = trades.toArray(new GDAXTrade[trades.size()]);
         return array;
     }
     

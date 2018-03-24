@@ -7,7 +7,6 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -250,7 +249,7 @@ public class Currency {
                 fillMissingData(i);
             }
         }
-        return SafeCastHelper.objectsToExchangeRates(updatedRates.toArray());
+        return updatedRates.toArray(new ExchangeRate[updatedRates.size()]);
     }
     
     private void fillMissingData(int i) {

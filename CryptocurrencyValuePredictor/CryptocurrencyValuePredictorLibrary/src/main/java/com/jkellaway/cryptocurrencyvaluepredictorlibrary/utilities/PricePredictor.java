@@ -8,7 +8,6 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.SafeCastHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class PricePredictor {
     private static void GOFAICalculations(Currency currency){
         Double[] predictions;
         Double[] deltas;
-        ExchangeRate[] allRates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
+        ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);
         ExchangeRate[] relevantRates;
         int highestIndex = allRates.length - 1;
         int noOfPredictions = highestIndex - Globals.NUMBEROFPREDICTIONS;
@@ -86,7 +85,7 @@ public class PricePredictor {
         List<Double> values = new ArrayList<>();
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             values.add(rates[i].getGrowth());
-            predictions[i] = MathsHelper.mean(SafeCastHelper.objectsToDoubles(values.toArray()));
+            predictions[i] = MathsHelper.mean(values.toArray(new Double[values.size()]));
         }
         return predictions;
     }
@@ -131,7 +130,7 @@ public class PricePredictor {
     
     private static void GOFAICalculation(Currency currency) {
         Double[] predictions;
-        ExchangeRate[] allRates = SafeCastHelper.objectsToExchangeRates(currency.getRates().toArray());
+        ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);
         int highestIndex = allRates.length - 1;
         ExchangeRate[] relevantRates = Arrays.copyOfRange(allRates, highestIndex - Globals.NUMBEROFPREDICTIONS, highestIndex);
         predictions = predict(relevantRates);
