@@ -5,36 +5,36 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 /**
  *
  * @author jkell
  */
-public class CurrencyAPIControllerTest extends TestCase {
+public class CurrencyAPIControllerTest {
     
     public CurrencyAPIControllerTest(String testName) {
-        super(testName);
     }
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(CurrencyAPIControllerTest.class);
-        return suite;
+    @BeforeClass
+    public static void setUpClass() throws Exception {
     }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
     }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+
+    @Before
+    public void setUp() throws Exception {
+    }
+
+    @After
+    public void tearDown() throws Exception {
     }
 
     public void testGetCurrencies() {
     }
-    
 }

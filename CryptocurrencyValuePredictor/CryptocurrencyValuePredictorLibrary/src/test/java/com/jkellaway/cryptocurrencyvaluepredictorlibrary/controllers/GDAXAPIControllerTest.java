@@ -5,35 +5,37 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class GDAXAPIControllerTest extends TestCase {
+public class GDAXAPIControllerTest {
     GDAXAPIController controller;
     
-    public GDAXAPIControllerTest(String testName) {
-        super(testName);
+    public GDAXAPIControllerTest() {
     }
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(GDAXAPIControllerTest.class);
-        return suite;
+    @BeforeClass
+    public static void setUpClass() throws Exception {
     }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+    }
+
+    @Before
+    public void setUp() {
         controller = new GDAXAPIController();
     }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+
+    @After
+    public void tearDown() {
     }
 
     public void testGetGDAXTrades() {

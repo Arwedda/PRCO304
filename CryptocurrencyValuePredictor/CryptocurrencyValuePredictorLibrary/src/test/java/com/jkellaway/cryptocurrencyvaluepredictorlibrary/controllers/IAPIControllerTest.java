@@ -3,59 +3,70 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
+package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class ISubjectTest {
+public class IAPIControllerTest {
     
-    public ISubjectTest() {
+    public IAPIControllerTest() {
     }
-
+    
     @BeforeClass
     public static void setUpClass() {
     }
-
+    
     @AfterClass
     public static void tearDownClass() {
     }
-
+    
     @Before
     public void setUp() {
     }
-
+    
     @After
     public void tearDown() {
     }
 
-    public void testRegisterObserver() {
+    @Test
+    public void testGet() {
     }
 
-    public void testRemoveObserver() {
+    @Test
+    public void testPost() {
     }
 
-    public void testNotifyObservers() {
+    @Test
+    public void testPut() {
     }
 
-    public class ISubjectImpl implements ISubject {
+    @Test
+    public void testDelete() {
+    }
 
-        public Boolean registerObserver(IObserver o) {
-            return null;
+    public class IAPIControllerImpl implements IAPIController {
+
+        public String get(String url) {
+            return "";
         }
 
-        public Boolean removeObserver(IObserver o) {
-            return null;
+        public void post(String url, String json) {
         }
 
-        public void notifyObservers() {
+        public void put(String url, String json) {
         }
-    }    
+
+        public void delete(String url) {
+        }
+    }
+    
 }

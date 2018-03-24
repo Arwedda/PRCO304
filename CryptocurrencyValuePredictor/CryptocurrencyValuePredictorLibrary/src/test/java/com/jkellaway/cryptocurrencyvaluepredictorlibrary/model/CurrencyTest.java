@@ -11,15 +11,17 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class CurrencyTest extends TestCase {
+public class CurrencyTest {
     GDAXAPIController controller;
     Currency blankCurrency;
     Currency ratelessCurrency;
@@ -27,29 +29,30 @@ public class CurrencyTest extends TestCase {
     ExchangeRate rate;
     LocalDateTime timeStamp;
     
-    public CurrencyTest(String testName) {
-        super(testName);
+    public CurrencyTest() {
     }
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(CurrencyTest.class);
-        return suite;
+    @BeforeClass
+    public static void setUpClass() {
     }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+
+    @AfterClass
+    public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() {
         timeStamp = LocalDateTime.now();
         controller = new GDAXAPIController();
         rate = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
         blankCurrency = new Currency();
         ratelessCurrency = new Currency(TestGlobals.IDLTC, TestGlobals.NAMELITECOIN, Globals.LTC_TRADES);
         currency = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
+
     }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+
+    @After
+    public void tearDown() {
     }
 
     public void testGetID() {

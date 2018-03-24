@@ -5,36 +5,37 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class TextBoxHelperTest extends TestCase {
+public class TextBoxHelperTest {
     
-    public TextBoxHelperTest(String testName) {
-        super(testName);
+    public TextBoxHelperTest() {
     }
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(TextBoxHelperTest.class);
-        return suite;
-    }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @BeforeClass
+    public static void setUpClass() {
     }
 
+    @AfterClass
+    public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
+    }
+    
     public void testForceNumeric() {
     }
-    
 }

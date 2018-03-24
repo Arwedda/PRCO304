@@ -5,33 +5,35 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class TraderTest extends TestCase {
+public class TraderTest {
     
-    public TraderTest(String testName) {
-        super(testName);
+    public TraderTest() {
     }
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(TraderTest.class);
-        return suite;
+    @BeforeClass
+    public static void setUpClass() {
     }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+
+    @AfterClass
+    public static void tearDownClass() {
     }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void tearDown() {
     }
 
     public void testGetWallet() {

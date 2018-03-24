@@ -7,39 +7,41 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
 import java.time.LocalDateTime;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author jkell
  */
-public class ExchangeRateTest extends TestCase {
+public class ExchangeRateTest {
     ExchangeRate blankRate;
     ExchangeRate rate;
     LocalDateTime timeStamp;
     
-    public ExchangeRateTest(String testName) {
-        super(testName);
+    public ExchangeRateTest() {
     }
 
-    public static Test suite() {
-        TestSuite suite = new TestSuite(ExchangeRateTest.class);
-        return suite;
+    @BeforeClass
+    public static void setUpClass() {
     }
-    
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+
+    @AfterClass
+    public static void tearDownClass() {
+    }
+
+    @Before
+    public void setUp() {
         timeStamp = LocalDateTime.now();
         blankRate = new ExchangeRate();
         rate = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
     }
-    
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+
+    @After
+    public void tearDown() {
     }
 
     public void testGetCurrency_id() {
@@ -64,7 +66,7 @@ public class ExchangeRateTest extends TestCase {
     public void testSetTimestamp_LocalDateTime() {
         blankRate.setTimestamp(timeStamp);
         assertEquals(timeStamp, blankRate.getTimestamp());
-        blankRate.setTimestamp(null);
+        blankRate.setTimestamp("");
     }
 
     public void testGetValue() {
