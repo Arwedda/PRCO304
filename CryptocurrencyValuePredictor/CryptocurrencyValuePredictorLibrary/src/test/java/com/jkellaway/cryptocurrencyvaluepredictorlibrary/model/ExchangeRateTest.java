@@ -12,6 +12,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -44,64 +45,80 @@ public class ExchangeRateTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetCurrency_id() {
     }
 
+    @Test
     public void testSetCurrency_id() {
     }
 
+    @Test
     public void testGetTimestamp() {
 
     }
 
+    @Test
     public void testSetTimestamp_String() {
         
     }
 
+    @Test
     public void testGetLDTTimestamp() {
         assertEquals(timeStamp, rate.getLDTTimestamp());
         assertNull(blankRate.getLDTTimestamp());
     }
-
+    
+    @Test
     public void testSetTimestamp_LocalDateTime() {
         blankRate.setTimestamp(timeStamp);
         assertEquals(timeStamp, blankRate.getTimestamp());
         blankRate.setTimestamp("");
     }
 
+    @Test
     public void testGetValue() {
         assertEquals(TestGlobals.ZERO, blankRate.getValue(), TestGlobals.DELTA);
         assertEquals(TestGlobals.ONEHUNDRED, rate.getValue(), TestGlobals.DELTA);
     }
 
+    @Test
     public void testSetValue() {
         rate.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
         assertEquals(TestGlobals.ONEHUNDREDANDTWENTYFIVE, rate.getValue(), TestGlobals.DELTA);
         rate.setValue(TestGlobals.ONEHUNDRED);
     }
 
+    @Test
     public void testGetGrowth() {
         assertNull(rate.getGrowth());
     }
 
+    @Test
     public void testGetLastTrade() {
     }
 
+    @Test
     public void testSetLastTrade() {
     }
 
+    @Test
     public void testGetGofaiNextGrowth() {
     }
 
+    @Test
     public void testSetGofaiNextGrowth() {
     }
 
+    @Test
     public void testGetNeuralNetworkNextGrowth() {
     }
 
+    @Test
     public void testSetNeuralNetworkNextGrowth() {
     }
 
+    @Test
     public void testCalculateGrowth() {
         rate.calculateGrowth(TestGlobals.ONEHUNDRED);
         assertEquals(TestGlobals.ZERO, rate.getGrowth(), TestGlobals.DELTA);
@@ -109,16 +126,19 @@ public class ExchangeRateTest {
         assertEquals(Double.POSITIVE_INFINITY, rate.getGrowth(), TestGlobals.DELTA);
     }
 
+    @Test
     public void testIsMinuteAfter() {
     }
 
+    @Test
     public void testIsSameMinute() {
     }
 
+    @Test
     public void testToString() {
     }
 
+    @Test
     public void testCompareTo() {
     }
-    
 }

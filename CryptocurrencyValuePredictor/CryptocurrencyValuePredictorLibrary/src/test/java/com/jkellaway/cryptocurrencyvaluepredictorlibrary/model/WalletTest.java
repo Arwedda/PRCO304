@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,28 +37,35 @@ public class WalletTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetHoldingID() {
     }
 
+    @Test
     public void testSetHoldingID() {
     }
 
+    @Test
     public void testSetValue() {
     }
 
+    @Test
     public void testGetValue() {
     }
 
+    @Test
     public void testSetStartingValue() {
     }
 
+    @Test
     public void testGetStartingValues() {
     }
 
+    @Test
     public void testGetStartingUSD() {
     }
 
+    @Test
     public void testGetUSDValue() {
     }
-    
 }

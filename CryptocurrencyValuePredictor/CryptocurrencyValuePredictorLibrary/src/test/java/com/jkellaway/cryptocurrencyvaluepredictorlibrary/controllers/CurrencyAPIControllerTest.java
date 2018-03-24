@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -16,7 +17,7 @@ import org.junit.BeforeClass;
  */
 public class CurrencyAPIControllerTest {
     
-    public CurrencyAPIControllerTest(String testName) {
+    public CurrencyAPIControllerTest() {
     }
 
     @BeforeClass
@@ -35,6 +36,7 @@ public class CurrencyAPIControllerTest {
     public void tearDown() throws Exception {
     }
 
+    @Test
     public void testGetCurrencies() {
     }
 }

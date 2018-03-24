@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,22 +37,27 @@ public class GapTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetPaginationStart() {
     }
 
+    @Test
     public void testSetPaginationStart() {
     }
-
+    
+    @Test
     public void testGetStartTime() {
     }
 
+    @Test
     public void testSetStartTime() {
     }
 
+    @Test
     public void testGetRatesRequired() {
     }
 
+    @Test
     public void testSetRatesRequired() {
     }
-    
 }

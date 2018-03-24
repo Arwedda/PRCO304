@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -38,6 +39,7 @@ public class GDAXAPIControllerTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetGDAXTrades() {
         String json = "[{\"time\":\"2016-05-18T00:14:03.60168Z\",\"trade_id\":1,\"price\":\"12.50000000\",\"size\":\"0.39900249\",\"side\":\"sell\"}]";
         assertEquals(json, controller.get("https://api.gdax.com/products/ETH-USD/trades?after=2"));

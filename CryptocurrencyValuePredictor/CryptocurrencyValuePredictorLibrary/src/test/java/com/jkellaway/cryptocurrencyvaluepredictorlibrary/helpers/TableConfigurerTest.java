@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,6 +37,7 @@ public class TableConfigurerTest {
     public void tearDown()  {
     }
 
+    @Test
     public void testConfigureTable() {
     }
 }

@@ -34,8 +34,8 @@ public class LocalDateTimeHelperTest {
 
     @Before
     public void setUp() {
-        timestamp = LocalDateTime.of(2016, 05, 18, 00, 14, 03, 60168);
-        stringTimestamp = "2016-05-18T00:14";
+        timestamp = LocalDateTime.of(2000, 1, 1, 0, 0, 7, 77777);
+        stringTimestamp = "2000-01-01T00:00";
     }
 
     @After
@@ -61,5 +61,9 @@ public class LocalDateTimeHelperTest {
 
     @Test
     public void testToString() {
+        LocalDateTime singleHours = LocalDateTime.of(2000, 1, 1, 1, 11, 7, 77777);
+        LocalDateTime singleMinutes = LocalDateTime.of(2000, 1, 1, 11, 1, 7, 77777);
+        assertEquals("1/1/2000 01:11", LocalDateTimeHelper.toString(singleHours));
+        assertEquals("1/1/2000 11:01", LocalDateTimeHelper.toString(singleMinutes));
     }
 }

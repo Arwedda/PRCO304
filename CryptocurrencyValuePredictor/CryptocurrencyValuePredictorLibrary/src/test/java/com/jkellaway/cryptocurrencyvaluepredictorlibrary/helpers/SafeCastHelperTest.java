@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,16 +37,19 @@ public class SafeCastHelperTest {
     public void tearDown() {
     }
 
+    @Test
     public void testObjectsToCurrencies() {
     }
-
+    
+    @Test
     public void testObjectsToExchangeRates() {
     }
 
+    @Test
     public void testObjectsToGDAXTrades() {
     }
 
+    @Test
     public void testObjectsToDoubles() {
     }
-    
 }

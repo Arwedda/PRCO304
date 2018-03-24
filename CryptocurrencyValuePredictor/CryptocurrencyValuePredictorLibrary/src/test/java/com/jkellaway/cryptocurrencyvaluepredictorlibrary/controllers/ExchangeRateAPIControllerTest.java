@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,19 +37,23 @@ public class ExchangeRateAPIControllerTest {
     public void tearDown() throws Exception {
     }
 
+    @Test
     public void testGetExchangeRates() {
     }
 
+    @Test
     public void testPost_String_ExchangeRate() {
     }
 
+    @Test
     public void testPost_String_ExchangeRateArr() {
     }
 
+    @Test
     public void testPut_String_ExchangeRate() {
     }
-
+    
+    @Test
     public void testPut_String_ExchangeRateArr() {
     }
-    
 }

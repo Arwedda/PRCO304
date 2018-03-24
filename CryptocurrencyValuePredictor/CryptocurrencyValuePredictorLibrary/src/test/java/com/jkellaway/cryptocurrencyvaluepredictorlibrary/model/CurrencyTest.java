@@ -16,6 +16,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -55,34 +56,40 @@ public class CurrencyTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetID() {
         assertEquals("unknown", blankCurrency.getID());
         assertEquals(TestGlobals.IDETH, currency.getID());
     }
 
+    @Test
     public void testSetID() {
         ratelessCurrency.setID(TestGlobals.IDETH);
         assertEquals(TestGlobals.IDETH, ratelessCurrency.getID());
         ratelessCurrency.setID(TestGlobals.IDLTC);
     }
 
+    @Test
     public void testGetName() {
         assertEquals("unknown", blankCurrency.getName());
         assertEquals("LITECOIN", ratelessCurrency.getName());
     }
 
+    @Test
     public void testSetName() {
         blankCurrency.setName(TestGlobals.NAMEETHEREUM);
         assertEquals(TestGlobals.NAMEETHEREUM, blankCurrency.getName());
         blankCurrency.setName("unknown");
     }
 
+    @Test
     public void testGetRate() {
         assertNull(blankCurrency.getRate());
         assertNull(ratelessCurrency.getRate());
         assertEquals(rate, currency.getRate());
     }
 
+    @Test
     public void testSetValue() {
         blankCurrency.setValue(rate);
         
@@ -99,6 +106,7 @@ public class CurrencyTest {
         currency = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
+    @Test
     public void testGetRates() {
         List<ExchangeRate> rates = new ArrayList<>();
         assertArrayEquals(rates.toArray(), blankCurrency.getRates().toArray());
@@ -108,6 +116,7 @@ public class CurrencyTest {
         assertArrayEquals(rates.toArray(), currency.getRates().toArray());
     }
 
+    @Test
     public void testGetHistoricRates() {
         ArrayList<ExchangeRate> rates = new ArrayList<>();
         assertArrayEquals(rates.toArray(), blankCurrency.getHistoricRates().toArray());
@@ -115,6 +124,7 @@ public class CurrencyTest {
         assertArrayEquals(rates.toArray(), currency.getHistoricRates().toArray());
     }
 
+    @Test
     public void testAddHistoricRate() {
         List<ExchangeRate> rates = new ArrayList<>();
         rates.add(rate);
@@ -125,12 +135,14 @@ public class CurrencyTest {
         currency = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
+    @Test
     public void testGetLastHistoricTrade() {
         assertNull(blankCurrency.getLastHistoricTrade());
         assertNull(ratelessCurrency.getLastHistoricTrade());
         assertNull(currency.getLastHistoricTrade());
     }
 
+    @Test
     public void testHasFoundPosition() {
         assertFalse(blankCurrency.hasFoundPosition());
         assertFalse(ratelessCurrency.hasFoundPosition());
@@ -146,12 +158,14 @@ public class CurrencyTest {
         blankCurrency = new Currency();
     }
 
+    @Test
     public void testGetGDAXEndpoint() {
         assertEquals("unknown", blankCurrency.getGDAXEndpoint());
         assertEquals(Globals.LTC_TRADES, ratelessCurrency.getGDAXEndpoint());
         assertEquals(Globals.ETH_TRADES, currency.getGDAXEndpoint());
     }
 
+    @Test
     public void testGetHistoricTrades() {
         List<GDAXTrade> historicTrades = new ArrayList<>();
         assertArrayEquals(historicTrades.toArray(), blankCurrency.getHistoricTrades().toArray());
@@ -159,6 +173,7 @@ public class CurrencyTest {
         assertArrayEquals(historicTrades.toArray(), currency.getHistoricTrades().toArray());
     }
 
+    @Test
     public void testAddHistoricTrade() {
         List<GDAXTrade> trades = new ArrayList<>();
         GDAXTrade trade = new GDAXTrade();
@@ -170,21 +185,27 @@ public class CurrencyTest {
         currency = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
     }
 
+    @Test
     public void testGetGaps() {
     }
 
+    @Test
     public void testGetLastGap() {
     }
 
+    @Test
     public void testGradualMerge() {
     }
 
+    @Test
     public void testDumpDuplicates() {
     }
 
+    @Test
     public void testFindGaps() {
     }
 
+    @Test
     public void testMergeRates() {
         LocalDateTime now = LocalDateTime.now().plusSeconds(1);
         blankCurrency.addHistoricRate(rate);
@@ -197,10 +218,11 @@ public class CurrencyTest {
         assertEquals(25.0, blankCurrency.getRates().get(1).getGrowth(), TestGlobals.DELTA);
     }
 
+    @Test
     public void testCalculateGrowth() {
     }
 
+    @Test
     public void testNoOfHistoricRates() {
     }
-    
 }

@@ -12,6 +12,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -44,39 +45,46 @@ public class GDAXTradeTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetTime() {
         assertNull(blankTrade.getTime());
         assertEquals(timeStamp, trade.getTime());
     }
 
+    @Test
     public void testSetTime() {
         blankTrade.setTime(timeStamp);
         assertEquals(timeStamp, blankTrade.getTime());
         blankTrade.setTime(null);
     }
 
+    @Test
     public void testGetPrice() {
         assertEquals(TestGlobals.ZERO, blankTrade.getPrice(), TestGlobals.DELTA);
         assertEquals(TestGlobals.ONEHUNDRED, trade.getPrice(), TestGlobals.DELTA);
     }
 
+    @Test
     public void testSetPrice() {
         blankTrade.setPrice(TestGlobals.ONE);
         assertEquals(TestGlobals.ONE, blankTrade.getPrice(), TestGlobals.DELTA);
         blankTrade.setPrice(TestGlobals.ZERO);
     }
 
+    @Test
     public void testGetTrade_id() {
-        assertEquals(Integer.valueOf(0), blankTrade.getTrade_id());
+        assertEquals(null, blankTrade.getTrade_id());
         assertEquals(TestGlobals.LASTTRADE, trade.getTrade_id());
     }
 
+    @Test
     public void testSetTrade_id() {
         blankTrade.setTrade_id(TestGlobals.LASTTRADE);
         assertEquals(TestGlobals.LASTTRADE, blankTrade.getTrade_id());
         blankTrade.setTrade_id(0);
     }
 
+    @Test
     public void testTradesMatch() {
         blankTrade = trade;
         assertTrue(blankTrade.tradesMatch(trade));

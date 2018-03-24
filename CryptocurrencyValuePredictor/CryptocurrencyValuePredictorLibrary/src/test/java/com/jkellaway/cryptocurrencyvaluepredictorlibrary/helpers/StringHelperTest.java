@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -39,6 +40,7 @@ public class StringHelperTest {
     public void tearDown() {
     }
 
+    @Test
     public void testStringsMatch() {
         for (int i = 0; i < 27; i++){
             assertTrue(StringHelper.stringsMatch(s1, s2, i));
@@ -48,6 +50,7 @@ public class StringHelperTest {
         }
     }
 
+    @Test
     public void testDoubleToCurrencyString() {
     }
 }

@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,28 +37,35 @@ public class PriceCollectorTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetFirstRelevantRate() {
     }
 
+    @Test
     public void testBenchmarkComplete() {
     }
 
+    @Test
     public void testGetLap() {
     }
 
+    @Test
     public void testGetCurrencies() {
     }
 
+    @Test
     public void testSetCurrencies() {
     }
 
+    @Test
     public void testRegisterObserver() {
     }
 
+    @Test
     public void testRemoveObserver() {
     }
 
+    @Test
     public void testNotifyObservers() {
     }
-    
 }

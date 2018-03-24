@@ -10,6 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  *
@@ -36,52 +37,67 @@ public class CryptocurrencyValuePredictorTest {
     public void tearDown() {
     }
 
+    @Test
     public void testGetInstance() {
     }
 
+    @Test
     public void testGetCurrencies() {
     }
 
+    @Test
     public void testGetPriceCollector() {
     }
 
+    @Test
     public void testGetTrader() {
     }
 
+    @Test
     public void testGetBest() {
     }
 
+    @Test
     public void testGetWorst() {
     }
 
+    @Test
     public void testGetHolders() {
     }
 
+    @Test
     public void testGetGOFAITradersUSD() {
     }
 
+    @Test
     public void testGetGOFAITradersHold() {
     }
 
+    @Test
     public void testGetLap() {
     }
 
+    @Test
     public void testStartTrading() {
     }
 
+    @Test
     public void testStopTrading() {
     }
 
+    @Test
     public void testRegisterObserver() {
     }
 
+    @Test
     public void testRemoveObserver() {
     }
 
+    @Test
     public void testNotifyObservers() {
     }
 
+    @Test
     public void testUpdate() {
     }
-    
 }
