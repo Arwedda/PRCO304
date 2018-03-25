@@ -19,7 +19,7 @@ import org.junit.Test;
  * @author jkell
  */
 public class MathsHelperTest {
-    Double[] doubles;
+    private Double[] doubles;
     
     public MathsHelperTest() {
     }

@@ -18,6 +18,7 @@ import org.junit.Test;
  */
 public class StringHelperTest {
     private String s1, s2;
+    private Double d1, d2, d3;
     
     public StringHelperTest() {
     }
@@ -34,6 +35,9 @@ public class StringHelperTest {
     public void setUp() {
         s1 = "abcdefghijklmnopqrstuvwxyz1234567890";
         s2 = "abcdefghijklmnopqrstuvwxyz9876543210";
+        d1 = 07.77;
+        d2 = 70.07;
+        d3 = 77.70;
     }
 
     @After
@@ -52,5 +56,8 @@ public class StringHelperTest {
 
     @Test
     public void testDoubleToCurrencyString() {
+        assertEquals("7.77", StringHelper.doubleToCurrencyString(d1));
+        assertEquals("70.07", StringHelper.doubleToCurrencyString(d2));
+        assertEquals("77.70", StringHelper.doubleToCurrencyString(d3));
     }
 }

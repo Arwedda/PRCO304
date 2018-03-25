@@ -17,7 +17,7 @@ import org.junit.Test;
  * @author jkell
  */
 public class GDAXAPIControllerTest {
-    GDAXAPIController controller;
+    private GDAXAPIController controller;
     
     public GDAXAPIControllerTest() {
     }

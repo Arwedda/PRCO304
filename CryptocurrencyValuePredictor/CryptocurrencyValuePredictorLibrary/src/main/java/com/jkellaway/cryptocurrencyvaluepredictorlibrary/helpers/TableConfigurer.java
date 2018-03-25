@@ -31,25 +31,60 @@ public class TableConfigurer {
         jTable.getTableHeader().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int index = jTable.convertColumnIndexToModel(jTable.columnAtPoint(e.getPoint()));
-                Object columnClass = jTable.getColumnClass(index);
+                int columnIndex = jTable.convertColumnIndexToModel(jTable.columnAtPoint(e.getPoint()));
+                Object columnClass = jTable.getColumnClass(columnIndex);
                 jTable.setAutoCreateRowSorter(true);
                 
                 TableRowSorter<TableModel> sorter = new TableRowSorter<>(jTable.getModel());
                 jTable.setRowSorter(sorter);
                 ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
 
-                sortKeys.add(new RowSorter.SortKey(index, SortOrder.ASCENDING));
-                sorter.setSortKeys(sortKeys);
+                boolean isDouble = false;
+                try {
+                    //If the column is a Double (stored as String to show extra 0s)
+                    Double.parseDouble(String.valueOf(jTable.getValueAt(0, columnIndex)));
+                    sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.DESCENDING));
+                    sorter.setSortKeys(sortKeys);
+                    sorter.setComparator(columnIndex, (Double a, Double b) -> a.compareTo(b));
+                    isDouble = true;
+                } catch (NumberFormatException ex) {
+                    //If the column is a Double but needs " USD" trimmed off...
+                    String val = String.valueOf(jTable.getValueAt(0, columnIndex));
+                    val = val.substring(0, val.length() - 4);
+                    Double.parseDouble(val);
+                    jTable.setValueAt(val, 0, columnIndex);
+                    jTable.getRowCount();
+                    jTable.getModel().getRowCount();
+                    
+                    for (int i = 1; i < jTable.getRowCount(); i++) {
+                        val = String.valueOf(jTable.getValueAt(i, columnIndex));
+                        val = val.substring(0, val.length() - 4);
+                        jTable.setValueAt(val, i, columnIndex);
+                    }
+                    sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.DESCENDING));
+                    sorter.setSortKeys(sortKeys);
+                    sorter.setComparator(columnIndex, (Double a, Double b) -> a.compareTo(b));
+                    isDouble = true;
+                } catch (Exception ex) {
+                    //Isn't a Double
+                }
                 
-                if (columnClass instanceof String) {
-                    sorter.setComparator(index, (String a, String b) -> a.compareTo(b));
-                } else if (columnClass instanceof Integer) {
-                    sorter.setComparator(index, (Integer a, Integer b) -> a.compareTo(b));
-                } else if (columnClass instanceof Double) {
-                    sorter.setComparator(index, (Double a, Double b) -> a.compareTo(b));
+                if (!isDouble) {
+                    sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.ASCENDING));
+                    sorter.setSortKeys(sortKeys);
+                    try {
+                        //If the column is a Double (stored as String to show extra 0s)
+                        Integer.parseInt((String)jTable.getValueAt(0, columnIndex));
+                        sorter.setComparator(columnIndex, (Integer a, Integer b) -> a.compareTo(b));
+                    } catch (NumberFormatException ex) {
+                        //Not an Integer, treat as String
+                        sorter.setComparator(columnIndex, (String a, String b) -> a.compareTo(b));
+                    }
                 }
                 sorter.sort();
+                if (isDouble) {
+                    
+                }
             }
         });
     }

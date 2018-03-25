@@ -18,7 +18,6 @@ public class MathsHelper {
                 }
             return (mean /= values.length);
         } catch (Exception e){
-            System.out.println("[INFO] Error: " + e);
             return null;
         }
     }
@@ -26,7 +25,11 @@ public class MathsHelper {
     public static Double[] deltas(Double actual, Double[] predictions){
         Double[] deltas = new Double[predictions.length];
         for (int i = 0; i < predictions.length; i++){
-            deltas[i] = Math.abs(actual - predictions[i]);
+            try {
+                deltas[i] = Math.abs(actual - predictions[i]);
+            } catch (NullPointerException e) {
+                return deltas;
+            }
         }
         return deltas;
     }
@@ -35,7 +38,11 @@ public class MathsHelper {
         if (0 < array.length) {
             Double max = array[0];
             for (Double dbl : array) {
-                max = (max < dbl) ? dbl : max;
+                try {
+                    max = (max < dbl) ? dbl : max;
+                } catch (NullPointerException e) {
+                    return null;
+                }
             }
             return max;
         }
@@ -46,7 +53,11 @@ public class MathsHelper {
         if (0 < array.length) {
             Double min = array[0];
             for (Double dbl : array) {
-                min = (min < dbl) ? min : dbl;
+                try {
+                    min = (min < dbl) ? min : dbl;
+                } catch (NullPointerException e) {
+                    return null;
+                }
             }
             return min;
         }
