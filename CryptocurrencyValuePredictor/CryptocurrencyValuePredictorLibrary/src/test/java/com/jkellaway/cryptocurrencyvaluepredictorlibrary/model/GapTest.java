@@ -5,6 +5,9 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
+import java.time.LocalDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,6 +20,9 @@ import org.junit.Test;
  * @author jkell
  */
 public class GapTest {
+    private Gap blank;
+    private Gap real;
+    private LocalDateTime timeStamp;
     
     public GapTest() {
     }
@@ -31,6 +37,9 @@ public class GapTest {
 
     @Before
     public void setUp() {
+        timeStamp = LocalDateTime.now();
+        blank = new Gap();
+        real = new Gap(TestGlobals.LASTTRADE, timeStamp, 1);
     }
 
     @After
@@ -39,25 +48,42 @@ public class GapTest {
 
     @Test
     public void testGetPaginationStart() {
+        assertNull(blank.getPaginationStart());
+        assertEquals(TestGlobals.LASTTRADE, real.getPaginationStart());
+        assertNotEquals((long)1, (long)real.getPaginationStart());
     }
 
     @Test
     public void testSetPaginationStart() {
+        blank.setPaginationStart(TestGlobals.LASTTRADE);
+        assertEquals(TestGlobals.LASTTRADE, blank.getPaginationStart());
+        blank.setPaginationStart(null);
     }
     
     @Test
     public void testGetStartTime() {
+        assertNull(blank.getStartTime());
+        assertEquals(timeStamp, real.getStartTime());
     }
 
     @Test
     public void testSetStartTime() {
+        LocalDateTime newTimeStamp = LocalDateTime.now().minusDays(1);
+        assertNotEquals(newTimeStamp, real.getStartTime());
+        real.setStartTime(newTimeStamp);
+        assertEquals(newTimeStamp, real.getStartTime());
     }
 
     @Test
     public void testGetRatesRequired() {
+        assertNull(blank.getRatesRequired());
+        assertEquals((long) 1, (long)real.getRatesRequired());
     }
 
     @Test
     public void testSetRatesRequired() {
+        blank.setRatesRequired(7);
+        assertEquals((long) 7, (long) blank.getRatesRequired());
+        blank.setRatesRequired(null);
     }
 }

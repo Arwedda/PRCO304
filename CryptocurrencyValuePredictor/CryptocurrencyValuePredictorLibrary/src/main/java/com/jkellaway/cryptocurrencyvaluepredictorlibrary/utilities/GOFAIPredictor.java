@@ -19,7 +19,7 @@ import java.util.List;
  *
  * @author jkell
  */
-public class PricePredictor {
+public class GOFAIPredictor {
     private static Double[] meanPredictedChange = new Double [Globals.NUMBEROFPREDICTIONS];
     private static int[] predictedChangeNo = new int[Globals.NUMBEROFPREDICTIONS];
     private static Double[] meanDeltas = new Double[Globals.NUMBEROFPREDICTIONS];
@@ -29,13 +29,12 @@ public class PricePredictor {
 
     
     public static Currency[] initialPredictions(Currency[] currencies){
-        initialiseTests();
-        GOFAI(currencies);
-        neuralNetwork(currencies);
+        initialise();
+        predict(currencies);
         return currencies;
     }
 
-    private static void initialiseTests(){
+    private static void initialise(){
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] = 0.0;
             predictedChangeNo[i] = 0;
@@ -44,14 +43,14 @@ public class PricePredictor {
         }
     }
     
-    public static void GOFAI(Currency[] currencies){
+    public static void predict(Currency[] currencies){
         for (Currency currency : currencies){
-            GOFAICalculations(currency);
+            GOFAIPredictions(currency);
         }
         GOFAIResults();
     }
     
-    private static void GOFAICalculations(Currency currency){
+    private static void GOFAIPredictions(Currency currency){
         Double[] predictions;
         Double[] deltas;
         ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);
@@ -100,30 +99,9 @@ public class PricePredictor {
         }
     }
     
-    private static void neuralNetwork(Currency[] currencies){
-        trainNeuralNetwork();
-        for (Currency currency: currencies){
-            neuralNetworkCalculations(currency);
-        }
-        neuralNetworkResults();
-    }
-    
-    private static void trainNeuralNetwork(){
-        
-    }
-    
-    private static void neuralNetworkCalculations(Currency currency){
-        
-    }
-    
-    private static void neuralNetworkResults(){
-        
-    }
-    
     public static Currency[] singlePrediction(Currency[] currencies) {
         for (Currency currency : currencies){
             GOFAICalculation(currency);
-            neuralNetworkCalculation(currency);
         }
         return currencies;
     }
@@ -135,9 +113,5 @@ public class PricePredictor {
         ExchangeRate[] relevantRates = Arrays.copyOfRange(allRates, highestIndex - Globals.NUMBEROFPREDICTIONS, highestIndex);
         predictions = predict(relevantRates);
         currency.getRates().get(highestIndex).setGofaiNextGrowth(predictions);
-    }
-    
-    private static void neuralNetworkCalculation(Currency currency) {
-        
     }
 }

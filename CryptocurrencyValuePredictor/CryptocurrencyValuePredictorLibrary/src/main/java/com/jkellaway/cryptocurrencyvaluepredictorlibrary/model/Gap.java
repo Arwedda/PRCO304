@@ -14,12 +14,15 @@ import java.time.LocalDateTime;
 public class Gap {
     private Integer paginationStart;
     private LocalDateTime startTime;
-    private int ratesRequired;
+    private Integer ratesRequired;
 
     public Gap() {
+        paginationStart = null;
+        startTime = null;
+        ratesRequired = null;
     }
     
-    public Gap(Integer paginationStart, LocalDateTime startTime, int ratesRequired) {
+    public Gap(Integer paginationStart, LocalDateTime startTime, Integer ratesRequired) {
         this.paginationStart = paginationStart;
         this.startTime = startTime;
         this.ratesRequired = ratesRequired;
@@ -41,11 +44,11 @@ public class Gap {
         this.startTime = startTime;
     }
 
-    public int getRatesRequired() {
+    public Integer getRatesRequired() {
         return ratesRequired;
     }
 
-    public void setRatesRequired(int ratesRequired) {
+    public void setRatesRequired(Integer ratesRequired) {
         this.ratesRequired = ratesRequired;
     }
 }

@@ -10,7 +10,7 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.IObserver;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.ISubject;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PriceCollector;
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PricePredictor;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.GOFAIPredictor;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 import java.util.ArrayList;
 import java.util.List;
@@ -179,11 +179,11 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     public void update() {
         currencies = priceCollector.getCurrencies();
         if (priceCollector.getLap() == 3) {
-            currencies = PricePredictor.initialPredictions(currencies);
+            currencies = GOFAIPredictor.initialPredictions(currencies);
             priceCollector.benchmarkComplete(currencies);
             tradeTest();
         } else if (priceCollector.getLap() == -1) {
-            currencies = PricePredictor.singlePrediction(currencies);
+            currencies = GOFAIPredictor.singlePrediction(currencies);
             priceCollector.setCurrencies(currencies);
             trade();
         }

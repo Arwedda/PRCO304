@@ -23,12 +23,14 @@ import org.junit.Test;
  * @author jkell
  */
 public class CurrencyTest {
-    GDAXAPIController controller;
-    Currency blankCurrency;
-    Currency ratelessCurrency;
-    Currency currency;
-    ExchangeRate rate;
-    LocalDateTime timeStamp;
+    private GDAXAPIController controller;
+    private Currency blankCurrency;
+    private Currency ratelessCurrency;
+    private Currency currency;
+    private ExchangeRate rate;
+    private GDAXTrade blankHistTrade;
+    private GDAXTrade realHistTrade;
+    private LocalDateTime timeStamp;
     
     public CurrencyTest() {
     }
@@ -45,11 +47,12 @@ public class CurrencyTest {
     public void setUp() {
         timeStamp = LocalDateTime.now();
         controller = new GDAXAPIController();
-        rate = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
         blankCurrency = new Currency();
         ratelessCurrency = new Currency(TestGlobals.IDLTC, TestGlobals.NAMELITECOIN, Globals.LTC_TRADES);
         currency = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
-
+        rate = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        blankHistTrade = new GDAXTrade();
+        realHistTrade = controller.getGDAXTrades(currency.getGDAXEndpoint())[0];
     }
 
     @After
@@ -187,22 +190,27 @@ public class CurrencyTest {
 
     @Test
     public void testGetGaps() {
+        
     }
 
     @Test
     public void testGetLastGap() {
+        
     }
 
     @Test
     public void testGradualMerge() {
+        
     }
 
     @Test
     public void testDumpDuplicates() {
+        
     }
 
     @Test
     public void testFindGaps() {
+        
     }
 
     @Test
@@ -220,9 +228,11 @@ public class CurrencyTest {
 
     @Test
     public void testCalculateGrowth() {
+        
     }
 
     @Test
     public void testNoOfHistoricRates() {
+        
     }
 }
