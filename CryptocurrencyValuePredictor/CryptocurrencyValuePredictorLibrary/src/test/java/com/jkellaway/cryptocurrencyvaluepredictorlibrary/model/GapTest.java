@@ -7,6 +7,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -37,7 +38,7 @@ public class GapTest {
 
     @Before
     public void setUp() {
-        timeStamp = LocalDateTime.now();
+        timeStamp = LocalDateTime.now(Clock.systemUTC());
         blank = new Gap();
         real = new Gap(TestGlobals.LASTTRADE, timeStamp, 1);
     }
@@ -68,7 +69,7 @@ public class GapTest {
 
     @Test
     public void testSetStartTime() {
-        LocalDateTime newTimeStamp = LocalDateTime.now().minusDays(1);
+        LocalDateTime newTimeStamp = LocalDateTime.now(Clock.systemUTC()).minusDays(1);
         assertNotEquals(newTimeStamp, real.getStartTime());
         real.setStartTime(newTimeStamp);
         assertEquals(newTimeStamp, real.getStartTime());

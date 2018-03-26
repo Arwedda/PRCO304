@@ -6,6 +6,7 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -36,7 +37,7 @@ public class GDAXTradeTest {
 
     @Before
     public void setUp() {
-        timeStamp = LocalDateTime.now();
+        timeStamp = LocalDateTime.now(Clock.systemUTC());
         blank = new GDAXTrade();
         real = new GDAXTrade(timeStamp, TestGlobals.ONEHUNDRED, TestGlobals.LASTTRADE);
     }

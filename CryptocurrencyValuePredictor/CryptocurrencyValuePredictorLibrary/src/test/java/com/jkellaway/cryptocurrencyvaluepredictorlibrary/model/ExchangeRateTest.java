@@ -8,6 +8,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -44,7 +45,7 @@ public class ExchangeRateTest {
             doubles[i] = (double) i;
         }
         
-        timeStamp = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+        timeStamp = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
         blank = new ExchangeRate();
         real = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
     }

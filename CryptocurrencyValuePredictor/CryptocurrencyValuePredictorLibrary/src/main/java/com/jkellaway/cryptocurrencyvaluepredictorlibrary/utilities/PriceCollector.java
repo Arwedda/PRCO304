@@ -18,6 +18,7 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Gap;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +53,7 @@ public class PriceCollector implements ISubject {
         currencyAPIController = new CurrencyAPIController();
         exchangeRateAPIController = new ExchangeRateAPIController();
         collector = Executors.newSingleThreadScheduledExecutor();
-        firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now().minusMinutes(Globals.READINGSREQUIRED));
+        firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()).minusMinutes(Globals.READINGSREQUIRED));
         connectedToDatabase = false;
         lap = 1;
     }
@@ -117,7 +118,7 @@ public class PriceCollector implements ISubject {
             }
 
             private void priceCollection() {
-                LocalDateTime currentTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+                LocalDateTime currentTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
                 LocalDateTime currentRateTime = null;
                 try {
                     currentRateTime = currencies[0].getRate().getLDTTimestamp();
@@ -316,7 +317,7 @@ public class PriceCollector implements ISubject {
                 int missingReadings = 0;
 
                 if (gap == null){
-                    tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+                    tradeTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
                     System.out.println("[INFO] " + currency.getID() + " starting prices at " + tradeTime.getHour() + ":" + tradeTime.getMinute());
                 } else {
                     tradeTime = gap.getStartTime();

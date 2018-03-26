@@ -7,6 +7,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -154,21 +155,27 @@ public class Currency {
     }
     
     public Gap getLastGap(){
-        return gaps.get(gaps.size() - 1);
+        try {
+            return gaps.get(gaps.size() - 1);
+        } catch (Exception e) {
+            return null;
+        }
     }
     
     public void gradualMerge(){
         this.rates.addAll(0, historicRates);
         Gap gap = getLastGap();
-        gap.setRatesRequired(gap.getRatesRequired() - historicRates.size());
-        if (gap.getRatesRequired() < 1){
-            gaps.remove(gap);
-            historicTrades.clear();
-        } else {
-            gap.setStartTime(gap.getStartTime().minusMinutes(historicRates.size()));
-            gap.setPaginationStart(gap.getPaginationStart() - 100);
+        if (gap != null) {
+            gap.setRatesRequired(gap.getRatesRequired() - historicRates.size());
+            if (gap.getRatesRequired() < 1){
+                gaps.remove(gap);
+                historicTrades.clear();
+            } else {
+                gap.setStartTime(gap.getStartTime().minusMinutes(historicRates.size()));
+                gap.setPaginationStart(gap.getPaginationStart() - 100);
+            }
+            historicRates.clear();
         }
-        historicRates.clear();
     }
     
     public boolean dumpDuplicates(boolean passedGap){
@@ -227,7 +234,7 @@ public class Currency {
                 ratesRequired++;
             }
         }
-        gap = new Gap(0, LocalDateTimeHelper.startOfMinute(LocalDateTime.now()), ratesRequired);
+        gap = new Gap(0, LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC())), ratesRequired);
         gaps.add(gap);
     }
     
