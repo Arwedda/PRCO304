@@ -8,7 +8,7 @@
     <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
     <Property Name="GDAXEndpoint" Type="String" MaxLength="60" FixedLength="false" Unicode="false" Nullable="false" />
   </EntityType>
-  <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+  <EntityContainer Name="Currencies" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="PRCO304_CURRENCY" EntityType="Self.PRCO304_CURRENCY" />
   </EntityContainer>
 </Schema>

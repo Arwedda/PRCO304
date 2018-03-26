@@ -6,12 +6,10 @@
       <PropertyRef Name="timestamp" />
     </Key>
     <Property Name="currency_id" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
-    <Property Name="timestamp" Type="DateTime" Precision="0" Nullable="false" />
+    <Property Name="timestamp" Type="DateTime" Precision="6" Nullable="false" />
     <Property Name="value" Type="Decimal" Precision="8" Scale="2" Nullable="false" />
     <Property Name="growth" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="gofaiNextGrowth" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="neuralNetworkNextGrowth" Type="Decimal" Precision="7" Scale="4" />
-    <Property Name="lastTrade" Type="Decimal" Precision="38" Scale="17" Nullable="false" />
+    <Property Name="lastTrade" Nullable="false" Type="Int32" />
   </EntityType>
   <EntityContainer Name="ExchangeRates" annotation:LazyLoadingEnabled="true">
     <EntitySet Name="PRCO304_EXCHANGERATE" EntityType="Self.PRCO304_EXCHANGERATE" />

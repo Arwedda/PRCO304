@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="8c28e462f6804da4b315baa2724f5c0b" Name="Diagram1">
+      <Diagram DiagramId="62b5ba6c75a9441abd66556a0f21c520" Name="Diagram1">
         <EntityTypeShape EntityType="ExchangeRate.PRCO304_EXCHANGERATE" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
       </Diagram>
     </edmx:Diagrams>

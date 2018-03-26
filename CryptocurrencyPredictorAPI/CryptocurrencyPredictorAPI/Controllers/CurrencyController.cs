@@ -13,17 +13,17 @@ using CryptocurrencyPredictorAPI.Models;
 
 namespace CryptocurrencyPredictorAPI.Controllers
 {
-    public class CurrencyController : ApiController
+    public class CURRENCYController : ApiController
     {
-        private Entities db = new Entities();
+        private Currencies db = new Currencies();
 
-        // GET: api/Currency
+        // GET: api/PRCO304_CURRENCY
         public IQueryable<PRCO304_CURRENCY> GetPRCO304_CURRENCY()
         {
             return db.PRCO304_CURRENCY;
         }
 
-        // GET: api/Currency/5
+        // GET: api/PRCO304_CURRENCY/5
         [ResponseType(typeof(PRCO304_CURRENCY))]
         public async Task<IHttpActionResult> GetPRCO304_CURRENCY(string id)
         {
@@ -36,7 +36,7 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return Ok(pRCO304_CURRENCY);
         }
 
-        // PUT: api/Currency/5
+        // PUT: api/PRCO304_CURRENCY/5
         [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutPRCO304_CURRENCY(string id, PRCO304_CURRENCY pRCO304_CURRENCY)
         {
@@ -71,7 +71,7 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/Currency
+        // POST: api/PRCO304_CURRENCY
         [ResponseType(typeof(PRCO304_CURRENCY))]
         public async Task<IHttpActionResult> PostPRCO304_CURRENCY(PRCO304_CURRENCY pRCO304_CURRENCY)
         {
@@ -101,7 +101,7 @@ namespace CryptocurrencyPredictorAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = pRCO304_CURRENCY.id }, pRCO304_CURRENCY);
         }
 
-        // DELETE: api/Currency/5
+        // DELETE: api/PRCO304_CURRENCY/5
         [ResponseType(typeof(PRCO304_CURRENCY))]
         public async Task<IHttpActionResult> DeletePRCO304_CURRENCY(string id)
         {

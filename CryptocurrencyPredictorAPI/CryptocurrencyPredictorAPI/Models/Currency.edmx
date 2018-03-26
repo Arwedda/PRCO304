@@ -29,7 +29,7 @@
           <Property Name="name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="GDAXEndpoint" Type="String" MaxLength="60" FixedLength="false" Unicode="false" Nullable="false" />
         </EntityType>
-        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="Currencies" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="PRCO304_CURRENCY" EntityType="Self.PRCO304_CURRENCY" />
         </EntityContainer>
       </Schema>
@@ -37,7 +37,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="CurrencyStoreContainer" CdmEntityContainer="Entities">
+        <EntityContainerMapping StorageEntityContainer="CurrencyStoreContainer" CdmEntityContainer="Currencies">
           <EntitySetMapping Name="PRCO304_CURRENCY">
             <EntityTypeMapping TypeName="Currency.PRCO304_CURRENCY">
               <MappingFragment StoreEntitySet="PRCO304_CURRENCY">

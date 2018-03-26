@@ -48,25 +48,29 @@ public class TableConfigurer {
                     sorter.setComparator(columnIndex, (Double a, Double b) -> a.compareTo(b));
                     isDouble = true;
                 } catch (NumberFormatException ex) {
-                    //If the column is a Double but needs " USD" trimmed off...
-                    String val = String.valueOf(jTable.getValueAt(0, columnIndex));
-                    val = val.substring(0, val.length() - 4);
-                    Double.parseDouble(val);
-                    jTable.setValueAt(val, 0, columnIndex);
-                    jTable.getRowCount();
-                    jTable.getModel().getRowCount();
-                    
-                    for (int i = 1; i < jTable.getRowCount(); i++) {
-                        val = String.valueOf(jTable.getValueAt(i, columnIndex));
+                    try {
+                        //If the column is a Double but needs " USD" trimmed off...
+                        String val = String.valueOf(jTable.getValueAt(0, columnIndex));
                         val = val.substring(0, val.length() - 4);
-                        jTable.setValueAt(val, i, columnIndex);
+                        Double.parseDouble(val);
+                        jTable.setValueAt(val, 0, columnIndex);
+                        jTable.getRowCount();
+                        jTable.getModel().getRowCount();
+
+                        for (int i = 1; i < jTable.getRowCount(); i++) {
+                            val = String.valueOf(jTable.getValueAt(i, columnIndex));
+                            val = val.substring(0, val.length() - 4);
+                            jTable.setValueAt(val, i, columnIndex);
+                        }
+                        sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.DESCENDING));
+                        sorter.setSortKeys(sortKeys);
+                        sorter.setComparator(columnIndex, (Double a, Double b) -> a.compareTo(b));
+                        isDouble = true;
+                    } catch (NumberFormatException exc) {
+                        //Isn't a Double
                     }
-                    sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.DESCENDING));
-                    sorter.setSortKeys(sortKeys);
-                    sorter.setComparator(columnIndex, (Double a, Double b) -> a.compareTo(b));
-                    isDouble = true;
                 } catch (Exception ex) {
-                    //Isn't a Double
+                    
                 }
                 
                 if (!isDouble) {

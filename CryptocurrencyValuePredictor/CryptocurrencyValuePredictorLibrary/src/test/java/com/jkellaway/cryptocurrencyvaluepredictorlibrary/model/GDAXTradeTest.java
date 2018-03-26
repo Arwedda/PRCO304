@@ -19,9 +19,9 @@ import org.junit.Test;
  * @author jkell
  */
 public class GDAXTradeTest {
-    GDAXTrade blankTrade;
-    GDAXTrade trade;
-    LocalDateTime timeStamp;
+    private GDAXTrade blank;
+    private GDAXTrade real;
+    private LocalDateTime timeStamp;
     
     public GDAXTradeTest() {
     }
@@ -37,8 +37,8 @@ public class GDAXTradeTest {
     @Before
     public void setUp() {
         timeStamp = LocalDateTime.now();
-        blankTrade = new GDAXTrade();
-        trade = new GDAXTrade(timeStamp, TestGlobals.ONEHUNDRED, TestGlobals.LASTTRADE);
+        blank = new GDAXTrade();
+        real = new GDAXTrade(timeStamp, TestGlobals.ONEHUNDRED, TestGlobals.LASTTRADE);
     }
 
     @After
@@ -47,47 +47,48 @@ public class GDAXTradeTest {
 
     @Test
     public void testGetTime() {
-        assertNull(blankTrade.getTime());
-        assertEquals(timeStamp, trade.getTime());
+        assertNull(blank.getTime());
+        assertEquals(timeStamp, real.getTime());
     }
 
     @Test
     public void testSetTime() {
-        blankTrade.setTime(timeStamp);
-        assertEquals(timeStamp, blankTrade.getTime());
-        blankTrade.setTime(null);
+        blank.setTime(timeStamp);
+        assertEquals(timeStamp, blank.getTime());
+        blank.setTime(null);
     }
 
     @Test
     public void testGetPrice() {
-        assertEquals(TestGlobals.ZERO, blankTrade.getPrice(), TestGlobals.DELTA);
-        assertEquals(TestGlobals.ONEHUNDRED, trade.getPrice(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.ZERO, blank.getPrice(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.ONEHUNDRED, real.getPrice(), TestGlobals.DELTA);
     }
 
     @Test
     public void testSetPrice() {
-        blankTrade.setPrice(TestGlobals.ONE);
-        assertEquals(TestGlobals.ONE, blankTrade.getPrice(), TestGlobals.DELTA);
-        blankTrade.setPrice(TestGlobals.ZERO);
+        blank.setPrice(TestGlobals.ONE);
+        assertEquals(TestGlobals.ONE, blank.getPrice(), TestGlobals.DELTA);
+        blank.setPrice(TestGlobals.ZERO);
     }
 
     @Test
     public void testGetTrade_id() {
-        assertEquals(null, blankTrade.getTrade_id());
-        assertEquals(TestGlobals.LASTTRADE, trade.getTrade_id());
+        assertEquals(null, blank.getTrade_id());
+        assertEquals(TestGlobals.LASTTRADE, real.getTrade_id());
     }
 
     @Test
     public void testSetTrade_id() {
-        blankTrade.setTrade_id(TestGlobals.LASTTRADE);
-        assertEquals(TestGlobals.LASTTRADE, blankTrade.getTrade_id());
-        blankTrade.setTrade_id(0);
+        blank.setTrade_id(TestGlobals.LASTTRADE);
+        assertEquals(TestGlobals.LASTTRADE, blank.getTrade_id());
+        blank.setTrade_id(0);
     }
 
     @Test
     public void testTradesMatch() {
-        blankTrade = trade;
-        assertTrue(blankTrade.tradesMatch(trade));
-        blankTrade = new GDAXTrade();
+        blank = real;
+        assertTrue(blank.tradesMatch(real));
+        blank = new GDAXTrade();
+        assertFalse(blank.tradesMatch(real));
     }
 }

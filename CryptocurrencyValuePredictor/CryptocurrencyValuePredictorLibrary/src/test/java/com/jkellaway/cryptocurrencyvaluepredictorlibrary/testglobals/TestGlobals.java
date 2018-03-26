@@ -14,6 +14,7 @@ public class TestGlobals {
     public static final String IDBTC = "BTC";
     public static final String IDETH = "ETH";
     public static final String IDLTC = "LTC";
+    public static final String IDUSD = "USD";
     public static final String NAMEBITCOINCASH = "Bitcoin Cash";
     public static final String NAMEBITCOIN = "Bitcoin";
     public static final String NAMEETHEREUM = "Ethereum";

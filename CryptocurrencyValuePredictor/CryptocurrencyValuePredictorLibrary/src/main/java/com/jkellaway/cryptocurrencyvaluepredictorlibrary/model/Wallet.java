@@ -26,7 +26,7 @@ public class Wallet {
         this.holdingID = holdingID;
         this.value = value;
         this.startingValues = new Double[4];
-        this.startingUSD = value;
+        this.startingUSD = (holdingID.equals("USD")) ? value : null;
     }
 
     public String getHoldingID() {
@@ -45,8 +45,11 @@ public class Wallet {
         return value;
     }
     
-    public void setStartingValue(Double value, int index){
-        this.startingValues[index] = value;
+    public void setStartingValues(Double[] startingValues, Double startQuantity, Integer startIndex){
+        this.startingValues = startingValues;
+        if (startQuantity != null && !holdingID.equals("USD")) {
+            this.startingUSD = startingValues[startIndex] * startQuantity;
+        }
     }
     
     public Double[] getStartingValues(){
@@ -58,11 +61,13 @@ public class Wallet {
     }
     
     public Double getUSDValue(Currency[] currencies) {
-        for (Currency currency : currencies){
-            if (currency.getID().equals(this.holdingID)) {
-                return this.value * currency.getRate().getValue();
+        if (value != null) {
+            for (Currency currency : currencies){
+                if (currency.getID().equals(this.holdingID)) {
+                    return value * currency.getRate().getValue();
+                }
             }
         }
-        return this.value;
+        return value;
     }
 }

@@ -122,11 +122,11 @@ public class Trader {
         ExchangeRate desired = new ExchangeRate();
         Double growth;
         Double predictedGrowth;
-        
+        Double starting[] = new Double[noOfCurrencies];
         for (int i = 0; i < noOfCurrencies; i++) {
-            Double starting = 100 / currencies[i].getRates().get(numberOfPredictions).getValue();
-            wallet.setStartingValue(starting, i);
+            starting[i] = Globals.STARTINGVALUE / currencies[i].getRates().get(numberOfPredictions).getValue();
         }
+        wallet.setStartingValues(starting, currencies[0].getRate().getValue(), 0);
 
         trading:
         for (int i = numberOfPredictions; i < Globals.READINGSREQUIRED - 1; i++) {

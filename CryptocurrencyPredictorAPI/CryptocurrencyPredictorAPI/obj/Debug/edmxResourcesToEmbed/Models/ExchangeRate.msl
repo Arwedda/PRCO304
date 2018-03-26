@@ -8,8 +8,6 @@
           <ScalarProperty Name="timestamp" ColumnName="DATETIME" />
           <ScalarProperty Name="value" ColumnName="DOLLAR_VALUE" />
           <ScalarProperty Name="growth" ColumnName="GROWTH" />
-          <ScalarProperty Name="gofaiNextGrowth" ColumnName="GOFAI_NEXT_GROWTH" />
-          <ScalarProperty Name="neuralNetworkNextGrowth" ColumnName="NEURALNETWORK_NEXT_GROWTH" />
           <ScalarProperty Name="lastTrade" ColumnName="LAST_GDAXTRADE" />
         </MappingFragment>
       </EntityTypeMapping>

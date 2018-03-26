@@ -12,11 +12,9 @@
           </Key>
           <Property Name="CURRENCY_ID" Type="varchar2" MaxLength="5" Nullable="false" />
           <Property Name="DATETIME" Type="timestamp" Precision="6" Nullable="false" />
-          <Property Name="DOLLAR_VALUE" Type="number" Precision="38" Scale="17" Nullable="false" />
-          <Property Name="GROWTH" Type="number" Precision="38" Scale="17" />
-          <Property Name="GOFAI_NEXT_GROWTH" Type="number" Precision="38" Scale="17" />
-          <Property Name="NEURALNETWORK_NEXT_GROWTH" Type="number" Precision="38" Scale="17" />
-          <Property Name="LAST_GDAXTRADE" Type="number" Precision="38" Scale="17" />
+          <Property Name="DOLLAR_VALUE" Type="number" Precision="8" Scale="2" Nullable="false" />
+          <Property Name="GROWTH" Type="number" Precision="7" Scale="4" />
+          <Property Name="LAST_GDAXTRADE" Type="number" Precision="10" Scale="0" Nullable="false" />
         </EntityType>
         <EntityContainer Name="ExchangeRateStoreContainer">
           <EntitySet Name="PRCO304_EXCHANGERATE" EntityType="Self.PRCO304_EXCHANGERATE" Schema="JOSEPHKELLAWAY" store:Type="Tables" />
@@ -32,12 +30,10 @@
             <PropertyRef Name="timestamp" />
           </Key>
           <Property Name="currency_id" Type="String" MaxLength="5" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="timestamp" Type="DateTime" Precision="0" Nullable="false" />
+          <Property Name="timestamp" Type="DateTime" Precision="6" Nullable="false" />
           <Property Name="value" Type="Decimal" Precision="8" Scale="2" Nullable="false" />
           <Property Name="growth" Type="Decimal" Precision="7" Scale="4" />
-          <Property Name="gofaiNextGrowth" Type="Decimal" Precision="7" Scale="4" />
-          <Property Name="neuralNetworkNextGrowth" Type="Decimal" Precision="7" Scale="4" />
-          <Property Name="lastTrade" Type="Decimal" Precision="38" Scale="17" Nullable="false" />
+          <Property Name="lastTrade" Nullable="false" Type="Int32" />
         </EntityType>
         <EntityContainer Name="ExchangeRates" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="PRCO304_EXCHANGERATE" EntityType="Self.PRCO304_EXCHANGERATE" />
@@ -55,8 +51,6 @@
                 <ScalarProperty Name="timestamp" ColumnName="DATETIME" />
                 <ScalarProperty Name="value" ColumnName="DOLLAR_VALUE" />
                 <ScalarProperty Name="growth" ColumnName="GROWTH" />
-                <ScalarProperty Name="gofaiNextGrowth" ColumnName="GOFAI_NEXT_GROWTH" />
-                <ScalarProperty Name="neuralNetworkNextGrowth" ColumnName="NEURALNETWORK_NEXT_GROWTH" />
                 <ScalarProperty Name="lastTrade" ColumnName="LAST_GDAXTRADE" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -5,6 +5,7 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import java.time.LocalDateTime;
 
@@ -28,8 +29,8 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         this.value = 0.0;
         this.lastTrade = null;
         this.growth = null;
-        this.gofaiNextGrowth = new Double[20];
-        this.neuralNetworkNextGrowth = new Double[20];
+        this.gofaiNextGrowth = new Double[Globals.NUMBEROFPREDICTIONS];
+        this.neuralNetworkNextGrowth = new Double[Globals.NUMBEROFPREDICTIONS];
         this.ldtTimestamp = null;
     }
 
@@ -39,14 +40,14 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         this.value = value;
         this.growth = growth;
         try {
-            this.gofaiNextGrowth = (gofaiNextGrowth.length < 1) ? new Double[20] : gofaiNextGrowth;
+            this.gofaiNextGrowth = (gofaiNextGrowth.length < 1) ? new Double[Globals.NUMBEROFPREDICTIONS] : gofaiNextGrowth;
         } catch (Exception e) {
-            this.gofaiNextGrowth = new Double[20];
+            this.gofaiNextGrowth = new Double[Globals.NUMBEROFPREDICTIONS];
         }
         try {
-            this.neuralNetworkNextGrowth = (neuralNetworkNextGrowth.length < 1) ? new Double[20] : neuralNetworkNextGrowth;
+            this.neuralNetworkNextGrowth = (neuralNetworkNextGrowth.length < 1) ? new Double[Globals.NUMBEROFPREDICTIONS] : neuralNetworkNextGrowth;
         } catch (Exception e) {
-            this.neuralNetworkNextGrowth = new Double[20];
+            this.neuralNetworkNextGrowth = new Double[Globals.NUMBEROFPREDICTIONS];
         }
         this.lastTrade = lastTrade;
         this.ldtTimestamp = timestamp;
@@ -58,14 +59,14 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
         this.value = value;
         this.growth = growth;
         try {
-            this.gofaiNextGrowth = (gofaiNextGrowth.length < 1) ? new Double[20] : gofaiNextGrowth;
+            this.gofaiNextGrowth = (gofaiNextGrowth.length < 1) ? new Double[Globals.NUMBEROFPREDICTIONS] : gofaiNextGrowth;
         } catch (Exception e) {
-            this.gofaiNextGrowth = new Double[20];
+            this.gofaiNextGrowth = new Double[Globals.NUMBEROFPREDICTIONS];
         }
         try {
-            this.neuralNetworkNextGrowth = (neuralNetworkNextGrowth.length < 1) ? new Double[20] : neuralNetworkNextGrowth;
+            this.neuralNetworkNextGrowth = (neuralNetworkNextGrowth.length < 1) ? new Double[Globals.NUMBEROFPREDICTIONS] : neuralNetworkNextGrowth;
         } catch (Exception e) {
-            this.neuralNetworkNextGrowth = new Double[20];
+            this.neuralNetworkNextGrowth = new Double[Globals.NUMBEROFPREDICTIONS];
         }
         this.lastTrade = lastTrade;
         this.ldtTimestamp = LocalDateTimeHelper.localDateTimeParser(timestamp);
@@ -94,7 +95,11 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.ldtTimestamp = timestamp;
-        this.timestamp = timestamp.toString();
+        if (timestamp != null) {
+            this.timestamp = timestamp.toString();
+        } else {
+            this.timestamp = "Unknown";
+        }
     }
 
     public Double getValue() {
@@ -145,16 +150,17 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     }
     
     public boolean isMinuteAfter(ExchangeRate rate){
-        return ldtTimestamp.minusMinutes(1).isEqual(rate.getLDTTimestamp());
+        if (ldtTimestamp != null && rate != null && rate.getLDTTimestamp() != null) {
+            return ldtTimestamp.minusMinutes(1).isEqual(rate.getLDTTimestamp());
+        }
+        return false;
     }
     
     public boolean isSameMinute(ExchangeRate rate){
-        return ldtTimestamp.isEqual(rate.getLDTTimestamp());
-    }
-    
-    @Override
-    public String toString(){
-        return "timestamp=" + timestamp + " value=" + value + " lastTrade=" + lastTrade + " growth=" + growth;
+        if (ldtTimestamp != null && rate != null && rate.getLDTTimestamp() != null) {
+            return ldtTimestamp.isEqual(rate.getLDTTimestamp());
+        }
+        return false;
     }
 
     @Override

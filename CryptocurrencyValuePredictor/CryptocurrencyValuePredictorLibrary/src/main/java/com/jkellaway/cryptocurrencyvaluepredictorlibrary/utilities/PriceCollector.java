@@ -59,7 +59,7 @@ public class PriceCollector implements ISubject {
     
     private void initCurrencies() {
         try {    
-            currencies = currencyAPIController.getCurrencies(Globals.API_ENDPOINT + "/currency");
+            currencies = currencyAPIController.getCurrencies(Globals.API_ENDPOINT + Globals.CURRENCY_EXTENSION);
             if (currencies.length == 0){
                 storageFreeMode();
             } else {
@@ -75,7 +75,7 @@ public class PriceCollector implements ISubject {
     private void sortRelevantRates() {
         ExchangeRate[] rates, updatedRates;
         for (Currency currency : currencies){
-            rates = exchangeRateAPIController.getExchangeRates(Globals.API_ENDPOINT + "/exchangerate/" + currency.getID());
+            rates = exchangeRateAPIController.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + currency.getID());
             for (ExchangeRate rate : rates){
                 rate.setTimestamp(rate.getTimestamp());
                 if (!rate.getLDTTimestamp().isBefore(firstRelevantRate)){
@@ -85,7 +85,7 @@ public class PriceCollector implements ISubject {
             currency.findGaps(firstRelevantRate);
             currency.mergeRates();
             updatedRates = currency.calculateGrowth(false);
-            exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+            exchangeRateAPIController.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, updatedRates);
         }
     }
     
@@ -157,7 +157,7 @@ public class PriceCollector implements ISubject {
                         rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, tradeID);
                         currency.setValue(rate);
                         if (connectedToDatabase){
-                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", rate);
+                            exchangeRateAPIController.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
                             if (0 < currency.getGaps().size() && 0 < trades.length) {
                                 if (currency.getLastGap().getPaginationStart() == 0) {
                                     currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
@@ -225,13 +225,13 @@ public class PriceCollector implements ISubject {
                     currency.mergeRates();
                     updatedRates = currency.calculateGrowth((lap == 2));
                     if (connectedToDatabase){
-                        exchangeRateAPIController.put(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                        exchangeRateAPIController.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, updatedRates);
                     }
                     if (!currency.getHistoricRates().isEmpty()) {
                         currency.mergeRates();
                         updatedRates = currency.calculateGrowth((lap == 2));
                         if (connectedToDatabase){
-                            exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", updatedRates);
+                            exchangeRateAPIController.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, updatedRates);
                         }
                     }
                 }
@@ -267,7 +267,8 @@ public class PriceCollector implements ISubject {
                                     currency.getGaps().remove(gap);
                                 } else {
                                     if (connectedToDatabase){
-                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + "/exchangerate", currency.getHistoricRates().toArray(new ExchangeRate[currency.getHistoricRates().size()]));
+                                        exchangeRateAPIController.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION,
+                                                currency.getHistoricRates().toArray(new ExchangeRate[currency.getHistoricRates().size()]));
                                     }
                                     currency.gradualMerge();
                                 }
