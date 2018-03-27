@@ -25,13 +25,17 @@ public class ExchangeRateTest {
     private ExchangeRate blank;
     private ExchangeRate real;
     private LocalDateTime timeStamp;
-    private Double[] doubles;
+    private static Double[] doubles;
     
     public ExchangeRateTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        doubles = new Double[20];
+        for (int i = 0; i < doubles.length; i++) {
+            doubles[i] = (double) i;
+        }
     }
 
     @AfterClass
@@ -40,11 +44,6 @@ public class ExchangeRateTest {
 
     @Before
     public void setUp() {
-        doubles = new Double[20];
-        for (int i = 0; i < doubles.length; i++) {
-            doubles[i] = (double) i;
-        }
-        
         timeStamp = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
         blank = new ExchangeRate();
         real = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);

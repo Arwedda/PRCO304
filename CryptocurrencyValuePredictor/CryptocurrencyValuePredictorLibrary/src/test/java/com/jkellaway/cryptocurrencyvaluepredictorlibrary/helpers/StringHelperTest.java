@@ -17,14 +17,19 @@ import org.junit.Test;
  * @author jkell
  */
 public class StringHelperTest {
-    private String s1, s2;
-    private Double d1, d2, d3;
+    private static String s1, s2;
+    private static Double d1, d2, d3;
     
     public StringHelperTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        s1 = "abcdefghijklmnopqrstuvwxyz1234567890";
+        s2 = "abcdefghijklmnopqrstuvwxyz9876543210";
+        d1 = 07.77;
+        d2 = 70.07;
+        d3 = 77.70;
     }
 
     @AfterClass
@@ -33,11 +38,6 @@ public class StringHelperTest {
 
     @Before
     public void setUp() {
-        s1 = "abcdefghijklmnopqrstuvwxyz1234567890";
-        s2 = "abcdefghijklmnopqrstuvwxyz9876543210";
-        d1 = 07.77;
-        d2 = 70.07;
-        d3 = 77.70;
     }
 
     @After

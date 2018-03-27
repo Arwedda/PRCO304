@@ -18,14 +18,16 @@ import static org.junit.Assert.*;
  * @author jkell
  */
 public class LocalDateTimeHelperTest {
-    private LocalDateTime timestamp;
-    private String stringTimestamp;
+    private static LocalDateTime timestamp;
+    private static String stringTimestamp;
     
     public LocalDateTimeHelperTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        timestamp = LocalDateTime.of(2000, 1, 1, 0, 0, 7, 77777);
+        stringTimestamp = "2000-01-01T00:00";
     }
 
     @AfterClass
@@ -34,8 +36,6 @@ public class LocalDateTimeHelperTest {
 
     @Before
     public void setUp() {
-        timestamp = LocalDateTime.of(2000, 1, 1, 0, 0, 7, 77777);
-        stringTimestamp = "2000-01-01T00:00";
     }
 
     @After

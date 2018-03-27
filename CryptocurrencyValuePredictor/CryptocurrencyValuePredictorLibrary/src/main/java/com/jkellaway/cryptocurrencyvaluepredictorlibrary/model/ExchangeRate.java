@@ -86,7 +86,11 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
 
     public void setTimestamp(String timestamp) {
         this.ldtTimestamp = LocalDateTimeHelper.localDateTimeParser(timestamp);
-        this.timestamp = this.ldtTimestamp.toString();
+        try {
+            this.timestamp = this.ldtTimestamp.toString();
+        } catch (Exception e) {
+            this.timestamp = "Unknown";
+        }
     }
 
     public LocalDateTime getLDTTimestamp() {

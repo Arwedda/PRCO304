@@ -59,7 +59,7 @@ public class PriceCollector implements ISubject {
     }
     
     private void initCurrencies() {
-        try {    
+        try {
             currencies = currencyAPIController.getCurrencies(Globals.API_ENDPOINT + Globals.CURRENCY_EXTENSION);
             if (currencies.length == 0){
                 storageFreeMode();

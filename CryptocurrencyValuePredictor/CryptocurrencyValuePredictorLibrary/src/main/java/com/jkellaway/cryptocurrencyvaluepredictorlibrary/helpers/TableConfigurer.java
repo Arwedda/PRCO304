@@ -31,13 +31,13 @@ public class TableConfigurer {
         jTable.getTableHeader().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int columnIndex = jTable.convertColumnIndexToModel(jTable.columnAtPoint(e.getPoint()));
+        /*        int columnIndex = jTable.convertColumnIndexToModel(jTable.columnAtPoint(e.getPoint()));
                 Object columnClass = jTable.getColumnClass(columnIndex);
                 jTable.setAutoCreateRowSorter(true);
                 
                 TableRowSorter<TableModel> sorter = new TableRowSorter<>(jTable.getModel());
                 jTable.setRowSorter(sorter);
-                ArrayList<RowSorter.SortKey> sortKeys = new ArrayList<>();
+                List<RowSorter.SortKey> sortKeys = new ArrayList<>();
 
                 boolean isDouble = false;
                 try {
@@ -88,7 +88,7 @@ public class TableConfigurer {
                 sorter.sort();
                 if (isDouble) {
                     
-                }
+                }*/
             }
         });
     }

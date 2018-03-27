@@ -25,21 +25,30 @@ import org.junit.Test;
  * @author jkell
  */
 public class CurrencyTest {
-    private GDAXAPIController controller;
-    private Currency blank;
-    private Currency rateless;
-    private Currency real;
-    private ExchangeRate rate;
-    private Gap gap;
-    private GDAXTrade blankHistTrade;
-    private GDAXTrade realHistTrade;
-    private LocalDateTime timeStamp;
+    private static GDAXAPIController controller;
+    private static Currency blank;
+    private static Currency rateless;
+    private static Currency real;
+    private static ExchangeRate rate;
+    private static Gap gap;
+    private static GDAXTrade[] blankHistTrades;
+    private static GDAXTrade[] realHistTrades;
+    private static LocalDateTime timeStamp;
     
     public CurrencyTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        timeStamp = LocalDateTime.now(Clock.systemUTC());
+        controller = new GDAXAPIController();
+        blank = new Currency();
+        rateless = new Currency(TestGlobals.IDLTC, TestGlobals.NAMELITECOIN, Globals.LTC_TRADES);
+        real = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
+        rate = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        gap = new Gap(TestGlobals.LASTTRADE, timeStamp, 1);
+        blankHistTrades = new GDAXTrade[100];
+        realHistTrades = controller.getGDAXTrades(real.getGDAXEndpoint());
     }
 
     @AfterClass
@@ -48,15 +57,7 @@ public class CurrencyTest {
 
     @Before
     public void setUp() {
-        timeStamp = LocalDateTime.now(Clock.systemUTC());
-        controller = new GDAXAPIController();
-        blank = new Currency();
-        rateless = new Currency(TestGlobals.IDLTC, TestGlobals.NAMELITECOIN, Globals.LTC_TRADES);
-        real = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
-        rate = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
-        gap = new Gap(TestGlobals.LASTTRADE, timeStamp, 1);
-        blankHistTrade = new GDAXTrade();
-        realHistTrade = (controller.getGDAXTrades(real.getGDAXEndpoint())[0]);
+
     }
 
     @After
@@ -64,16 +65,16 @@ public class CurrencyTest {
     }
 
     @Test
-    public void testGetID() {/*
+    public void testGetID() {
         assertEquals("unknown", blank.getID());
         assertEquals(TestGlobals.IDETH, real.getID());
-    */}
+    }
 
     @Test
-    public void testSetID() {/*
+    public void testSetID() {
         rateless.setID(TestGlobals.IDETH);
         assertEquals(TestGlobals.IDETH, rateless.getID());
-        rateless.setID(TestGlobals.IDLTC);*/
+        rateless.setID(TestGlobals.IDLTC);
     }
 
     @Test

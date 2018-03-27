@@ -23,7 +23,7 @@ import org.junit.Test;
  * @author jkell
  */
 public class ExchangeRateAPIControllerTest {
-    private ExchangeRateAPIController controller;
+    private static ExchangeRateAPIController controller;
     private ExchangeRate[] rates;
     
     public ExchangeRateAPIControllerTest() {
@@ -31,6 +31,7 @@ public class ExchangeRateAPIControllerTest {
 
     @BeforeClass
     public static void setUpClass() {
+        controller = new ExchangeRateAPIController();
     }
 
     @AfterClass
@@ -39,7 +40,7 @@ public class ExchangeRateAPIControllerTest {
 
     @Before
     public void setUp() {
-        controller = new ExchangeRateAPIController();
+        
     }
 
     @After

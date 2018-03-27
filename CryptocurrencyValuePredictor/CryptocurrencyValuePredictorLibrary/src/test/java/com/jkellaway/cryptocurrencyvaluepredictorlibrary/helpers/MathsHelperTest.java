@@ -19,13 +19,14 @@ import org.junit.Test;
  * @author jkell
  */
 public class MathsHelperTest {
-    private Double[] doubles;
+    private static Double[] doubles;
     
     public MathsHelperTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        doubles = new Double[] {9.9, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 1.1};
     }
 
     @AfterClass
@@ -34,7 +35,6 @@ public class MathsHelperTest {
 
     @Before
     public void setUp() {
-        doubles = new Double[] {9.9, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 1.1};
     }
 
     @After

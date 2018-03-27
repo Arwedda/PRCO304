@@ -19,22 +19,22 @@ import org.junit.Test;
  * @author jkell
  */
 public class GDAXAPIControllerTest {
-    private GDAXAPIController controller;
+    private static GDAXAPIController controller;
     
     public GDAXAPIControllerTest() {
     }
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
+        controller = new GDAXAPIController();
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownClass() {
     }
 
     @Before
     public void setUp() {
-        controller = new GDAXAPIController();
     }
 
     @After

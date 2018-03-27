@@ -22,13 +22,14 @@ import org.junit.Test;
 public class GDAXTradeTest {
     private GDAXTrade blank;
     private GDAXTrade real;
-    private LocalDateTime timeStamp;
+    private static LocalDateTime timeStamp;
     
     public GDAXTradeTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        timeStamp = LocalDateTime.now(Clock.systemUTC());
     }
 
     @AfterClass
@@ -37,7 +38,6 @@ public class GDAXTradeTest {
 
     @Before
     public void setUp() {
-        timeStamp = LocalDateTime.now(Clock.systemUTC());
         blank = new GDAXTrade();
         real = new GDAXTrade(timeStamp, TestGlobals.ONEHUNDRED, TestGlobals.LASTTRADE);
     }

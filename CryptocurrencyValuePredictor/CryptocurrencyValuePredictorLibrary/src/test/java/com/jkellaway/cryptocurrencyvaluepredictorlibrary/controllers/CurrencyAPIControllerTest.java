@@ -19,13 +19,14 @@ import org.junit.Test;
  * @author jkell
  */
 public class CurrencyAPIControllerTest {
-    private CurrencyAPIController controller;
+    private static CurrencyAPIController controller;
     
     public CurrencyAPIControllerTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        controller = new CurrencyAPIController();
     }
 
     @AfterClass
@@ -34,7 +35,6 @@ public class CurrencyAPIControllerTest {
 
     @Before
     public void setUp() {
-        controller = new CurrencyAPIController();
     }
 
     @After

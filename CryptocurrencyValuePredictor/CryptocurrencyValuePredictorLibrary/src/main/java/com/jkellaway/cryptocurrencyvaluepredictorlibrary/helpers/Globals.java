@@ -23,7 +23,7 @@ public class Globals {
     public static final Double MINIMUM_INVESTMENT = 0.01;
     
     public static final int NUMBEROFPREDICTIONS = 20;
-    public static final int READINGSREQUIRED = 15000 + NUMBEROFPREDICTIONS;
+    public static final int READINGSREQUIRED = 5000 + NUMBEROFPREDICTIONS;
     public static final String STARTINGUNITS = "USD";
     public static final Double STARTINGVALUE = 100.00;
 }

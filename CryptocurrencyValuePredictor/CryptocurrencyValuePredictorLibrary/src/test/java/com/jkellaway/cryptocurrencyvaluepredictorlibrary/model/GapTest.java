@@ -23,13 +23,14 @@ import org.junit.Test;
 public class GapTest {
     private Gap blank;
     private Gap real;
-    private LocalDateTime timeStamp;
+    private static LocalDateTime timeStamp;
     
     public GapTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
+        timeStamp = LocalDateTime.now(Clock.systemUTC());
     }
 
     @AfterClass
@@ -38,7 +39,6 @@ public class GapTest {
 
     @Before
     public void setUp() {
-        timeStamp = LocalDateTime.now(Clock.systemUTC());
         blank = new Gap();
         real = new Gap(TestGlobals.LASTTRADE, timeStamp, 1);
     }
