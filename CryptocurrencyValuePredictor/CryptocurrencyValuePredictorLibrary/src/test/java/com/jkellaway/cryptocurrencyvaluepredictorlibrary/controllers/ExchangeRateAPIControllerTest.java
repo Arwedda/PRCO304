@@ -5,6 +5,12 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -17,43 +23,203 @@ import org.junit.Test;
  * @author jkell
  */
 public class ExchangeRateAPIControllerTest {
+    private ExchangeRateAPIController controller;
+    private ExchangeRate[] rates;
     
     public ExchangeRateAPIControllerTest() {
     }
 
     @BeforeClass
-    public static void setUpClass() throws Exception {
+    public static void setUpClass() {
     }
 
     @AfterClass
-    public static void tearDownClass() throws Exception {
+    public static void tearDownClass() {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        controller = new ExchangeRateAPIController();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     @Test
     public void testGetExchangeRates() {
+        assertNull(rates);
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION);
+        assertNotSame(null, rates);
     }
 
     @Test
     public void testPost_String_ExchangeRate() {
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 0, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
+        controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        List<ExchangeRate> temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:00:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(1, rates.length);
+        assertEquals(rate.getCurrency_id(), rates[0].getCurrency_id());
+        assertEquals(rate.getGrowth(), rates[0].getGrowth());
+        assertEquals(rate.getLDTTimestamp(), rates[0].getLDTTimestamp());
+        assertEquals(rate.getLastTrade(), rates[0].getLastTrade());
+        assertEquals(rate.getTimestamp(), rates[0].getTimestamp());
+        assertEquals(rate.getValue(), rates[0].getValue());
+        
+        //Also testing delete
+        controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id() + "/" + rate.getLDTTimestamp());
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:00:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(0, rates.length);
     }
 
     @Test
     public void testPost_String_ExchangeRateArr() {
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 1, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate2 = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 2, 0), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        rates = new ExchangeRate[2];
+        rates[0] = rate;
+        rates[1] = rate2;
+        controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rates);
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        List<ExchangeRate> temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:01:00") || er.getTimestamp().equals("2000-01-01T00:02:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(2, rates.length);
+        assertEquals(rate.getCurrency_id(), rates[0].getCurrency_id());
+        assertEquals(rate.getGrowth(), rates[0].getGrowth());
+        assertEquals(rate.getLDTTimestamp(), rates[0].getLDTTimestamp());
+        assertEquals(rate.getLastTrade(), rates[0].getLastTrade());
+        assertEquals(rate.getTimestamp(), rates[0].getTimestamp());
+        assertEquals(rate.getValue(), rates[0].getValue());
+        assertEquals(rate2.getCurrency_id(), rates[1].getCurrency_id());
+        assertEquals(rate2.getGrowth(), rates[1].getGrowth());
+        assertEquals(rate2.getLDTTimestamp(), rates[1].getLDTTimestamp());
+        assertEquals(rate2.getLastTrade(), rates[1].getLastTrade());
+        assertEquals(rate2.getTimestamp(), rates[1].getTimestamp());
+        assertEquals(rate2.getValue(), rates[1].getValue());
+        
+        //Also testing delete
+        controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id() + "/" + rate.getLDTTimestamp());
+        controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate2.getCurrency_id() + "/" + rate2.getLDTTimestamp());;
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:01:00") || er.getTimestamp().equals("2000-01-01T00:02:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(0, rates.length);
     }
 
     @Test
     public void testPut_String_ExchangeRate() {
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 3, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
+        controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
+        rate.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        controller.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        List<ExchangeRate> temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:03:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(1, rates.length);
+        assertEquals(rate.getCurrency_id(), rates[0].getCurrency_id());
+        assertEquals(rate.getGrowth(), rates[0].getGrowth());
+        assertEquals(rate.getLDTTimestamp(), rates[0].getLDTTimestamp());
+        assertEquals(rate.getLastTrade(), rates[0].getLastTrade());
+        assertEquals(rate.getTimestamp(), rates[0].getTimestamp());
+        assertEquals(rate.getValue(), rates[0].getValue());
+        
+        //Also testing delete
+        controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id() + "/" + rate.getLDTTimestamp());
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:03:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(0, rates.length);
     }
     
     @Test
     public void testPut_String_ExchangeRateArr() {
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 4, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate2 = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 5, 0), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        rates = new ExchangeRate[2];
+        rates[0] = rate;
+        rates[1] = rate2;
+        controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rates);
+        rates = new ExchangeRate[2];
+        rate.setValue(TestGlobals.ONE);
+        rate2.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        rates[0] = rate;
+        rates[1] = rate2;
+        controller.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rates);
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        List<ExchangeRate> temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:04:00") || er.getTimestamp().equals("2000-01-01T00:05:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(2, rates.length);
+        assertEquals(rate.getCurrency_id(), rates[0].getCurrency_id());
+        assertEquals(rate.getGrowth(), rates[0].getGrowth());
+        assertEquals(rate.getLDTTimestamp(), rates[0].getLDTTimestamp());
+        assertEquals(rate.getLastTrade(), rates[0].getLastTrade());
+        assertEquals(rate.getTimestamp(), rates[0].getTimestamp());
+        assertEquals(rate.getValue(), rates[0].getValue());
+        assertEquals(rate2.getCurrency_id(), rates[1].getCurrency_id());
+        assertEquals(rate2.getGrowth(), rates[1].getGrowth());
+        assertEquals(rate2.getLDTTimestamp(), rates[1].getLDTTimestamp());
+        assertEquals(rate2.getLastTrade(), rates[1].getLastTrade());
+        assertEquals(rate2.getTimestamp(), rates[1].getTimestamp());
+        assertEquals(rate2.getValue(), rates[1].getValue());
+        
+        //Also testing delete
+        controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id() + "/" + rate.getLDTTimestamp());
+        controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate2.getCurrency_id() + "/" + rate2.getLDTTimestamp());;
+        rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
+        temp = new ArrayList<>();
+        for (ExchangeRate er : rates) {
+            if (er.getTimestamp().equals("2000-01-01T00:04:00") || er.getTimestamp().equals("2000-01-01T00:05:00")) {
+                temp.add(er);
+                er.setTimestamp(er.getTimestamp());
+            }
+        }
+        rates = temp.toArray(new ExchangeRate[temp.size()]);
+        assertEquals(0, rates.length);
     }
 }

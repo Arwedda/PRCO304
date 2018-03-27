@@ -5,6 +5,8 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.GDAXTrade;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -38,10 +40,19 @@ public class GDAXAPIControllerTest {
     @After
     public void tearDown() {
     }
+    
+    @Test
+    public void testGet() {
+        String json = "[{\"time\":\"2016-05-18T00:14:03.60168Z\",\"trade_id\":1,\"price\":\"12.50000000\",\"size\":\"0.39900249\",\"side\":\"sell\"}]";
+        assertEquals(json, controller.get("https://api.gdax.com/products/ETH-USD/trades?after=2"));
+    }
 
     @Test
     public void testGetGDAXTrades() {
-        String json = "[{\"time\":\"2016-05-18T00:14:03.60168Z\",\"trade_id\":1,\"price\":\"12.50000000\",\"size\":\"0.39900249\",\"side\":\"sell\"}]";
-        assertEquals(json, controller.get("https://api.gdax.com/products/ETH-USD/trades?after=2"));
+        GDAXTrade[] trades = controller.getGDAXTrades("https://api.gdax.com/products/ETH-USD/trades?after=2");
+        assertTrue(1 == trades.length);
+        assertTrue(trades[0].getPrice() == 12.5);
+        assertTrue(trades[0].getTime().equals(LocalDateTimeHelper.localDateTimeParser("2016-05-18T00:14")));
+        assertTrue(trades[0].getTrade_id() == 1);
     }
 }

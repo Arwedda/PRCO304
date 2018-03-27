@@ -6,6 +6,7 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.controllers;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 /**
@@ -37,9 +38,14 @@ public class ExchangeRateAPIController extends APIController {
         }
     }
     
-    public void put(String endpoint, ExchangeRate rate){
-        String json = gson.toJson(rate, ExchangeRate.class);
-        post(endpoint, json);
+    public void put(String endpoint, ExchangeRate rate) {
+        try {
+            String json = gson.toJson(rate, ExchangeRate.class);
+            String query = "/" + rate.getCurrency_id() + "/" + rate.getTimestamp();
+            put(endpoint + URLEncoder.encode(query, "UTF-8"), json);
+        } catch (Exception e) {
+            System.out.println("[INFO] Error: " + e);
+        }
     }
     
     public void put(String endpoint, ExchangeRate[] rates) {

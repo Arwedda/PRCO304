@@ -36,7 +36,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
 
     public ExchangeRate(String currency_id, LocalDateTime timestamp, Double value, Double growth, Double[] gofaiNextGrowth, Double[] neuralNetworkNextGrowth, Integer lastTrade) {
         this.currency_id = currency_id;
-        this.timestamp = timestamp.toString();
+        this.timestamp = LocalDateTimeHelper.startOfMinute(timestamp).toString();
         this.value = value;
         this.growth = growth;
         try {
@@ -85,8 +85,8 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     }
 
     public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
         this.ldtTimestamp = LocalDateTimeHelper.localDateTimeParser(timestamp);
+        this.timestamp = this.ldtTimestamp.toString();
     }
 
     public LocalDateTime getLDTTimestamp() {
