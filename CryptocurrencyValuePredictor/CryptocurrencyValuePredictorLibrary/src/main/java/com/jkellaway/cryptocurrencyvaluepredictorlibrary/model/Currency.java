@@ -174,8 +174,8 @@ public class Currency {
                 gap.setStartTime(gap.getStartTime().minusMinutes(historicRates.size()));
                 gap.setPaginationStart(gap.getPaginationStart() - 100);
             }
-            historicRates.clear();
         }
+        historicRates.clear();
     }
     
     public boolean dumpDuplicates(boolean passedGap){
@@ -193,7 +193,10 @@ public class Currency {
             if (historicTrades.isEmpty() && passedGap) {
                 return true;
             }
-            getLastGap().setPaginationStart(getLastGap().getPaginationStart() - 100);
+            Gap gap = getLastGap();
+            if (gap != null) {
+                gap.setPaginationStart(getLastGap().getPaginationStart() - 100);
+            }
         }
         return false;
     }
@@ -204,7 +207,7 @@ public class Currency {
         }
         int ratesRequired = 0;
         int timeBetween;
-        ExchangeRate[] reqRates = new ExchangeRate[Globals.READINGSREQUIRED];
+        ExchangeRate[] reqRates = new ExchangeRate[(int) ChronoUnit.MINUTES.between(firstMinute, LocalDateTime.now(Clock.systemUTC()))];
         Gap gap;
         
         List<ExchangeRate> gatheredRates = new ArrayList<>();

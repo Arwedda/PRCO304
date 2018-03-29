@@ -43,7 +43,7 @@ public class GOFAIPredictor {
         }
     }
     
-    public static void predict(Currency[] currencies){
+    private static void predict(Currency[] currencies){
         for (Currency currency : currencies){
             GOFAIPredictions(currency);
         }

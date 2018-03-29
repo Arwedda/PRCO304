@@ -50,6 +50,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
             GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", i, "Crypto");
             GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", i, "USD");
         }
+        priceCollector.initialise(Globals.READINGSREQUIRED);
     }
 
     /**

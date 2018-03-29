@@ -43,19 +43,18 @@ public class PriceCollector implements ISubject {
     private ScheduledExecutorService collector;
     
     public PriceCollector() {
-        initialise();
-        initCurrencies();
-        initCollector();
     }
     
-    private void initialise() {
+    public void initialise(Integer readingsRequired) {
         gdaxAPIController = new GDAXAPIController();
         currencyAPIController = new CurrencyAPIController();
         exchangeRateAPIController = new ExchangeRateAPIController();
         collector = Executors.newSingleThreadScheduledExecutor();
-        firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()).minusMinutes(Globals.READINGSREQUIRED));
+        firstRelevantRate = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()).minusMinutes(readingsRequired));
         connectedToDatabase = false;
         lap = 1;
+        initCurrencies();
+        initCollector();
     }
     
     private void initCurrencies() {
