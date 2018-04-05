@@ -72,18 +72,21 @@ public class GOFAIPredictor {
                     meanDeltas[j] += deltas[j];
                     deltaNo[j]++;
                 }
-            } catch (Exception e){
-                System.out.println("[INFO] Error: " + e);
-                System.out.println("[INFO] Failed to get growth for " + currency.getID() + " at " + currency.getRates().get(highestIndex - i).getLDTTimestamp().plusMinutes(1));
+            } catch (IndexOutOfBoundsException ie){
+                System.out.println("[INFO] Error: " + ie);
+                System.out.println("[INFO] If Index = Size then expected.");
+            } catch (Exception e) {
+                
             }
         }
     }
 
     private static Double[] predict(ExchangeRate[] rates){
+        Integer highestIndex = rates.length - 1;
         Double[] predictions = new Double[Globals.NUMBEROFPREDICTIONS];
         List<Double> values = new ArrayList<>();
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
-            values.add(rates[i].getGrowth());
+            values.add(rates[highestIndex - i].getGrowth());
             predictions[i] = MathsHelper.mean(values.toArray(new Double[values.size()]));
         }
         return predictions;
