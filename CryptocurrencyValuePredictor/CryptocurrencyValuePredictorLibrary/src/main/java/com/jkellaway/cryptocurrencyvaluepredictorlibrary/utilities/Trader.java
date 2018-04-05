@@ -53,8 +53,8 @@ public class Trader {
         return tradeModeIndex;
     }
 
-    public void setTradeModeIndex(int tradeModeIndex) {
-        this.tradeModeIndex = tradeModeIndex - 1;
+    public void setTradeModeIndex(int tradeModeNo) {
+        this.tradeModeIndex = tradeModeNo - 1;
     }
 
     public void setHoldMode(HoldMode holdMode) {
