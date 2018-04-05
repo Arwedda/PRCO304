@@ -18,20 +18,20 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Wallet;
 public class Trader {
     private GDAXAPIController gdaxAPIController;
     private Wallet wallet;
-    private String tradeMode;
+    private TradeMode tradeMode;
     private int tradeModeIndex;
-    private String holdMode;
+    private HoldMode holdMode;
     
     public Trader(){
         gdaxAPIController = new GDAXAPIController();
         wallet = new Wallet(Globals.STARTINGUNITS, Globals.STARTINGVALUE);
-        this.tradeMode = "unknown";
+        this.tradeMode = TradeMode.MANUAL;
         this.tradeModeIndex = -1;
-        this.holdMode = "unknown";
+        this.holdMode = HoldMode.USD;
     }
     
-    public Trader(String currency, Double value, String tradeMode, int tradeModeIndex, String holdMode){
-        wallet = new Wallet(currency, value);
+    public Trader(String currencyID, Double value, TradeMode tradeMode, int tradeModeIndex, HoldMode holdMode){
+        wallet = new Wallet(currencyID, value);
         this.tradeMode = tradeMode;
         this.tradeModeIndex = tradeModeIndex;
         this.holdMode = holdMode;
@@ -41,11 +41,11 @@ public class Trader {
         return wallet;
     }
 
-    public String getTradeMode() {
+    public TradeMode getTradeMode() {
         return tradeMode;
     }
 
-    public void setTradeMode(String tradeMode) {
+    public void setTradeMode(TradeMode tradeMode) {
         this.tradeMode = tradeMode;
     }
 
@@ -57,11 +57,11 @@ public class Trader {
         this.tradeModeIndex = tradeModeIndex - 1;
     }
 
-    public void setHoldMode(String holdMode) {
+    public void setHoldMode(HoldMode holdMode) {
         this.holdMode = holdMode;
     }
 
-    public String getHoldMode() {
+    public HoldMode getHoldMode() {
         return holdMode;
     }
     
@@ -71,7 +71,7 @@ public class Trader {
         Double predictedGrowth;
         ExchangeRate rate;
         switch (tradeMode){
-            case "NeuralNetwork":
+            case NEURALNETWORK:
                 for (Currency currency : currencies) {
                     rate = currency.getRate();
                     predictedGrowth = rate.getNeuralNetworkNextGrowth()[tradeModeIndex];
@@ -82,7 +82,7 @@ public class Trader {
                 }
                 trade(desired, currencies);
                 break;
-            case "GOFAI":
+            case GOFAI:
                 for (Currency currency : currencies) {
                     rate = currency.getRate();
                     predictedGrowth = rate.getGofaiNextGrowth()[tradeModeIndex];
@@ -93,7 +93,7 @@ public class Trader {
                 }
                 trade(desired, currencies);
                 break;
-            case "Manual":
+            case MANUAL:
                 System.out.println("[INFO] Autotrade mode off...");
                 break;
             default:
@@ -136,7 +136,7 @@ public class Trader {
             }
             
             switch (tradeMode) {
-                case "NeuralNetwork":
+                case NEURALNETWORK:
                     growth = 0.0;
                     desired = new ExchangeRate();
                     for (ExchangeRate rate : rates) {
@@ -146,12 +146,12 @@ public class Trader {
                             growth = predictedGrowth;
                         }
                     }
-                    if (growth == 0.0 && holdMode.equals("Crypto")){
+                    if (growth == 0.0 && holdMode == HoldMode.CRYPTOCURRENCY){
                         break;
                     }
                     trade(desired, rates);
                     break;
-                case "GOFAI":
+                case GOFAI:
                     growth = 0.0;
                     desired = new ExchangeRate();
                     for (ExchangeRate rate : rates) {
@@ -161,30 +161,34 @@ public class Trader {
                             growth = predictedGrowth;
                         }
                     }
-                    if (growth == 0.0 && holdMode.equals("Crypto")){
+                    if (growth == 0.0 && holdMode == HoldMode.CRYPTOCURRENCY){
                         break;
                     }
                     trade(desired, rates);
                     break;
-                case "Manual":
+                case MANUAL:
                     ExchangeRate[] nextRates = new ExchangeRate[4];
                     for (int j = 0; j < noOfCurrencies ; j++) {
                         nextRates[j] = currencies[j].getRates().get(i+1);
                     }
-                    if (holdMode.equals("BEST")){
-                        desired = getHighestGrowth(nextRates);
-                        trade(desired, rates);
-                    } else if (holdMode.equals("WORST")){
-                        desired = getLowestGrowth(nextRates);
-                        trade(desired, rates);
-                    } else {
-                        //HOLD
-                        if (desired.getCurrency_id().equals("Unknown")){
-                            desired = getRate(rates);
+                    switch (holdMode) {
+                        case BEST:
+                            desired = getHighestGrowth(nextRates);
                             trade(desired, rates);
-                        } else {
-                            break trading;
-                        }
+                            break;
+                        case WORST:
+                            desired = getLowestGrowth(nextRates);
+                            trade(desired, rates);
+                            break;
+                        default:
+                            //HOLD
+                            if (desired.getCurrency_id().equals("Unknown")){
+                                desired = getRate(rates);
+                                trade(desired, rates);
+                            } else {
+                                break trading;
+                            }
+                            break;
                     }
                     break;
                 default:
@@ -192,7 +196,7 @@ public class Trader {
             }
         }
         
-        if (!wallet.getHoldingID().equals("USD")){
+        if (!wallet.getHoldingID().equals(HoldMode.USD.toString())){
             System.out.println("Finished holding " + wallet.getValue() + " " + wallet.getHoldingID());
         }
         System.out.println("$" + wallet.getUSDValue(currencies));
@@ -211,7 +215,7 @@ public class Trader {
         }
         
         switch (tradeMode) {
-            case "NeuralNetwork":
+            case NEURALNETWORK:
                 growth = 0.0;
                 desired = new ExchangeRate();
                 for (ExchangeRate rate : rates) {
@@ -221,12 +225,12 @@ public class Trader {
                         growth = predictedGrowth;
                     }
                 }
-                if (growth == 0.0 && holdMode.equals("Crypto")){
+                if (growth == 0.0 && holdMode == HoldMode.CRYPTOCURRENCY){
                     break;
                 }
                 trade(desired, rates);
                 break;
-            case "GOFAI":
+            case GOFAI:
                 growth = 0.0;
                 desired = new ExchangeRate();
                 for (ExchangeRate rate : rates) {
@@ -236,28 +240,32 @@ public class Trader {
                         growth = predictedGrowth;
                     }
                 }
-                if (growth == 0.0 && holdMode.equals("Crypto")){
+                if (growth == 0.0 && holdMode == HoldMode.CRYPTOCURRENCY){
                     break;
                 }
                 trade(desired, rates);
                 break;
-            case "Manual":
+            case MANUAL:
                 ExchangeRate[] nextRates = new ExchangeRate[4];
                 for (int j = 0; j < noOfCurrencies ; j++) {
                     nextRates[j] = currencies[j].getRate();
                 }
-                if (holdMode.equals("BEST")){
-                    desired = getHighestGrowth(nextRates);
-                    trade(desired, rates);
-                } else if (holdMode.equals("WORST")){
-                    desired = getLowestGrowth(nextRates);
-                    trade(desired, rates);
-                } else {
-                    //HOLD
-                    if (desired.getCurrency_id().equals("Unknown")){
-                        desired = getRate(rates);
+                switch (holdMode) {
+                    case BEST:
+                        desired = getHighestGrowth(nextRates);
                         trade(desired, rates);
-                    }
+                        break;
+                    case WORST:
+                        desired = getLowestGrowth(nextRates);
+                        trade(desired, rates);
+                        break;
+                    default:
+                        //HOLD
+                        if (desired.getCurrency_id().equals("Unknown")){
+                            desired = getRate(rates);
+                            trade(desired, rates);
+                        }
+                        break;
                 }
                 break;
             default:
@@ -295,7 +303,7 @@ public class Trader {
         ExchangeRate desired = new ExchangeRate();
         
         for (ExchangeRate rate : rates){
-            if (rate.getCurrency_id().equals(holdMode)){
+            if (rate.getCurrency_id().equals(holdMode.toString())){
                 desired = rate;
                 break;
             }
@@ -306,7 +314,7 @@ public class Trader {
     private void trade(ExchangeRate desired, ExchangeRate[] rates){
         String holdingID = wallet.getHoldingID();
         if (!holdingID.equals(desired.getCurrency_id()) && 
-                !(holdingID.equals("USD") && desired.getCurrency_id().equals("Unknown"))) {
+                !(holdingID.equals(HoldMode.USD.toString()) && desired.getCurrency_id().equals("Unknown"))) {
             ExchangeRate current = new ExchangeRate();
             for (ExchangeRate rate : rates){
                 String id = rate.getCurrency_id();
@@ -323,7 +331,7 @@ public class Trader {
     public void trade(ExchangeRate desired, Currency[] currencies) {
         String holdingID = wallet.getHoldingID();
         if (!holdingID.equals(desired.getCurrency_id()) && 
-                !(holdingID.equals("USD") && desired.getCurrency_id().equals("Unknown"))) {
+                !(holdingID.equals(HoldMode.USD.toString()) && desired.getCurrency_id().equals("Unknown"))) {
             ExchangeRate current = new ExchangeRate();
             for (Currency currency : currencies){
                 String id = currency.getID();

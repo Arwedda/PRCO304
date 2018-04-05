@@ -11,6 +11,8 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.ISubject;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.PriceCollector;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.GOFAIPredictor;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.HoldMode;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.TradeMode;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.Trader;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,15 +42,15 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         priceCollector.registerObserver(this);
         trader = new Trader();
         observers = new ArrayList<>();
-        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "BCH");
-        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "BTC");
-        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "ETH");
-        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "LTC");
-        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "BEST");
-        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "Manual", -1, "WORST");
+        holders[0] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.MANUAL, -1, HoldMode.BCH);
+        holders[1] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.MANUAL, -1, HoldMode.BTC);
+        holders[2] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.MANUAL, -1, HoldMode.ETH);
+        holders[3] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.MANUAL, -1, HoldMode.LTC);
+        best = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.MANUAL, -1, HoldMode.BEST);
+        worst = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.MANUAL, -1, HoldMode.WORST);
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
-            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", i, "Crypto");
-            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, "GOFAI", i, "USD");
+            GOFAITradersHold[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.GOFAI, i, HoldMode.CRYPTOCURRENCY);
+            GOFAITradersUSD[i] = new Trader(Globals.STARTINGUNITS, Globals.STARTINGVALUE, TradeMode.GOFAI, i, HoldMode.USD);
         }
         priceCollector.initialise(Globals.READINGSREQUIRED);
     }
@@ -132,14 +134,14 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     }
     
     public void startTrading(boolean gofai, int tradeModeIndex, Double startValue, boolean holdUSD, String apiKey) {
-        String tradeMode = (gofai ? "GOFAI" : "NeuralNetwork");
-        String holdMode =  (holdUSD ? "USD" : "Crypto");
+        TradeMode tradeMode = (gofai ? TradeMode.GOFAI : TradeMode.NEURALNETWORK);
+        HoldMode holdMode =  (holdUSD ? HoldMode.USD : HoldMode.CRYPTOCURRENCY);
         System.out.println(apiKey);
         trader = new Trader("USD", startValue, tradeMode, tradeModeIndex, holdMode);
     }
     
     public void stopTrading() {
-        trader.setTradeMode("Manual");
+        trader.setTradeMode(TradeMode.MANUAL);
     }
 
     @Override

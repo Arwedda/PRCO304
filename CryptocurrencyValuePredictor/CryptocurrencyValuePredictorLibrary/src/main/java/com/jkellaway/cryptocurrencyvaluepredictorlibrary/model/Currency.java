@@ -111,7 +111,7 @@ public class Currency {
     }
 
     public void addHistoricRate(ExchangeRate rate) {
-        if (rate.getValue() < 0.0000000000000001){
+        if (rate.getValue() < 0.0000000000000001 && null != getHistoricRate()){
             rate.setValue(getHistoricRate().getValue());
         }
         this.historicRates.add(rate);
