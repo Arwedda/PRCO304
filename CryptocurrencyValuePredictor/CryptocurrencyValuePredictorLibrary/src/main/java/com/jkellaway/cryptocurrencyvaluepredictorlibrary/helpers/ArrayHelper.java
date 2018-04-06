@@ -12,6 +12,13 @@ import java.util.Arrays;
  * @author jkell
  */
 public class ArrayHelper {
+    
+    /**
+     * Merges two arrays into a single, larger array.
+     * @param a The first array.
+     * @param b The second array.
+     * @return The merged array.
+     */
     public static <T> T[] merge(T[] a, T[] b) {
       T[] result = Arrays.copyOf(a, a.length + b.length);
       System.arraycopy(b, 0, result, a.length, b.length);

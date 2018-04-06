@@ -14,10 +14,22 @@ import java.time.format.DateTimeParseException;
  * @author jkell
  */
 public class LocalDateTimeHelper {
+    
+    /**
+     * Crops a timestamp of any seconds and nanoseconds (to make timestamps the 
+     * start of each minute).
+     * @param timestamp LocalDateTime timestamp to crop.
+     * @return The cropped LocalDateTime timestamp.
+     */
     public static LocalDateTime startOfMinute(LocalDateTime timestamp){
         return timestamp.minusSeconds(timestamp.getSecond()).minusNanos(timestamp.getNano());
     }
     
+    /**
+     * Handles parsing various Strings into LocalDateTime timestamps.
+     * @param timestamp The string form of the timestamp.
+     * @return The LocalDateTime timestamp.
+     */
     public static LocalDateTime localDateTimeParser(String timestamp){
         try {
             DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
@@ -38,6 +50,12 @@ public class LocalDateTimeHelper {
         }
     }
     
+    /**
+     * Converts a LocalDateTime timestamp to a user-friendly String for the GUI.
+     * Adds preceeding 0s if hours or minutes are less than 10.
+     * @param datetime The LocalDateTime timestamp to convert.
+     * @return The user-friendly String.
+     */
     public static String toString(LocalDateTime datetime){
         String mins = ":";
         String hours = String.valueOf(datetime.getHour());

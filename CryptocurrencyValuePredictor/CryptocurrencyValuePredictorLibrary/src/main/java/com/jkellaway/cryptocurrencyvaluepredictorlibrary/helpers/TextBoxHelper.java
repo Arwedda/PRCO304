@@ -10,6 +10,12 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
  * @author jkell
  */
 public class TextBoxHelper {
+    
+    /**
+     * Prevents default action caused by any non-numeric keys (with the exception
+     * of . to act as a decimal point).
+     * @param evt Keyboard input.
+     */
     public static void forceNumeric(java.awt.event.KeyEvent evt) {
         switch (evt.getKeyChar()) {
             case '1':

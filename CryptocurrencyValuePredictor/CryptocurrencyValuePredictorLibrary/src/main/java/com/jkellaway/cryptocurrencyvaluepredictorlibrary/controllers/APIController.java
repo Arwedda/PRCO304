@@ -20,12 +20,21 @@ import java.util.stream.Collectors;
  * @author jkell
  */
 public abstract class APIController implements IAPIController {
-    Gson gson;
+    final Gson gson;
     
+    /**
+     * APIController constructor. Initialises Gson to be used to parse JSON by
+     * implemented APIControllers.
+     */
     public APIController() {
         gson = new Gson();
     }
 
+    /**
+     * Retrieves data from the target URL.
+     * @param url String form of the URL to collect data from.
+     * @return JSON String from target URL.
+     */
     @Override
     public String get(String url) {
         String json = "";
@@ -42,6 +51,11 @@ public abstract class APIController implements IAPIController {
         return json;
     }
 
+    /**
+     * Posts data to the target URL.
+     * @param endpoint String form of the URL endpoint to post data to.
+     * @param json JSON string to post to the URL.
+     */
     @Override
     public void post(String endpoint, String json) {
         //System.out.println("[INFO] Posting to: " + endpoint);
@@ -65,6 +79,12 @@ public abstract class APIController implements IAPIController {
         }
     }
 
+    /**
+     * Puts data to the target URL. Used to update/overwrite data that exists
+     * there.
+     * @param url String form of the URL endpoint to put data to.
+     * @param json JSON string to put to the URL.
+     */
     @Override
     public void put(String url, String json) {
         //System.out.println("[INFO] Putting resource to: " + url);
@@ -89,6 +109,10 @@ public abstract class APIController implements IAPIController {
         }
     }
 
+    /**
+     * Deletes data from the target URL.
+     * @param url String form of the URL endpoint to delete data from.
+     */
     @Override
     public void delete(String url) {
         //System.out.println("[INFO] Deleting resource at: " + url);
@@ -105,6 +129,5 @@ public abstract class APIController implements IAPIController {
         } catch (Exception e) {
             System.out.println("[ERR] " + e);
         }
-
     }
 }

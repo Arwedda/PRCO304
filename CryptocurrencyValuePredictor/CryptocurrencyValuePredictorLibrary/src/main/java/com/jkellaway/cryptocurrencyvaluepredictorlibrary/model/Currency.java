@@ -5,7 +5,6 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
-import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -27,6 +26,9 @@ public class Currency {
     private transient List<Gap> gaps;
     private final String GDAXEndpoint;
 
+    /**
+     * Default currency constructor.
+     */
     public Currency() {
         this.id = "unknown";
         this.name = "unknown";
@@ -37,6 +39,12 @@ public class Currency {
         this.GDAXEndpoint = "unknown";
     }
     
+    /**
+     * Standard currency constructor.
+     * @param id The identifier.
+     * @param name The name.
+     * @param GDAXEndpoint The GDAX API endpoint.
+     */
     public Currency(String id, String name, String GDAXEndpoint) {
         this.id = id;
         this.name = name;
@@ -47,6 +55,13 @@ public class Currency {
         this.GDAXEndpoint = GDAXEndpoint;
     }
     
+    /**
+     * Currency constructor for currency with a current ExchangeRate.
+     * @param id The identifier.
+     * @param name The name.
+     * @param rate The current ExchangeRate.
+     * @param GDAXEndpoint The GDAX API endpoint.
+     */
     public Currency(String id, String name, ExchangeRate rate, String GDAXEndpoint) {
         this.id = id;
         this.name = name;
@@ -58,22 +73,42 @@ public class Currency {
         this.GDAXEndpoint = GDAXEndpoint;
     }
 
+    /**
+     * The globally recognised identifier (normally 3 characters).
+     * @return The identifier.
+     */
     public String getID() {
         return id;
     }
 
+    /**
+     * Adjust the globally recognised identifier.
+     * @param id The new identifier.
+     */
     public void setID(String id) {
         this.id = id;
     }
 
+    /**
+     * The globally recognised name.
+     * @return The name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Adjust the globally recognised name.
+     * @param name The new name.
+     */
     public void setName(String name) {
         this.name = name;
     }
     
+    /**
+     * Gets the last ExchangeRate added to the currency's current rates list.
+     * @return The current ExchangeRate.
+     */
     public ExchangeRate getRate(){
         try {
             return rates.get(rates.size() - 1);
@@ -82,6 +117,10 @@ public class Currency {
         }
     }
     
+    /**
+     * Sets the new ExchangeRate value, calculating growth if possible.
+     * @param rate The new ExchangeRate.
+     */
     public void setValue(ExchangeRate rate){
         try {
             if (rate.getValue() < 0.0000000000000001){
@@ -102,14 +141,27 @@ public class Currency {
         this.rates.add(rate);
     }
     
+    /**
+     * Gets the list of current ExchangeRates stored for this Currency.
+     * @return The List of current ExchangeRates stored for this Currency.
+     */
     public List<ExchangeRate> getRates() {
         return this.rates;
     }
 
+    /**
+     * Gets the list of historic ExchangeRates stored for this Currency.
+     * @return The List of historic ExchangeRates stored for this Currency.
+     */
     public List<ExchangeRate> getHistoricRates() {
         return historicRates;
     }
 
+    /**
+     * Adds a new historic ExchangeRate to the Currency. Clears historic GDAXTrades
+     * used to calculate the ExchangeRate.
+     * @param rate The newly calculated historic ExchangeRate.
+     */
     public void addHistoricRate(ExchangeRate rate) {
         if (rate.getValue() < 0.0000000000000001 && null != getHistoricRate()){
             rate.setValue(getHistoricRate().getValue());
@@ -118,6 +170,10 @@ public class Currency {
         this.historicTrades.clear();
     }
     
+    /**
+     * Gets the last added historic ExchangeRate.
+     * @return The last added historic ExchangeRate.
+     */
     private ExchangeRate getHistoricRate(){
         try {
             return historicRates.get(historicRates.size() - 1);
@@ -126,6 +182,10 @@ public class Currency {
         }
     }
     
+    /**
+     * Gets the last added historic GDAXTrade.
+     * @return The last added historic GDAXTrade.
+     */
     public GDAXTrade getLastHistoricTrade() {
         try {
             return historicTrades.get(historicTrades.size() - 1);
@@ -134,26 +194,53 @@ public class Currency {
         }
     }
 
+    /**
+     * Calculates whether this Currency has found where it should begin harvesting
+     * historic GDAXTrades to create historic ExchangeRates.
+     * @return true - has, false - has not.
+     */
     public boolean hasFoundPosition() {
         return (0 < this.historicRates.size() || 0 < this.historicTrades.size());
     }
     
+    /**
+     * Gets the GDAX API endpoint for this Currency.
+     * @return The GDAX API endpoint for this Currency.
+     */
     public String getGDAXEndpoint() {
         return GDAXEndpoint;
     }
 
+    /**
+     * Gets the List of historic GDAXTrades that will be used to create the next
+     * historic ExchangeRate.
+     * @return The current List of historic GDAXTrades.
+     */
     public List<GDAXTrade> getHistoricTrades() {
         return historicTrades;
     }
 
+    /**
+     * Adds a GDAXTrade to the List to create the next historic ExchangeRate.
+     * @param historicTrade GDAXTrade to be included in the next ExchangeRate.
+     */
     public void addHistoricTrade(GDAXTrade historicTrade) {
         this.historicTrades.add(historicTrade);
     }
     
+    /**
+     * Gets the list of all Gaps to be filled by the historic ExchangeRate
+     * PriceCollector.
+     * @return The list of Gaps to be filled.
+     */
     public List<Gap> getGaps(){
         return gaps;
     }
     
+    /**
+     * The last (most recent) Gap in ExchangeRates that needs to be filled.
+     * @return The current Gap to fill.
+     */
     public Gap getLastGap(){
         try {
             return gaps.get(gaps.size() - 1);
@@ -162,6 +249,11 @@ public class Currency {
         }
     }
     
+    /**
+     * Merges historic ExchangeRates into the current ExchangeRate list. They are
+     * placed at the beginning of the list and not sorted. The Gap is adjusted to
+     * account for the ExchangeRates being removed from the historic List.
+     */
     public void gradualMerge(){
         this.rates.addAll(0, historicRates);
         Gap gap = getLastGap();
@@ -178,6 +270,13 @@ public class Currency {
         historicRates.clear();
     }
     
+    /**
+     * Removes any historic ExchangeRates that clash with ExchangeRates that have
+     * already been harvested. Pass parameter true specify that the current Gap 
+     * time limit has been passed (to not waste an API call on a finished Gap).
+     * @param passedGap Whether the Gap has been passed or not.
+     * @return true - no more useful data to collect, false - data worth harvesting
+     */
     public boolean dumpDuplicates(boolean passedGap){
         List<ExchangeRate> toRemove = new ArrayList<>();
         for (ExchangeRate rate : rates){
@@ -281,6 +380,10 @@ public class Currency {
         }
     }
     
+    /**
+     * Gets the number of historic ExchangeRates stored for this Currency.
+     * @return Integer value of historic ExchangeRates stored for this Currency.
+     */
     public int noOfHistoricRates(){
         return this.historicRates.size();
     }

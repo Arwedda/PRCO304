@@ -15,6 +15,12 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities.JSONParser;
 public class GDAXAPIController extends APIController {
     private JSONParser parser = new JSONParser();
 
+    /**
+     * Uses APIController to get a JSON string from the URL and then JSONParser
+     * to parse the JSON into an array of GDAXTrade objects.
+     * @param url String form of the URL to collect data from.
+     * @return Array of GDAXTrade objects parsed from received JSON.
+     */
     public GDAXTrade[] getGDAXTrades(String url){
         GDAXTrade[] gDAXTrades;
         String json = get(url);

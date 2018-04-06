@@ -20,6 +20,11 @@ import javax.swing.table.TableRowSorter;
  * @author jkell
  */
 public class TableConfigurer {
+    
+    /**
+     * 
+     * @param jTable 
+     */
     public static void configureTable(JTable jTable) {
         //Selecting single entire row
         jTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);

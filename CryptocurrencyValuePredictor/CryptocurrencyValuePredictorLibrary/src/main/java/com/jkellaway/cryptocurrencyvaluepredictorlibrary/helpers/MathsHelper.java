@@ -10,6 +10,12 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
  * @author jkell
  */
 public class MathsHelper {
+    
+    /**
+     * Calculates the mean of an array of Doubles.
+     * @param values The array of Doubles.
+     * @return The mean.
+     */
     public static Double mean(Double[] values){
         try {
             Double mean = 0.0;
@@ -22,6 +28,12 @@ public class MathsHelper {
         }
     }
 
+    /**
+     * Calculates the difference between an actual value and various predicted values.
+     * @param actual The actual value.
+     * @param predictions Array of predicted values.
+     * @return The differences between the predictions and the actual value.
+     */
     public static Double[] deltas(Double actual, Double[] predictions){
         Double[] deltas = new Double[predictions.length];
         for (int i = 0; i < predictions.length; i++){
@@ -34,6 +46,11 @@ public class MathsHelper {
         return deltas;
     }
     
+    /**
+     * Calculates the highest value in an array.
+     * @param array The array of doubles.
+     * @return The highest value in the array.
+     */
     public static Double max(Double[] array) {
         if (0 < array.length) {
             Double max = array[0];
@@ -49,6 +66,11 @@ public class MathsHelper {
         return null;
     }
     
+    /**
+     * Calculates the lowest value in an array.
+     * @param array The array of doubles.
+     * @return The lowest value in the array.
+     */
     public static Double min(Double[] array) {
         if (0 < array.length) {
             Double min = array[0];
