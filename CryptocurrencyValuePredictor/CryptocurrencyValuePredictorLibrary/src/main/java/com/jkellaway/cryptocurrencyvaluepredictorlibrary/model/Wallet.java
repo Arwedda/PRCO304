@@ -64,7 +64,11 @@ public class Wallet {
         if (value != null) {
             for (Currency currency : currencies){
                 if (currency.getID().equals(this.holdingID)) {
-                    return value * currency.getRate().getValue();
+                    //if (currency.getRate().getValue() != null) {
+                        return value * currency.getRate().getValue();
+                    /*} else {
+                        return 0.0;
+                    }*/
                 }
             }
         }

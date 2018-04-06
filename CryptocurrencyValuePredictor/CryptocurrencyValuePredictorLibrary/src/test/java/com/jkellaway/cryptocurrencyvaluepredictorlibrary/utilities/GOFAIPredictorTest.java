@@ -96,36 +96,25 @@ public class GOFAIPredictorTest {
 
     @Test
     public void testInitialPredictions() {
+        List<ExchangeRate> decRates;
+        List<ExchangeRate> groRates;
+        Double decGrowth;
+        Double groGrowth;
         decliningCurrencies = GOFAIPredictor.initialPredictions(decliningCurrencies);
         growingCurrencies = GOFAIPredictor.initialPredictions(growingCurrencies);
         
         for (int i = 0; i < decliningCurrencies.length; i++) {
-            List<ExchangeRate> decRates = decliningCurrencies[i].getRates();
-            List<ExchangeRate> groRates = growingCurrencies[i].getRates();
+            decRates = decliningCurrencies[i].getRates();
+            groRates = growingCurrencies[i].getRates();
             for (int j = 0; j < decliningCurrencies[i].getRates().size(); j++) {
-                if (j < 20) {
+                if (j <= 20) {
                     for (int k = 0; k < Globals.NUMBEROFPREDICTIONS; k++) {
                         assertNull(decRates.get(j).getGofaiNextGrowth()[k]);
                         assertNull(groRates.get(j).getGofaiNextGrowth()[k]);
                     }
-                    
-                    /*
-                        WHEN
-                            j == 20,
-                            gofaiprediction[19] is null
-                        BECAUSE
-                            it requires the growth from price -1 to 0
-                        NEED TO
-                            push first prediction made on by 1
-                        AND
-                            reduce number of predictions by 1
-                    */
-                    
-                    
-                    
-                } else if (20 < j) {
-                    Double decGrowth = 0.0;
-                    Double groGrowth = 0.0;
+                } else {
+                    decGrowth = 0.0;
+                    groGrowth = 0.0;
                     for (int k = 0; k < Globals.NUMBEROFPREDICTIONS; k++) {
                         decGrowth += decRates.get(j - (k + 1)).getGrowth();
                         groGrowth += groRates.get(j - (k + 1)).getGrowth();
@@ -139,6 +128,24 @@ public class GOFAIPredictorTest {
 
     @Test
     public void testSinglePrediction() {
+        List<ExchangeRate> decRates;
+        List<ExchangeRate> groRates;
+        Double decGrowth;
+        Double groGrowth;
+        decliningCurrencies = GOFAIPredictor.singlePrediction(decliningCurrencies);
+        growingCurrencies = GOFAIPredictor.singlePrediction(growingCurrencies);
         
+        for (int i = 0; i < decliningCurrencies.length; i++) {
+            decRates = decliningCurrencies[i].getRates();
+            groRates = growingCurrencies[i].getRates();
+            decGrowth = 0.0;
+            groGrowth = 0.0;
+            for (int j = 0; j < Globals.NUMBEROFPREDICTIONS; j++) {
+                decGrowth += decRates.get(decRates.size() - (j + 1)).getGrowth();
+                groGrowth += groRates.get(groRates.size() - (j + 1)).getGrowth();
+                assertEquals(decGrowth / (j + 1), decRates.get(decRates.size() - 1).getGofaiNextGrowth()[j], TestGlobals.DELTA);
+                assertEquals(groGrowth / (j + 1), groRates.get(groRates.size() - 1).getGofaiNextGrowth()[j], TestGlobals.DELTA);
+            }
+        }
     }
 }

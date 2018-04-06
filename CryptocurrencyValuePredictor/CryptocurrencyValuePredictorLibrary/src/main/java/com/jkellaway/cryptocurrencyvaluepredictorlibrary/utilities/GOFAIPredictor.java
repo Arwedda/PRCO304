@@ -56,7 +56,7 @@ public class GOFAIPredictor {
         ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);
         ExchangeRate[] relevantRates;
         int highestIndex = allRates.length - 1;
-        int noOfPredictions = highestIndex - Globals.NUMBEROFPREDICTIONS;
+        int noOfPredictions = highestIndex - (Globals.NUMBEROFPREDICTIONS + 1);
         Double actualGrowth;
 
         for (int i = 0; i <= noOfPredictions; i++) {
@@ -112,9 +112,9 @@ public class GOFAIPredictor {
     private static void GOFAICalculation(Currency currency) {
         Double[] predictions;
         ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);
-        int highestIndex = allRates.length - 1;
-        ExchangeRate[] relevantRates = Arrays.copyOfRange(allRates, highestIndex - Globals.NUMBEROFPREDICTIONS, highestIndex);
+        int length = allRates.length;
+        ExchangeRate[] relevantRates = Arrays.copyOfRange(allRates, length - Globals.NUMBEROFPREDICTIONS, length);
         predictions = predict(relevantRates);
-        currency.getRates().get(highestIndex).setGofaiNextGrowth(predictions);
+        currency.getRates().get(length - 1).setGofaiNextGrowth(predictions);
     }
 }

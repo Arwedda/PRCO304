@@ -24,7 +24,6 @@ import java.util.List;
  */
 public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     private static CryptocurrencyValuePredictor instance;
-    private Currency[] currencies;
     private transient List<IObserver> observers;
     private PriceCollector priceCollector;
     private Trader trader;
@@ -69,11 +68,11 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     }
 
     public Currency[] getCurrencies() {
-        return currencies;
+        return priceCollector.getCurrencies();
     }
 
     private void setCurrencies(Currency[] currencies) {
-        this.currencies = currencies;
+        this.priceCollector.setCurrencies(currencies);
     }
 
     public PriceCollector getPriceCollector() {
@@ -84,28 +83,28 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return trader;
     }
     
-    private void tradeTest(){
-        best.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
-        worst.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
+    private void initialBenchmark(){
+        best.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
+        worst.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
         for (Trader holder : holders) {
-            holder.tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
+            holder.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
         }
         for (int i = 0; i < GOFAITradersUSD.length; i++){
-            GOFAITradersUSD[i].tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
-            GOFAITradersHold[i].tradeBenchmark(currencies, Globals.NUMBEROFPREDICTIONS);
+            GOFAITradersUSD[i].tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
+            GOFAITradersHold[i].tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
         }
     }
     
     private void trade() {
-        trader.autoTrade(currencies);
-        best.tradeBenchmark(currencies);
-        worst.tradeBenchmark(currencies);
+        trader.autoTrade(getCurrencies());
+        best.tradeBenchmark(getCurrencies());
+        worst.tradeBenchmark(getCurrencies());
         for (Trader holder : holders) {
-            holder.tradeBenchmark(currencies);
+            holder.tradeBenchmark(getCurrencies());
         }
         for (int i = 0; i < GOFAITradersUSD.length; i++){
-            GOFAITradersUSD[i].tradeBenchmark(currencies);
-            GOFAITradersHold[i].tradeBenchmark(currencies);
+            GOFAITradersUSD[i].tradeBenchmark(getCurrencies());
+            GOFAITradersHold[i].tradeBenchmark(getCurrencies());
         }
     }
     
@@ -180,14 +179,13 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
 
     @Override
     public void update() {
-        currencies = priceCollector.getCurrencies();
         if (priceCollector.getLap() == 3) {
-            currencies = GOFAIPredictor.initialPredictions(currencies);
-            priceCollector.benchmarkComplete(currencies);
-            tradeTest();
+            setCurrencies(GOFAIPredictor.initialPredictions(getCurrencies()));
+            priceCollector.benchmarkComplete(getCurrencies());
+            initialBenchmark();
         } else if (priceCollector.getLap() == -1) {
-            currencies = GOFAIPredictor.singlePrediction(currencies);
-            priceCollector.setCurrencies(currencies);
+            setCurrencies(GOFAIPredictor.singlePrediction(getCurrencies()));
+            priceCollector.setCurrencies(getCurrencies());
             trade();
         }
         notifyObservers();

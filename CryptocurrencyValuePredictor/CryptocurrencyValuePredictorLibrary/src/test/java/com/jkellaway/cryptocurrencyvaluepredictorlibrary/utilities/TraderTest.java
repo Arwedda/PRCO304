@@ -5,7 +5,12 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -20,7 +25,6 @@ import org.junit.Test;
 public class TraderTest {
     private static Trader blank;
     private static Trader realGOFAICrypto;
-    private static Trader realManualCrypto;
     private static Trader realNNCrypto;
     private static Trader realGOFAIUSD;
     private static Trader realManualUSD;
@@ -28,26 +32,65 @@ public class TraderTest {
     private static Trader manualBest;
     private static Trader manualWorst;
     private static Trader[] holders;
+    private static Currency[] decliningCurrencies;
+    private static Currency[] growingCurrencies;
     
     public TraderTest() {
     }
 
     @BeforeClass
     public static void setUpClass() {
-        blank = new Trader();
-        realGOFAICrypto = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.GOFAI, 1, HoldMode.CRYPTOCURRENCY);
-        realManualCrypto = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.CRYPTOCURRENCY);
-        realNNCrypto = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.NEURALNETWORK, 1, HoldMode.CRYPTOCURRENCY);
-        realGOFAIUSD = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.GOFAI, 1, HoldMode.USD);
-        realManualUSD = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.USD);
-        realNNUSD = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.NEURALNETWORK, 1, HoldMode.USD);
-        manualBest = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.BEST);
-        manualWorst = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.WORST);
-        holders = new Trader[4];
-        holders[0] = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.BCH);
-        holders[1] = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.BTC);
-        holders[2] = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.ETH);
-        holders[3] = new Trader(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED, TradeMode.MANUAL, -1, HoldMode.LTC);
+        LocalDateTime timestamp = LocalDateTime.now(Clock.systemUTC());
+        ExchangeRate rate;
+        decliningCurrencies = new Currency[4];
+        growingCurrencies = new Currency[4];
+        Currency newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
+        decliningCurrencies[0] = newCurrency;
+        newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
+        decliningCurrencies[1] = newCurrency;
+        newCurrency = new Currency("ETH", "Ethereum", Globals.ETH_TRADES);
+        decliningCurrencies[2] = newCurrency;
+        newCurrency = new Currency("LTC", "Litecoin", Globals.LTC_TRADES);
+        decliningCurrencies[3] = newCurrency;
+        
+        newCurrency = new Currency("BCH", "Bitcoin Cash", Globals.BCH_TRADES);
+        growingCurrencies[0] = newCurrency;
+        newCurrency = new Currency("BTC", "Bitcoin", Globals.BTC_TRADES);
+        growingCurrencies[1] = newCurrency;
+        newCurrency = new Currency("ETH", "Ethereum", Globals.ETH_TRADES);
+        growingCurrencies[2] = newCurrency;
+        newCurrency = new Currency("LTC", "Litecoin", Globals.LTC_TRADES);
+        growingCurrencies[3] = newCurrency;
+        
+        for (int i = 0; i < TestGlobals.REQUIREDRATES + 10; i++) {
+            rate = new ExchangeRate(TestGlobals.IDBCH, timestamp.minusMinutes(i), Double.valueOf(i), null, null, null, TestGlobals.LASTTRADE);
+            decliningCurrencies[0].addHistoricRate(rate);
+            rate = new ExchangeRate(TestGlobals.IDBTC, timestamp.minusMinutes(i), Double.valueOf(i), null, null, null, TestGlobals.LASTTRADE);
+            decliningCurrencies[1].addHistoricRate(rate);
+            rate = new ExchangeRate(TestGlobals.IDETH, timestamp.minusMinutes(i), Double.valueOf(i), null, null, null, TestGlobals.LASTTRADE);
+            decliningCurrencies[2].addHistoricRate(rate);
+            rate = new ExchangeRate(TestGlobals.IDLTC, timestamp.minusMinutes(i), Double.valueOf(i), null, null, null, TestGlobals.LASTTRADE);
+            decliningCurrencies[3].addHistoricRate(rate);
+            
+            rate = new ExchangeRate(TestGlobals.IDBCH, timestamp.minusMinutes(i), Double.valueOf(TestGlobals.REQUIREDRATES + 10 - i), null, null, null, TestGlobals.LASTTRADE);
+            growingCurrencies[0].addHistoricRate(rate);
+            rate = new ExchangeRate(TestGlobals.IDBTC, timestamp.minusMinutes(i), Double.valueOf(TestGlobals.REQUIREDRATES + 10 - i), null, null, null, TestGlobals.LASTTRADE);
+            growingCurrencies[1].addHistoricRate(rate);
+            rate = new ExchangeRate(TestGlobals.IDETH, timestamp.minusMinutes(i), Double.valueOf(TestGlobals.REQUIREDRATES + 10 - i), null, null, null, TestGlobals.LASTTRADE);
+            growingCurrencies[2].addHistoricRate(rate);
+            rate = new ExchangeRate(TestGlobals.IDLTC, timestamp.minusMinutes(i), Double.valueOf(TestGlobals.REQUIREDRATES + 10 - i), null, null, null, TestGlobals.LASTTRADE);
+            growingCurrencies[3].addHistoricRate(rate);
+        }
+        
+        for (int i = 0; i < decliningCurrencies.length; i++) {
+            decliningCurrencies[i].mergeRates();
+            decliningCurrencies[i].calculateGrowth(true);
+            growingCurrencies[i].mergeRates();
+            growingCurrencies[i].calculateGrowth(true);
+        }
+        
+        decliningCurrencies = GOFAIPredictor.initialPredictions(decliningCurrencies);
+        growingCurrencies = GOFAIPredictor.initialPredictions(growingCurrencies);
     }
 
     @AfterClass
@@ -57,6 +100,18 @@ public class TraderTest {
     @Before
     public void setUp() {
         blank = new Trader();
+        realGOFAICrypto = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.CRYPTOCURRENCY);
+        realNNCrypto = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.NEURALNETWORK, 1, HoldMode.CRYPTOCURRENCY);
+        realGOFAIUSD = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.USD);
+        realManualUSD = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.USD);
+        realNNUSD = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.NEURALNETWORK, 1, HoldMode.USD);
+        manualBest = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.BEST);
+        manualWorst = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.WORST);
+        holders = new Trader[4];
+        holders[0] = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.BCH);
+        holders[1] = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.BTC);
+        holders[2] = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.ETH);
+        holders[3] = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.LTC);
     }
 
     @After
@@ -66,38 +121,35 @@ public class TraderTest {
     @Test
     public void testGetWallet() {
         assertNotNull(blank.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, blank.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, blank.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(realGOFAICrypto.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, realGOFAICrypto.getWallet().getStartingUSD(), TestGlobals.DELTA);
-        assertNotNull(realManualCrypto.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, realManualCrypto.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(realNNCrypto.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, realNNCrypto.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, realNNCrypto.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(realGOFAIUSD.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, realGOFAIUSD.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(realManualUSD.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, realManualUSD.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, realManualUSD.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(realNNUSD.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, realNNUSD.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, realNNUSD.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(manualBest.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, manualBest.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, manualBest.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(manualWorst.getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, manualWorst.getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(holders[0].getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, holders[0].getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, holders[0].getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(holders[1].getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, holders[1].getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, holders[1].getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(holders[2].getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, holders[2].getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, holders[2].getWallet().getStartingUSD(), TestGlobals.DELTA);
         assertNotNull(holders[3].getWallet());
-        assertEquals(TestGlobals.ONEHUNDRED, holders[3].getWallet().getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, holders[3].getWallet().getStartingUSD(), TestGlobals.DELTA);
     }
 
     @Test
     public void testGetTradeMode() {
         assertEquals(TradeMode.MANUAL, blank.getTradeMode());
         assertEquals(TradeMode.GOFAI, realGOFAICrypto.getTradeMode());
-        assertEquals(TradeMode.MANUAL, realManualCrypto.getTradeMode());
         assertEquals(TradeMode.NEURALNETWORK, realNNCrypto.getTradeMode());
         assertEquals(TradeMode.GOFAI, realGOFAIUSD.getTradeMode());
         assertEquals(TradeMode.MANUAL, realManualUSD.getTradeMode());
@@ -124,7 +176,6 @@ public class TraderTest {
     public void testGetTradeModeIndex() {
         assertEquals(-1, blank.getTradeModeIndex());
         assertEquals(1, realGOFAICrypto.getTradeModeIndex());
-        assertEquals(-1, realManualCrypto.getTradeModeIndex());
         assertEquals(1, realNNCrypto.getTradeModeIndex());
         assertEquals(1, realGOFAIUSD.getTradeModeIndex());
         assertEquals(-1, realManualUSD.getTradeModeIndex());
@@ -169,7 +220,6 @@ public class TraderTest {
     public void testGetHoldMode() {
         assertEquals(HoldMode.USD, blank.getHoldMode());
         assertEquals(HoldMode.CRYPTOCURRENCY, realGOFAICrypto.getHoldMode());
-        assertEquals(HoldMode.CRYPTOCURRENCY, realManualCrypto.getHoldMode());
         assertEquals(HoldMode.CRYPTOCURRENCY, realNNCrypto.getHoldMode());
         assertEquals(HoldMode.USD, realGOFAIUSD.getHoldMode());
         assertEquals(HoldMode.USD, realManualUSD.getHoldMode());
@@ -184,17 +234,172 @@ public class TraderTest {
 
     @Test
     public void testAutoTrade() {
+        realGOFAICrypto.autoTrade(decliningCurrencies);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, realGOFAICrypto.getWallet().getHoldingID());
+        realGOFAIUSD.autoTrade(decliningCurrencies);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, realGOFAIUSD.getWallet().getHoldingID());
+        
+        realGOFAICrypto = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.CRYPTOCURRENCY);
+        realGOFAIUSD = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.USD);
+        
+        realGOFAICrypto.autoTrade(growingCurrencies);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(3.225806451612903, realGOFAICrypto.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, realGOFAICrypto.getWallet().getHoldingID());
+        realGOFAIUSD.autoTrade(growingCurrencies);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(3.225806451612903, realGOFAIUSD.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, realGOFAIUSD.getWallet().getHoldingID());
     }
 
     @Test
     public void testTradeBenchmark_CurrencyArr_int() {
+        Integer numberOfReadings = decliningCurrencies[0].getRates().size();
+        blank.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(100.0, blank.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, blank.getWallet().getHoldingID());
+        blank.tradeBenchmark(growingCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(100.0, blank.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, blank.getWallet().getHoldingID());
+        
+        for (Trader trader : holders) {
+            assertEquals(TestGlobals.IDUSD, trader.getWallet().getHoldingID());
+            assertEquals(100.0, trader.getWallet().getValue(), TestGlobals.DELTA);
+            trader.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+            assertEquals(trader.getHoldMode().toString(), trader.getWallet().getHoldingID());
+            assertEquals(11.11111111111111, trader.getWallet().getValue(), TestGlobals.DELTA);
+            assertEquals(0.0, trader.getWallet().getUSDValue(decliningCurrencies), TestGlobals.DELTA);
+            trader.tradeBenchmark(growingCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+            assertEquals(trader.getHoldMode().toString(), trader.getWallet().getHoldingID());
+            assertEquals(11.11111111111111, trader.getWallet().getValue(), TestGlobals.DELTA);
+            assertEquals(344.44444444444446, trader.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        }
+        manualBest.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        manualWorst.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(100.0, manualBest.getWallet().getUSDValue(decliningCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualBest.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualBest.getWallet().getHoldingID());
+        assertEquals(0.0, manualWorst.getWallet().getUSDValue(decliningCurrencies), TestGlobals.DELTA);
+        assertEquals(12.5, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, manualWorst.getWallet().getHoldingID());
+        
+        manualBest = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.BEST);
+        manualWorst = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.WORST);
+        
+        manualBest.tradeBenchmark(growingCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        manualWorst.tradeBenchmark(growingCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(134.78260869565216, manualBest.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(4.3478260869565215, manualBest.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, manualBest.getWallet().getHoldingID());
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        
+        realManualUSD.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        realManualUSD.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS);
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        
+        realGOFAICrypto.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, realGOFAICrypto.getWallet().getHoldingID());
+        realGOFAIUSD.tradeBenchmark(decliningCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, realGOFAIUSD.getWallet().getHoldingID());
+        
+        realGOFAICrypto = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.CRYPTOCURRENCY);
+        realGOFAIUSD = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.USD);
+        
+        realGOFAICrypto.tradeBenchmark(growingCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(140.90909090909093, realGOFAICrypto.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(4.545454545454546, realGOFAICrypto.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, realGOFAICrypto.getWallet().getHoldingID());
+        realGOFAIUSD.tradeBenchmark(growingCurrencies, numberOfReadings, Globals.NUMBEROFPREDICTIONS + 1);
+        assertEquals(140.90909090909093, realGOFAIUSD.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(4.545454545454546, realGOFAIUSD.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, realGOFAIUSD.getWallet().getHoldingID());
     }
 
     @Test
     public void testTradeBenchmark_CurrencyArr() {
-    }
-
-    @Test
-    public void testTrade() {
+        blank.tradeBenchmark(decliningCurrencies);
+        assertEquals(100.0, blank.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, blank.getWallet().getHoldingID());
+        blank.tradeBenchmark(growingCurrencies);
+        assertEquals(100.0, blank.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, blank.getWallet().getHoldingID());
+        
+        for (Trader trader : holders) {
+            assertEquals(TestGlobals.IDUSD, trader.getWallet().getHoldingID());
+            assertEquals(100.0, trader.getWallet().getValue(), TestGlobals.DELTA);
+            trader.tradeBenchmark(decliningCurrencies);
+            assertEquals(trader.getHoldMode().toString(), trader.getWallet().getHoldingID());
+            assertEquals(100.0, trader.getWallet().getValue(), TestGlobals.DELTA);
+            assertEquals(0.0, trader.getWallet().getUSDValue(decliningCurrencies), TestGlobals.DELTA);
+            trader.tradeBenchmark(growingCurrencies);
+            assertEquals(trader.getHoldMode().toString(), trader.getWallet().getHoldingID());
+            assertEquals(100.0, trader.getWallet().getValue(), TestGlobals.DELTA);
+            assertEquals(3100.0, trader.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        }
+        manualBest.tradeBenchmark(decliningCurrencies);
+        manualWorst.tradeBenchmark(decliningCurrencies);
+        assertEquals(100.0, manualBest.getWallet().getUSDValue(decliningCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualBest.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualBest.getWallet().getHoldingID());
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(decliningCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        
+        manualBest = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.BEST);
+        manualWorst = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.MANUAL, -1, HoldMode.WORST);
+        
+        manualBest.tradeBenchmark(growingCurrencies);
+        manualWorst.tradeBenchmark(growingCurrencies);
+        assertEquals(100.0, manualBest.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(3.225806451612903, manualBest.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, manualBest.getWallet().getHoldingID());
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        
+        realManualUSD.tradeBenchmark(decliningCurrencies);
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        realManualUSD.tradeBenchmark(decliningCurrencies);
+        assertEquals(100.0, manualWorst.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, manualWorst.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, manualWorst.getWallet().getHoldingID());
+        
+        realGOFAICrypto.tradeBenchmark(decliningCurrencies);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAICrypto.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, realGOFAICrypto.getWallet().getHoldingID());
+        realGOFAIUSD.tradeBenchmark(decliningCurrencies);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(100.0, realGOFAIUSD.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDUSD, realGOFAIUSD.getWallet().getHoldingID());
+        
+        realGOFAICrypto = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.CRYPTOCURRENCY);
+        realGOFAIUSD = new Trader(TestGlobals.IDUSD, 100.0, TradeMode.GOFAI, 1, HoldMode.USD);
+        
+        realGOFAICrypto.tradeBenchmark(growingCurrencies);
+        assertEquals(103.33333333333334, realGOFAICrypto.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(3.3333333333333335, realGOFAICrypto.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, realGOFAICrypto.getWallet().getHoldingID());
+        realGOFAIUSD.tradeBenchmark(growingCurrencies);
+        assertEquals(103.33333333333334, realGOFAIUSD.getWallet().getUSDValue(growingCurrencies), TestGlobals.DELTA);
+        assertEquals(3.3333333333333335, realGOFAIUSD.getWallet().getValue(), TestGlobals.DELTA);
+        assertEquals(TestGlobals.IDBCH, realGOFAIUSD.getWallet().getHoldingID());
     }
 }

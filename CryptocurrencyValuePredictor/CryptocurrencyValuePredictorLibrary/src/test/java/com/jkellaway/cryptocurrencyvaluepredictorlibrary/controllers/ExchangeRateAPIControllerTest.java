@@ -56,7 +56,7 @@ public class ExchangeRateAPIControllerTest {
 
     @Test
     public void testPost_String_ExchangeRate() {
-        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 0, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 0, 0), 1.0, null, null, null, TestGlobals.LASTTRADE);
         controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
         rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
         List<ExchangeRate> temp = new ArrayList<>();
@@ -91,8 +91,8 @@ public class ExchangeRateAPIControllerTest {
 
     @Test
     public void testPost_String_ExchangeRateArr() {
-        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 1, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
-        ExchangeRate rate2 = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 2, 0), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 1, 0), 1.0, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate2 = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 2, 0), 100.0, null, null, null, TestGlobals.LASTTRADE);
         rates = new ExchangeRate[2];
         rates[0] = rate;
         rates[1] = rate2;
@@ -137,9 +137,9 @@ public class ExchangeRateAPIControllerTest {
 
     @Test
     public void testPut_String_ExchangeRate() {
-        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 3, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 3, 0), 1.0, null, null, null, TestGlobals.LASTTRADE);
         controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
-        rate.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        rate.setValue(125.0);
         controller.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
         rates = controller.getExchangeRates(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id());
         List<ExchangeRate> temp = new ArrayList<>();
@@ -174,15 +174,15 @@ public class ExchangeRateAPIControllerTest {
     
     @Test
     public void testPut_String_ExchangeRateArr() {
-        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 4, 0), TestGlobals.ONE, null, null, null, TestGlobals.LASTTRADE);
-        ExchangeRate rate2 = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 5, 0), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 4, 0), 1.0, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate rate2 = new ExchangeRate(TestGlobals.IDBCH, LocalDateTime.of(2000, 01, 01, 0, 5, 0), 100.0, null, null, null, TestGlobals.LASTTRADE);
         rates = new ExchangeRate[2];
         rates[0] = rate;
         rates[1] = rate2;
         controller.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rates);
         rates = new ExchangeRate[2];
-        rate.setValue(TestGlobals.ONE);
-        rate2.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        rate.setValue(1.0);
+        rate2.setValue(125.0);
         rates[0] = rate;
         rates[1] = rate2;
         controller.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rates);

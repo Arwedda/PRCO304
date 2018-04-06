@@ -41,7 +41,7 @@ public class CurrencyTest {
     public static void setUpClass() {
         timeStamp = LocalDateTime.now(Clock.systemUTC()).minusMinutes(1);
         controller = new GDAXAPIController();
-        rate = new ExchangeRate(TestGlobals.IDETH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        rate = new ExchangeRate(TestGlobals.IDETH, timeStamp, 100.0, null, null, null, TestGlobals.LASTTRADE);
         blank = new Currency();
         rateless = new Currency(TestGlobals.IDLTC, TestGlobals.NAMELITECOIN, Globals.LTC_TRADES);
         real = new Currency(TestGlobals.IDETH, TestGlobals.NAMEETHEREUM, rate, Globals.ETH_TRADES);
@@ -104,14 +104,14 @@ public class CurrencyTest {
         blank.setValue(rate);
         
         assertEquals(rate, blank.getRate());
-        assertEquals(TestGlobals.ONEHUNDRED, blank.getRate().getValue(), TestGlobals.DELTA);
+        assertEquals(100.0, blank.getRate().getValue(), TestGlobals.DELTA);
         
-        rate.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        rate.setValue(125.0);
         real.setValue(rate);
         assertEquals(rate, real.getRate());
-        assertEquals(TestGlobals.ONEHUNDREDANDTWENTYFIVE, real.getRate().getValue(), TestGlobals.DELTA);
+        assertEquals(125.0, real.getRate().getValue(), TestGlobals.DELTA);
         
-        rate.setValue(TestGlobals.ONEHUNDRED);
+        rate.setValue(100.0);
     }
 
     @Test
@@ -230,8 +230,8 @@ public class CurrencyTest {
 
     @Test
     public void testDumpDuplicates() {
-        ExchangeRate newRate = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(1), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
-        ExchangeRate newRate2 = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(2), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate newRate = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(1), 100.0, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate newRate2 = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(2), 100.0, null, null, null, TestGlobals.LASTTRADE);
         assertFalse(blank.dumpDuplicates(false));
         assertFalse(rateless.dumpDuplicates(false));
         assertFalse(real.dumpDuplicates(false));
@@ -274,8 +274,8 @@ public class CurrencyTest {
 
     @Test
     public void testMergeRates() {
-        ExchangeRate newRate = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(1), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
-        ExchangeRate newRate2 = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(2), TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate newRate = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(1), 100.0, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate newRate2 = new ExchangeRate(TestGlobals.IDETH, timeStamp.plusMinutes(2), 100.0, null, null, null, TestGlobals.LASTTRADE);
         real.addHistoricRate(newRate2);
         real.addHistoricRate(newRate);
         real.mergeRates();
@@ -288,7 +288,7 @@ public class CurrencyTest {
     @Test
     public void testCalculateGrowth() {
         blank.setValue(rate);
-        ExchangeRate newRate = new ExchangeRate(TestGlobals.IDBCH, rate.getLDTTimestamp().plusMinutes(1), TestGlobals.ONEHUNDREDANDTWENTYFIVE, null, null, null, TestGlobals.LASTTRADE);
+        ExchangeRate newRate = new ExchangeRate(TestGlobals.IDBCH, rate.getLDTTimestamp().plusMinutes(1), 125.0, null, null, null, TestGlobals.LASTTRADE);
         blank.setValue(newRate);
         blank.mergeRates();
         

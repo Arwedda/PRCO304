@@ -116,7 +116,7 @@ public class Trader {
         }
     }
     
-    public void tradeBenchmark(Currency[] currencies, int numberOfPredictions){
+    public void tradeBenchmark(Currency[] currencies, Integer numberOfReadings, Integer numberOfPredictions){
         int noOfCurrencies = currencies.length;
         ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
@@ -129,8 +129,7 @@ public class Trader {
         wallet.setStartingValues(starting, currencies[0].getRate().getValue(), 0);
 
         trading:
-        for (int i = numberOfPredictions; i < Globals.READINGSREQUIRED - 1; i++) {
-            
+        for (int i = numberOfPredictions; i < numberOfReadings - 1; i++) {
             for (int j = 0; j < noOfCurrencies ; j++) {
                 rates[j] = currencies[j].getRates().get(i);
             }
@@ -182,7 +181,7 @@ public class Trader {
                             break;
                         default:
                             //HOLD
-                            if (desired.getCurrency_id().equals("Unknown")){
+                            if (!holdMode.toString().equals(wallet.getHoldingID())) {
                                 desired = getRate(rates);
                                 trade(desired, rates);
                             } else {
@@ -261,7 +260,7 @@ public class Trader {
                         break;
                     default:
                         //HOLD
-                        if (desired.getCurrency_id().equals("Unknown")){
+                        if (!holdMode.toString().equals(wallet.getHoldingID())) {
                             desired = getRate(rates);
                             trade(desired, rates);
                         }
@@ -323,12 +322,14 @@ public class Trader {
                     break;
                 }
             }
-            makeTrade(current, desired);
+            if (0.0 < desired.getValue()) {
+                makeTrade(current, desired);
+            }
         }
         //System.out.println("[INFO] Holding desired currency - " + wallet.getValue() + " " + wallet.getHoldingID());
     }
     
-    public void trade(ExchangeRate desired, Currency[] currencies) {
+    private void trade(ExchangeRate desired, Currency[] currencies) {
         String holdingID = wallet.getHoldingID();
         if (!holdingID.equals(desired.getCurrency_id()) && 
                 !(holdingID.equals(HoldMode.USD.toString()) && desired.getCurrency_id().equals("Unknown"))) {

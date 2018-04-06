@@ -46,7 +46,7 @@ public class ExchangeRateTest {
     public void setUp() {
         timeStamp = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
         blank = new ExchangeRate();
-        real = new ExchangeRate(TestGlobals.IDBCH, timeStamp, TestGlobals.ONEHUNDRED, null, null, null, TestGlobals.LASTTRADE);
+        real = new ExchangeRate(TestGlobals.IDBCH, timeStamp, 100.0, null, null, null, TestGlobals.LASTTRADE);
     }
 
     @After
@@ -99,15 +99,15 @@ public class ExchangeRateTest {
 
     @Test
     public void testGetValue() {
-        assertEquals(TestGlobals.ZERO, blank.getValue(), TestGlobals.DELTA);
-        assertEquals(TestGlobals.ONEHUNDRED, real.getValue(), TestGlobals.DELTA);
+        assertEquals(0.0, blank.getValue(), TestGlobals.DELTA);
+        assertEquals(100.0, real.getValue(), TestGlobals.DELTA);
     }
 
     @Test
     public void testSetValue() {
-        real.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
-        assertEquals(TestGlobals.ONEHUNDREDANDTWENTYFIVE, real.getValue(), TestGlobals.DELTA);
-        real.setValue(TestGlobals.ONEHUNDRED);
+        real.setValue(125.0);
+        assertEquals(125.0, real.getValue(), TestGlobals.DELTA);
+        real.setValue(100.0);
     }
 
     @Test
@@ -165,11 +165,11 @@ public class ExchangeRateTest {
 
     @Test
     public void testCalculateGrowth() {
-        real.calculateGrowth(TestGlobals.ONEHUNDRED);
-        assertEquals(TestGlobals.ZERO, real.getGrowth(), TestGlobals.DELTA);
-        real.calculateGrowth(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        real.calculateGrowth(100.0);
+        assertEquals(0.0, real.getGrowth(), TestGlobals.DELTA);
+        real.calculateGrowth(125.0);
         assertEquals(-20.0, real.getGrowth(), TestGlobals.DELTA);
-        real.calculateGrowth(TestGlobals.ZERO);
+        real.calculateGrowth(0.0);
         assertEquals(Double.POSITIVE_INFINITY, real.getGrowth(), TestGlobals.DELTA);
     }
 

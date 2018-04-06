@@ -36,7 +36,7 @@ public class WalletTest {
     @Before
     public void setUp() {
         blank = new Wallet();
-        real = new Wallet(TestGlobals.IDUSD, TestGlobals.ONEHUNDRED);
+        real = new Wallet(TestGlobals.IDUSD, 100.0);
     }
 
     @After
@@ -58,15 +58,15 @@ public class WalletTest {
 
     @Test
     public void testSetValue() {
-        blank.setValue(TestGlobals.ONE);
-        assertEquals(TestGlobals.ONE, blank.getValue());
+        blank.setValue(1.0);
+        assertEquals(1.0, blank.getValue(), TestGlobals.DELTA);
         blank.setValue(null);
     }
 
     @Test
     public void testGetValue() {
         assertNull(blank.getValue());
-        assertEquals(TestGlobals.ONEHUNDRED, real.getValue(), TestGlobals.DELTA);
+        assertEquals(100.0, real.getValue(), TestGlobals.DELTA);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class WalletTest {
     @Test
     public void testGetStartingUSD() {
         assertNull(blank.getStartingUSD());
-        assertEquals(TestGlobals.ONEHUNDRED, real.getStartingUSD(), TestGlobals.DELTA);
+        assertEquals(100.0, real.getStartingUSD(), TestGlobals.DELTA);
     }
 
     @Test
@@ -104,17 +104,17 @@ public class WalletTest {
         currency = new Currency(TestGlobals.IDBTC, TestGlobals.NAMEBITCOIN, Globals.BTC_TRADES);
         currencies[1] = currency;
         ExchangeRate rate = new ExchangeRate();
-        rate.setValue(TestGlobals.ONEHUNDRED);
+        rate.setValue(100.0);
         currencies[0].setValue(rate);
         rate = new ExchangeRate();
-        rate.setValue(TestGlobals.ONEHUNDREDANDTWENTYFIVE);
+        rate.setValue(125.0);
         currencies[1].setValue(rate);
         assertNull(blank.getUSDValue(currencies));
         blank.setHoldingID(TestGlobals.IDBCH);
         assertNull(blank.getUSDValue(currencies));
-        blank.setValue(TestGlobals.ONE);
-        assertEquals(TestGlobals.ONEHUNDRED, blank.getUSDValue(currencies), TestGlobals.DELTA);
-        assertEquals(TestGlobals.ONEHUNDRED, real.getUSDValue(currencies), TestGlobals.DELTA);
+        blank.setValue(1.0);
+        assertEquals(100.0, blank.getUSDValue(currencies), TestGlobals.DELTA);
+        assertEquals(100.0, real.getUSDValue(currencies), TestGlobals.DELTA);
         blank = new Wallet();
     }
 }

@@ -10,10 +10,6 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals;
  * @author jkell
  */
 public class TestGlobals {
-    public static final Double ZERO = 0.0;
-    public static final Double ONE = 1.0;
-    public static final Double ONEHUNDRED = 100.0;
-    public static final Double ONEHUNDREDANDTWENTYFIVE = 125.0;
     public static final Double DELTA = 1e-15;
     public static final Integer LASTTRADE = 777;
     public static final Integer REQUIREDRATES = 21;

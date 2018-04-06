@@ -39,7 +39,7 @@ public class GDAXTradeTest {
     @Before
     public void setUp() {
         blank = new GDAXTrade();
-        real = new GDAXTrade(timeStamp, TestGlobals.ONEHUNDRED, TestGlobals.LASTTRADE);
+        real = new GDAXTrade(timeStamp, 100.0, TestGlobals.LASTTRADE);
     }
 
     @After
@@ -61,15 +61,15 @@ public class GDAXTradeTest {
 
     @Test
     public void testGetPrice() {
-        assertEquals(TestGlobals.ZERO, blank.getPrice(), TestGlobals.DELTA);
-        assertEquals(TestGlobals.ONEHUNDRED, real.getPrice(), TestGlobals.DELTA);
+        assertEquals(0.0, blank.getPrice(), TestGlobals.DELTA);
+        assertEquals(100.0, real.getPrice(), TestGlobals.DELTA);
     }
 
     @Test
     public void testSetPrice() {
-        blank.setPrice(TestGlobals.ONE);
-        assertEquals(TestGlobals.ONE, blank.getPrice(), TestGlobals.DELTA);
-        blank.setPrice(TestGlobals.ZERO);
+        blank.setPrice(1.0);
+        assertEquals(1.0, blank.getPrice(), TestGlobals.DELTA);
+        blank.setPrice(0.0);
     }
 
     @Test

@@ -50,9 +50,9 @@ public class MathsHelperTest {
     public void testDeltas() {
         Double[] manualDeltas = new Double[doubles.length];
         for (int i = 0; i < doubles.length; i++) {
-            manualDeltas[i] = doubles[i] - TestGlobals.ONE;
+            manualDeltas[i] = doubles[i] - 1.0;
         }
-        Assert.assertArrayEquals(manualDeltas, MathsHelper.deltas(TestGlobals.ONE, doubles));
+        Assert.assertArrayEquals(manualDeltas, MathsHelper.deltas(1.0, doubles));
     }
 
     @Test
