@@ -27,7 +27,7 @@ public class Currency {
     private final String GDAXEndpoint;
 
     /**
-     * Default currency constructor.
+     * Default Currency constructor.
      */
     public Currency() {
         this.id = "unknown";
@@ -40,7 +40,7 @@ public class Currency {
     }
     
     /**
-     * Standard currency constructor.
+     * Standard Currency constructor.
      * @param id The identifier.
      * @param name The name.
      * @param GDAXEndpoint The GDAX API endpoint.
@@ -74,7 +74,7 @@ public class Currency {
     }
 
     /**
-     * The globally recognised identifier (normally 3 characters).
+     * Get the globally recognised identifier (normally 3 characters).
      * @return The identifier.
      */
     public String getID() {
@@ -82,7 +82,7 @@ public class Currency {
     }
 
     /**
-     * Adjust the globally recognised identifier.
+     * Set the globally recognised identifier.
      * @param id The new identifier.
      */
     public void setID(String id) {
@@ -90,7 +90,7 @@ public class Currency {
     }
 
     /**
-     * The globally recognised name.
+     * Get the globally recognised name.
      * @return The name.
      */
     public String getName() {
@@ -98,7 +98,7 @@ public class Currency {
     }
 
     /**
-     * Adjust the globally recognised name.
+     * Set the globally recognised name.
      * @param name The new name.
      */
     public void setName(String name) {
@@ -106,7 +106,7 @@ public class Currency {
     }
     
     /**
-     * Gets the last ExchangeRate added to the currency's current rates list.
+     * Get the last ExchangeRate added to the currency's current rates list.
      * @return The current ExchangeRate.
      */
     public ExchangeRate getRate(){
@@ -118,7 +118,7 @@ public class Currency {
     }
     
     /**
-     * Sets the new ExchangeRate value, calculating growth if possible.
+     * Set the new ExchangeRate value, calculating growth if possible.
      * @param rate The new ExchangeRate.
      */
     public void setValue(ExchangeRate rate){
@@ -142,7 +142,7 @@ public class Currency {
     }
     
     /**
-     * Gets the list of current ExchangeRates stored for this Currency.
+     * Get the list of current ExchangeRates stored for this Currency.
      * @return The List of current ExchangeRates stored for this Currency.
      */
     public List<ExchangeRate> getRates() {
@@ -150,7 +150,7 @@ public class Currency {
     }
 
     /**
-     * Gets the list of historic ExchangeRates stored for this Currency.
+     * Get the list of historic ExchangeRates stored for this Currency.
      * @return The List of historic ExchangeRates stored for this Currency.
      */
     public List<ExchangeRate> getHistoricRates() {
@@ -158,7 +158,7 @@ public class Currency {
     }
 
     /**
-     * Adds a new historic ExchangeRate to the Currency. Clears historic GDAXTrades
+     * Add a new historic ExchangeRate to the Currency. Clears historic GDAXTrades
      * used to calculate the ExchangeRate.
      * @param rate The newly calculated historic ExchangeRate.
      */
@@ -171,7 +171,7 @@ public class Currency {
     }
     
     /**
-     * Gets the last added historic ExchangeRate.
+     * Get the last added historic ExchangeRate.
      * @return The last added historic ExchangeRate.
      */
     private ExchangeRate getHistoricRate(){
@@ -183,7 +183,7 @@ public class Currency {
     }
     
     /**
-     * Gets the last added historic GDAXTrade.
+     * Get the last added historic GDAXTrade.
      * @return The last added historic GDAXTrade.
      */
     public GDAXTrade getLastHistoricTrade() {
@@ -204,7 +204,7 @@ public class Currency {
     }
     
     /**
-     * Gets the GDAX API endpoint for this Currency.
+     * Get the GDAX API endpoint for this Currency.
      * @return The GDAX API endpoint for this Currency.
      */
     public String getGDAXEndpoint() {
@@ -212,7 +212,7 @@ public class Currency {
     }
 
     /**
-     * Gets the List of historic GDAXTrades that will be used to create the next
+     * Get the List of historic GDAXTrades that will be used to create the next
      * historic ExchangeRate.
      * @return The current List of historic GDAXTrades.
      */
@@ -221,7 +221,7 @@ public class Currency {
     }
 
     /**
-     * Adds a GDAXTrade to the List to create the next historic ExchangeRate.
+     * Add a GDAXTrade to the List to create the next historic ExchangeRate.
      * @param historicTrade GDAXTrade to be included in the next ExchangeRate.
      */
     public void addHistoricTrade(GDAXTrade historicTrade) {
@@ -229,7 +229,7 @@ public class Currency {
     }
     
     /**
-     * Gets the list of all Gaps to be filled by the historic ExchangeRate
+     * Get the list of all Gaps to be filled by the historic ExchangeRate
      * PriceCollector.
      * @return The list of Gaps to be filled.
      */
@@ -300,6 +300,10 @@ public class Currency {
         return false;
     }
     
+    /**
+     * Finds any Gaps in the relevant collected data to be filled by the PriceCollector.
+     * @param firstMinute The first minute (oldest) data required.
+     */
     public void findGaps(LocalDateTime firstMinute) {
         if (0 < gaps.size()) {
             gaps.clear();
@@ -340,12 +344,24 @@ public class Currency {
         gaps.add(gap);
     }
     
+    /**
+     * A full merge of historic ExchangeRates into current ExchangeRates - sorted
+     * chronologically.
+     */
     public void mergeRates(){        
         this.rates.addAll(0, historicRates);
         Collections.sort(rates);
         historicRates.clear();
     }
     
+    /**
+     * Calculates growth between consecutive ExchangeRates. Outputs an array of
+     * ExchangeRates that have been updated with a growth value. Feed true to force
+     * the algorithm to calculate growth over a Gap where no prices are available.
+     * @param calculateChange true - calculate growth because data not available
+     * false - do not calculate growth (attempt another collection later)
+     * @return Array of updated ExchangeRates.
+     */
     public ExchangeRate[] calculateGrowth(boolean calculateChange){
         List<ExchangeRate> updatedRates = new ArrayList<>();
         for (int i = 1; i < rates.size(); i++){
@@ -361,6 +377,11 @@ public class Currency {
         return updatedRates.toArray(new ExchangeRate[updatedRates.size()]);
     }
     
+    /**
+     * Fills missing data (due to no prices being available) from index i to the
+     * first available price.
+     * @param i Start index.
+     */
     private void fillMissingData(int i) {
         ExchangeRate previous = rates.get(i - 1);
         ExchangeRate next = rates.get(i);
@@ -381,7 +402,7 @@ public class Currency {
     }
     
     /**
-     * Gets the number of historic ExchangeRates stored for this Currency.
+     * Get the number of historic ExchangeRates stored for this Currency.
      * @return Integer value of historic ExchangeRates stored for this Currency.
      */
     public int noOfHistoricRates(){

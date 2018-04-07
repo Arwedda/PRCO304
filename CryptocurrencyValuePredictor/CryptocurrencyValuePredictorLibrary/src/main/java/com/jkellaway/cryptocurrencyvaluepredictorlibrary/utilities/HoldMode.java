@@ -26,8 +26,8 @@ public enum HoldMode {
     }
     
     /**
-     * Creates a user-friendly string to describe the HoldMode
-     * @return User-friendly string to describe the hold mode
+     * Creates a user-friendly String to describe the HoldMode
+     * @return User-friendly String to describe the HoldMode
      */
     @Override
     public String toString()

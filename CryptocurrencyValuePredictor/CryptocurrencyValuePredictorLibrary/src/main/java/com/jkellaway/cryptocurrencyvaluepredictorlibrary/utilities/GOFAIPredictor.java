@@ -26,14 +26,22 @@ public class GOFAIPredictor {
     private static int[] deltaNo = new int[Globals.NUMBEROFPREDICTIONS];
     private static Double[] closest = new Double[Globals.NUMBEROFPREDICTIONS];
     private static int totalReadings = 0;
-
     
+    /**
+     * Initial predictions that would have been across the ExchangeRates as they 
+     * collected live - used for benchmarking.
+     * @param currencies The Currency array to make predictions for.
+     * @return The Currency array with newly calculated predictions.
+     */
     public static Currency[] initialPredictions(Currency[] currencies){
         initialise();
         predict(currencies);
         return currencies;
     }
 
+    /**
+     * Initialises variables used to compare each algorithm's prediction accuracy.
+     */
     private static void initialise(){
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] = 0.0;
@@ -43,6 +51,10 @@ public class GOFAIPredictor {
         }
     }
     
+    /**
+     * Cycles each Currency in parameter and makes GOFAI predictions across it.
+     * @param currencies The Currency array to make GOFAI predictions for.
+     */
     private static void predict(Currency[] currencies){
         for (Currency currency : currencies){
             GOFAIPredictions(currency);
@@ -50,6 +62,15 @@ public class GOFAIPredictor {
         GOFAIResults();
     }
     
+    /**
+     * Creates an array of 20 growth predictions for each ExchangeRate in Currency.
+     * Starts at price 22 (index 21) because each prediction requires up to 20 minutes
+     * of previous prices. Prediction Index 0 = 1 minute, Prediction Index 19 = 20 minutes.
+     * It creates relevant 20 ExchangeRate arrays to calculate each growth array.
+     * Also calculates the difference between the prediction and the result to
+     * assess algorithm accuracy.
+     * @param currency The Currency to make GOFAI predictions for.
+     */
     private static void GOFAIPredictions(Currency currency){
         Double[] predictions;
         Double[] deltas;
@@ -81,6 +102,12 @@ public class GOFAIPredictor {
         }
     }
 
+    /**
+     * Constructs the prediction array from the relevant ExchangeRates by creating
+     * a mean of the growths used in each prediction.
+     * @param rates The ExchangeRates relevant to this prediction array.
+     * @return The prediction array.
+     */
     private static Double[] predict(ExchangeRate[] rates){
         Integer highestIndex = rates.length - 1;
         Double[] predictions = new Double[Globals.NUMBEROFPREDICTIONS];
@@ -92,6 +119,10 @@ public class GOFAIPredictor {
         return predictions;
     }
     
+    /**
+     * Calculates and outputs the mean predictions of each algorithm and then the
+     * difference between the prediction and the actual result (error).
+     */
     private static void GOFAIResults(){
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] /= predictedChangeNo[i];
@@ -102,6 +133,13 @@ public class GOFAIPredictor {
         }
     }
     
+    /**
+     * Creates a set of predictions for the next ExchangeRate values based on the 
+     * growth between the previous 20 prices. Updates benchmarking and used for
+     * live trading.
+     * @param currencies The Currency array to make predictions for.
+     * @return The Currency array with newly calculated predictions.
+     */
     public static Currency[] singlePrediction(Currency[] currencies) {
         for (Currency currency : currencies){
             GOFAICalculation(currency);
@@ -109,6 +147,13 @@ public class GOFAIPredictor {
         return currencies;
     }
     
+    /**
+     * Creates an array of 20 growth predictions for the next ExchangeRate of Currency.
+     * Starts at price 22 (index 21) because each prediction requires up to 20 minutes
+     * of previous prices. Prediction Index 0 = 1 minute, Prediction Index 19 = 20 minutes.
+     * It creates relevant 20 ExchangeRate arrays to calculate each growth array.
+     * @param currency The Currency to make GOFAI predictions for.
+     */
     private static void GOFAICalculation(Currency currency) {
         Double[] predictions;
         ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);

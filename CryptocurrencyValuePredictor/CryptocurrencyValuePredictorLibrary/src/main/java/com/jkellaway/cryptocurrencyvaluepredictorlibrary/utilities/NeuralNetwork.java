@@ -6,20 +6,21 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
+import java.util.List;
 
 /**
  *
  * @author jkell
  */
 public class NeuralNetwork {
-    private Double[] weights;
+    private List<Double[]> weights;
     
     public NeuralNetwork() {
         
     }
     
-    public NeuralNetwork(Currency[] currencies, Integer inputSize) {
-        initialiseWeights(inputSize);
+    public NeuralNetwork(Currency[] currencies, Integer[] inputSizes) {
+        initialiseWeights(inputSizes);
         trainNeuralNetwork();
         for (Currency currency: currencies){
             neuralNetworkCalculations(currency);
@@ -27,8 +28,15 @@ public class NeuralNetwork {
         neuralNetworkResults();
     }
     
-    private void initialiseWeights(Integer inputSize) {
-        weights = new Double[inputSize];
+    private void initialiseWeights(Integer[] inputSizes) {
+        Double[] locWeights;
+        for (int i = 0; i < inputSizes.length; i++) {
+            locWeights = new Double[inputSizes[i]];
+            for (Double dbl : locWeights) {
+                dbl = Math.random() * 0.001;
+            }
+            weights.add(locWeights);
+        }
         
     }
     

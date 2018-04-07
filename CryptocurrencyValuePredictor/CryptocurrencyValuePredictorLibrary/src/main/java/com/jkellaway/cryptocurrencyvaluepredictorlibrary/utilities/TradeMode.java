@@ -22,7 +22,7 @@ public enum TradeMode {
     
     /**
      * Creates a user-friendly string to describe the TradeMode
-     * @return User-friendly string to describe the trade mode
+     * @return User-friendly string to describe the TradeMode
      */
     @Override
     public String toString()

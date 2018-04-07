@@ -17,9 +17,19 @@ import java.util.regex.*;
  * @author jkell
  */
 public class JSONParser {
+    
+    /**
+     * Default JSONParser constructor.
+     */
     public JSONParser() {
     }
     
+    /**
+     * Passed a JSON String containing GDAXTrade Objects. Extracts variable data
+     * from the String and matches it together to build the String into Objects.
+     * @param json JSON String to extract GDAXTrades from.
+     * @return An array of GDAXTrades extracted from the JSON String.
+     */
     public GDAXTrade[] GDAXTradeFromJSON(String json){
         GDAXTrade[] array;
         GDAXTrade trade;
@@ -46,6 +56,13 @@ public class JSONParser {
         return array;
     }
     
+    /**
+     * Uses a JSON String and regular expression to create a List of Strings 
+     * that match a particular format.
+     * @param json JSON String to extract matches from.
+     * @param regex Regex to match.
+     * @return Any data in the JSON String that matches the regex.
+     */
     private List<String> getMatches(String json, String regex){
         Pattern pattern = Pattern.compile(regex);
         Matcher match = pattern.matcher(json);
@@ -58,6 +75,10 @@ public class JSONParser {
         return arlMatches;
     }
     
+    
+    /**
+     * Parser functions originally used to collect data from the Oracle API endpoint.
+     */
     
     /*
     public Currency[] currencyFromJSON(String json){

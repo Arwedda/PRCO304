@@ -42,9 +42,18 @@ public class PriceCollector implements ISubject {
     private LocalDateTime firstRelevantRate;
     private ScheduledExecutorService collector;
     
+    /**
+     * Default PriceCollector constructor.
+     */
     public PriceCollector() {
     }
     
+    /**
+     * Initialises required APIControllers, the collector thread and calculates
+     * the oldest required ExchangeRate before initialising the Currency array
+     * and the current and historic data collection.
+     * @param readingsRequired The number of readings required to make predictions.
+     */
     public void initialise(Integer readingsRequired) {
         gdaxAPIController = new GDAXAPIController();
         currencyAPIController = new CurrencyAPIController();
@@ -57,6 +66,11 @@ public class PriceCollector implements ISubject {
         initCollector();
     }
     
+    /**
+     * Attempts to connect to the database to obtain Currency data, initialises 
+     * database use if successful, falls back on hard-coded Currency data if
+     * unsuccessful to prevent error.
+     */
     private void initCurrencies() {
         try {
             currencies = currencyAPIController.getCurrencies(Globals.API_ENDPOINT + Globals.CURRENCY_EXTENSION);
@@ -72,6 +86,12 @@ public class PriceCollector implements ISubject {
         }
     }
     
+    /**
+     * Connects to the database to obtain ExchangeRate data for each Currency.
+     * Separates obsolete data from useful data and then calculates any Gaps in
+     * the useful data that need to be filled by the historic collector. Calculates
+     * any growths not stored in the database and updates it as necessary.
+     */
     private void sortRelevantRates() {
         ExchangeRate[] rates, updatedRates;
         for (Currency currency : currencies){
@@ -89,6 +109,11 @@ public class PriceCollector implements ISubject {
         }
     }
     
+    /**
+     * Sets up Currency data manually to avoid errors when database connection is
+     * unsuccessful. It then calculates the single Gap that needs to be filled -
+     * between now and the oldest required ExchangeRate.
+     */
     private void storageFreeMode() {
         /*
             Not intended for project - only as failsafe.
@@ -109,6 +134,11 @@ public class PriceCollector implements ISubject {
         }
     }
     
+    /**
+     * Initialises automated collection with a 1 second delay between the end of
+     * a processing cycle and beginning of the next cycle. This is to ensure that
+     * GDAX's API call threshold is not violated.
+     */
     private void initCollector() {
         Runnable automatedCollection = new Runnable() {
             @Override
@@ -116,6 +146,12 @@ public class PriceCollector implements ISubject {
                 priceCollection();
             }
 
+            /**
+             * Collects data from GDAX API endpoints. If there is no data for the 
+             * current minute then that data is prioritised, otherwise collects
+             * required historic data. Calculates growths when all Gaps in historic
+             * data have been filled.
+             */
             private void priceCollection() {
                 LocalDateTime currentTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
                 LocalDateTime currentRateTime = null;
@@ -135,6 +171,12 @@ public class PriceCollector implements ISubject {
                 }
             }
             
+            /**
+             * Collects current data from GDAX API endpoint. If no trades were 
+             * made in the last minute then the price is carried forward from 
+             * the previous minute.
+             * @param postTime The time to collect data for - current UTC time.
+             */
             private void getCurrentPrices(LocalDateTime postTime) {
                 System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
                 try {
@@ -172,6 +214,12 @@ public class PriceCollector implements ISubject {
                 }
             }
             
+            /**
+             * 
+             * @param trades
+             * @param postTime
+             * @return 
+             */
             private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime) {
                 ArrayList<GDAXTrade> relevantTrades = new ArrayList<>();
                 boolean foundStart = false;
@@ -184,6 +232,11 @@ public class PriceCollector implements ISubject {
                 return relevantTrades.toArray(new GDAXTrade[relevantTrades.size()]);
             }
             
+            /**
+             * 
+             * @param trades
+             * @return 
+             */
             private Double calculateMeanPrice(GDAXTrade[] trades) {
                 List<Double> prices = new ArrayList<>();
                 Double meanPrice;
@@ -196,6 +249,10 @@ public class PriceCollector implements ISubject {
                 return meanPrice;
             }
             
+            /**
+             * 
+             * @return 
+             */
             private boolean gapsFilled() {
                 boolean filled = true;
                 int ratesRequired = 0;
@@ -219,6 +276,9 @@ public class PriceCollector implements ISubject {
                 return filled;
             }
             
+            /**
+             * 
+             */
             private void calculateHistoricGrowth() {
                 ExchangeRate[] updatedRates;
                 for (Currency currency : currencies){
@@ -251,6 +311,9 @@ public class PriceCollector implements ISubject {
                 }
             }
             
+            /**
+             * 
+             */
             private void getHistoricPrices() {
                 int readingsTaken = 0;
                 GDAXTrade[] trades;
@@ -288,10 +351,22 @@ public class PriceCollector implements ISubject {
                 }
             }
             
+            /**
+             * 
+             * @param required
+             * @param collected
+             * @return 
+             */
             private boolean collectionCompleted(int required, int collected) {
                 return (required <= collected);
             }
             
+            /**
+             * 
+             * @param currency
+             * @param gap
+             * @return 
+             */
             private GDAXTrade[] getHistoricTrades(Currency currency, Gap gap) {
                 String pagination = "";
                 if (currency.getLastHistoricTrade() != null) {
@@ -305,6 +380,12 @@ public class PriceCollector implements ISubject {
                 return gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint() + pagination);
             }
             
+            /**
+             * 
+             * @param currency
+             * @param trades
+             * @param gap 
+             */
             private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades, Gap gap) {
                 if (trades.length == 0) {
                     System.out.println("[INFO] calculateHistoricAverages received no trades. GDAX endpoint may be down...");
@@ -347,6 +428,7 @@ public class PriceCollector implements ISubject {
                 }
             }
         };
+        
         if (lap == 1) {
             collector.scheduleWithFixedDelay(automatedCollection, 1, 1, TimeUnit.SECONDS);
         }/* else {
@@ -358,10 +440,18 @@ public class PriceCollector implements ISubject {
         }*/
     }
 
+    /**
+     * 
+     * @return 
+     */
     public LocalDateTime getFirstRelevantRate() {
         return firstRelevantRate;
     }
     
+    /**
+     * 
+     * @param currencies 
+     */
     public void benchmarkComplete(Currency[] currencies) {
         this.currencies = currencies;
         lap = -1;
@@ -370,18 +460,35 @@ public class PriceCollector implements ISubject {
         */
     }
     
+    /**
+     * 
+     * @return 
+     */
     public int getLap(){
         return lap;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public Currency[] getCurrencies() {
         return currencies;
     }
 
+    /**
+     * 
+     * @param currencies 
+     */
     public void setCurrencies(Currency[] currencies) {
         this.currencies = currencies;
     }
 
+    /**
+     * 
+     * @param o
+     * @return 
+     */
     @Override
     public Boolean registerObserver(IObserver o) {
         Boolean blnAdded = false;
@@ -396,6 +503,11 @@ public class PriceCollector implements ISubject {
         return blnAdded;
     }
 
+    /**
+     * 
+     * @param o
+     * @return 
+     */
     @Override
     public Boolean removeObserver(IObserver o) {
         Boolean blnRemoved = false;
@@ -407,6 +519,9 @@ public class PriceCollector implements ISubject {
         return blnRemoved;
     }
 
+    /**
+     * 
+     */
     @Override
     public void notifyObservers() {
         if (this.observers != null && 0 < this.observers.size()) {
