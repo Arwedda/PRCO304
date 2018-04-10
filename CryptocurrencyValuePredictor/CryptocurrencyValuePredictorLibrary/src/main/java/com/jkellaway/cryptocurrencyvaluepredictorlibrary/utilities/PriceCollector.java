@@ -174,7 +174,8 @@ public class PriceCollector implements ISubject {
             /**
              * Collects current data from GDAX API endpoint. If no trades were 
              * made in the last minute then the price is carried forward from 
-             * the previous minute.
+             * the previous minute. It also notifies Observers so that the GUI
+             * can remain up to date with the latest prices.
              * @param postTime The time to collect data for - current UTC time.
              */
             private void getCurrentPrices(LocalDateTime postTime) {
@@ -215,10 +216,11 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
-             * @param trades
-             * @param postTime
-             * @return 
+             * Extracts GDAXTrades from parameter array that occur in the minute
+             * leading up to the parameter time.
+             * @param trades Potentially relevant GDAXTrades.
+             * @param postTime Minute to associate with ExchangeRate.
+             * @return GDAXTrades at the required time.
              */
             private GDAXTrade[] getRelevantTrades(GDAXTrade[] trades, LocalDateTime postTime) {
                 ArrayList<GDAXTrade> relevantTrades = new ArrayList<>();
@@ -233,9 +235,9 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
-             * @param trades
-             * @return 
+             * Calculates the mean of the prices of the GDAXTrade array parameter.
+             * @param trades The array of GDAXTrades to get the mean price of.
+             * @return The mean price of the parameter.
              */
             private Double calculateMeanPrice(GDAXTrade[] trades) {
                 List<Double> prices = new ArrayList<>();
@@ -250,8 +252,9 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
-             * @return 
+             * Calculates whether all fillable Gaps have been filled for each
+             * Currency. Removes any Gaps which have 0 rates required remaining.
+             * @return true - filled, false - some data to collect
              */
             private boolean gapsFilled() {
                 boolean filled = true;
@@ -277,14 +280,22 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
+             * Merges historic ExchangeRates into the current ExchangeRate List
+             * and then calculates growths between consecutive ExchangeRates
+             * before storing new information in the database. If the collector
+             * has already completed its second pass through the Gaps it assumes
+             * that any missing data genuinely is missing and calculates any
+             * missing ExchangeRates. Finally it sets up the collector for its
+             * next phase: either a re-run through any Gaps to attempt to find
+             * missing ExchangeRates or shutting down historic collection and
+             * notifying Observers to begin predicting future prices.
              */
             private void calculateHistoricGrowth() {
                 ExchangeRate[] updatedRates;
-                for (Currency currency : currencies){
+                for (Currency currency : currencies) {
                     currency.mergeRates();
                     updatedRates = currency.calculateGrowth((lap == 2));
-                    if (connectedToDatabase){
+                    if (connectedToDatabase) {
                         exchangeRateAPIController.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, updatedRates);
                     }
                     if (!currency.getHistoricRates().isEmpty()) {
@@ -295,8 +306,8 @@ public class PriceCollector implements ISubject {
                         }
                     }
                 }
-                if (lap == 1){
-                    for (Currency currency : currencies){
+                if (lap == 1) {
+                    for (Currency currency : currencies) {
                         currency.findGaps(firstRelevantRate);
                     }
                     System.out.println("[INFO] First lap completed. Attempting to collect failed prices.");
@@ -312,7 +323,17 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
+             * Gathers the maximum number of GDAXTrades from the GDAX API endpoint
+             * and groups each minute of data into a single ExchangeRate with a
+             * mean price. It then crops any data that has already been collected
+             * and if there is still useful data it is posted to the database. If
+             * there is no useful data or the Gap's pagination can't be collected
+             * properly (i.e. it is negative) then it discards the Gap as filled 
+             * or unable to be filled. Since GDAX's API allows only 4 readings 
+             * per second the historic collector will break after one get per
+             * Currency under normal conditions, however, if one Currency has
+             * been collected then it will wrap back to the first that hasn't
+             * been finished to utilise the full 4 gets per second.
              */
             private void getHistoricPrices() {
                 int readingsTaken = 0;
@@ -352,20 +373,22 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
-             * @param required
-             * @param collected
-             * @return 
+             * Calculates whether the number of collected readings exceeds the
+             * required number.
+             * @param required Target number.
+             * @param collected Actual number.
+             * @return true - collected >= required, else false
              */
             private boolean collectionCompleted(int required, int collected) {
                 return (required <= collected);
             }
             
             /**
-             * 
-             * @param currency
-             * @param gap
-             * @return 
+             * Uses GDAX pagination information to collect missing historical
+             * GDAXTrade data.
+             * @param currency The Currency to collect GDAXTrades for.
+             * @param gap The Gap to fill.
+             * @return GDAXTrade array of collected data.
              */
             private GDAXTrade[] getHistoricTrades(Currency currency, Gap gap) {
                 String pagination = "";
@@ -381,10 +404,12 @@ public class PriceCollector implements ISubject {
             }
             
             /**
-             * 
-             * @param currency
-             * @param trades
-             * @param gap 
+             * Sorts an array of GDAXTrades minutely ExchangeRates and averages
+             * the price. Always wraps the final minute into the next collection
+             * so that all trades are used creating the mean.
+             * @param currency The Currency to collect prices for.
+             * @param trades The GDAXTrades to create ExchangeRates from.
+             * @param gap The Gap being filled.
              */
             private void calculateHistoricAverages(Currency currency, GDAXTrade[] trades, Gap gap) {
                 if (trades.length == 0) {
@@ -441,16 +466,18 @@ public class PriceCollector implements ISubject {
     }
 
     /**
-     * 
-     * @return 
+     * Gets the LocalDateTime timestamp of the first ExchangeRate required to
+     * perform price predictions.
+     * @return The LocalDateTime timestamp of the first ExchangeRate required.
      */
     public LocalDateTime getFirstRelevantRate() {
         return firstRelevantRate;
     }
     
     /**
-     * 
-     * @param currencies 
+     * Updates the Currency data to include predictions and turns off historic 
+     * collections.
+     * @param currencies The new Currency data.
      */
     public void benchmarkComplete(Currency[] currencies) {
         this.currencies = currencies;
@@ -461,33 +488,34 @@ public class PriceCollector implements ISubject {
     }
     
     /**
-     * 
-     * @return 
+     * Gets the current data collection lap.
+     * @return The current data collection lap.
      */
     public int getLap(){
         return lap;
     }
 
     /**
-     * 
-     * @return 
+     * Gets the currently collected Currency data.
+     * @return The currently collected Currency data.
      */
     public Currency[] getCurrencies() {
         return currencies;
     }
 
     /**
-     * 
-     * @param currencies 
+     * Sets the Currency data to a new array of data (used to add the prediction
+     * calculations).
+     * @param currencies The new Currency data.
      */
     public void setCurrencies(Currency[] currencies) {
         this.currencies = currencies;
     }
 
     /**
-     * 
-     * @param o
-     * @return 
+     * Adds the parameter Observer to the Observer List.
+     * @param o Observer to register.
+     * @return true = registered correctly, false = failed to register.
      */
     @Override
     public Boolean registerObserver(IObserver o) {
@@ -504,9 +532,9 @@ public class PriceCollector implements ISubject {
     }
 
     /**
-     * 
-     * @param o
-     * @return 
+     * Remove parameter Observer from the Observer List.
+     * @param o Observer to be removed.
+     * @return true = Observer successfully removed, false = failed to remove.
      */
     @Override
     public Boolean removeObserver(IObserver o) {
@@ -520,7 +548,7 @@ public class PriceCollector implements ISubject {
     }
 
     /**
-     * 
+     * Notify each Observer to update itself due to a change of situation.
      */
     @Override
     public void notifyObservers() {

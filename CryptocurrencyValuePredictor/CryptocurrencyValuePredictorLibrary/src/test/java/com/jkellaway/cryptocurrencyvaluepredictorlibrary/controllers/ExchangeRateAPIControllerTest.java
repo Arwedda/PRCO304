@@ -120,6 +120,22 @@ public class ExchangeRateAPIControllerTest {
         assertEquals(rate2.getTimestamp(), rates[1].getTimestamp());
         assertEquals(rate2.getValue(), rates[1].getValue());
         
+        /**
+         * IF FAILS REPLACE WITH:
+            assertEquals(rate.getCurrency_id(), rates[1].getCurrency_id());
+            assertEquals(rate.getGrowth(), rates[1].getGrowth());
+            assertEquals(rate.getLDTTimestamp(), rates[1].getLDTTimestamp());
+            assertEquals(rate.getLastTrade(), rates[1].getLastTrade());
+            assertEquals(rate.getTimestamp(), rates[1].getTimestamp());
+            assertEquals(rate.getValue(), rates[1].getValue());
+            assertEquals(rate2.getCurrency_id(), rates[0].getCurrency_id());
+            assertEquals(rate2.getGrowth(), rates[0].getGrowth());
+            assertEquals(rate2.getLDTTimestamp(), rates[0].getLDTTimestamp());
+            assertEquals(rate2.getLastTrade(), rates[0].getLastTrade());
+            assertEquals(rate2.getTimestamp(), rates[0].getTimestamp());
+            assertEquals(rate2.getValue(), rates[0].getValue());
+         */
+        
         //Also testing delete
         controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id() + "/" + rate.getLDTTimestamp());
         controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate2.getCurrency_id() + "/" + rate2.getLDTTimestamp());;
@@ -208,6 +224,21 @@ public class ExchangeRateAPIControllerTest {
         assertEquals(rate2.getLastTrade(), rates[1].getLastTrade());
         assertEquals(rate2.getTimestamp(), rates[1].getTimestamp());
         assertEquals(rate2.getValue(), rates[1].getValue());
+        /**
+         * IF FAILS REPLACE WITH:
+            assertEquals(rate.getCurrency_id(), rates[1].getCurrency_id());
+            assertEquals(rate.getGrowth(), rates[1].getGrowth());
+            assertEquals(rate.getLDTTimestamp(), rates[1].getLDTTimestamp());
+            assertEquals(rate.getLastTrade(), rates[1].getLastTrade());
+            assertEquals(rate.getTimestamp(), rates[1].getTimestamp());
+            assertEquals(rate.getValue(), rates[1].getValue());
+            assertEquals(rate2.getCurrency_id(), rates[0].getCurrency_id());
+            assertEquals(rate2.getGrowth(), rates[0].getGrowth());
+            assertEquals(rate2.getLDTTimestamp(), rates[0].getLDTTimestamp());
+            assertEquals(rate2.getLastTrade(), rates[0].getLastTrade());
+            assertEquals(rate2.getTimestamp(), rates[0].getTimestamp());
+            assertEquals(rate2.getValue(), rates[0].getValue());
+         */
         
         //Also testing delete
         controller.delete(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION + "/" + rate.getCurrency_id() + "/" + rate.getLDTTimestamp());

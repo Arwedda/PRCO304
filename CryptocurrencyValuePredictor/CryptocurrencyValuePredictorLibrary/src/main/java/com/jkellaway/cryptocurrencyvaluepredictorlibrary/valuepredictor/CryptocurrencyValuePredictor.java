@@ -58,7 +58,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
      * Gets the active instance of CryptocurrencyValuePredictor. Allows the user
      * to create an instance if one doesn't exist, forcing the instance to 
      * follow the Singleton Design pattern. 
-     * @return Single initiation of CryptocurrencyValuePredictor
+     * @return Single initiation of CryptocurrencyValuePredictor.
      */
     public static CryptocurrencyValuePredictor getInstance(){
         if (instance == null){
@@ -67,22 +67,42 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return instance;
     }
 
+    /**
+     * Gets the current Currency data stored in the PriceCollector class.
+     * @return The current Currency data.
+     */
     public Currency[] getCurrencies() {
         return priceCollector.getCurrencies();
     }
 
+    /**
+     * Sets the Currency data stored in the PriceCollector class.
+     * @param currencies The new Currency data.
+     */
     private void setCurrencies(Currency[] currencies) {
         this.priceCollector.setCurrencies(currencies);
     }
 
+    /**
+     * Gets the PriceCollector.
+     * @return The PriceCollector.
+     */
     public PriceCollector getPriceCollector() {
         return priceCollector;
     }
 
+    /**
+     * Gets the user's Trader.
+     * @return The user's Trader.
+     */
     public Trader getTrader() {
         return trader;
     }
     
+    /**
+     * Performs initial benchmarking of each Trader strategy. This allows the 
+     * end user to see how strategies are performing in the current market.
+     */
     private void initialBenchmark(){
         best.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
         worst.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
@@ -95,6 +115,10 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         }
     }
     
+    /**
+     * Updates benchmarking of each Trader strategy and performs actions for the 
+     * user's Trader.
+     */
     private void trade() {
         trader.autoTrade(getCurrencies());
         best.tradeBenchmark(getCurrencies());
@@ -108,41 +132,85 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         }
     }
     
+    /**
+     * Gets the Trader with the best possible performance. (Requires knowledge 
+     * of future prices).
+     * @return Trader with the best possible performance.
+     */
     public Trader getBest() {
         return best;
     }
 
+    /**
+     * Gets the Trader with the worst possible performance. (Requires knowledge 
+     * of future prices).
+     * @return Trader with the worst possible performance.
+     */
     public Trader getWorst() {
         return worst;
     }
-
+    
+    /**
+     * Gets a List of Traders with the hold strategies. (One trade to their
+     * desired Currency).
+     * @return Traders with hold strategy.
+     */
     public Trader[] getHolders() {
         return holders;
     }
 
+    /**
+     * Gets a List of Traders with GOFAI strategies with a HoldMode of USD.
+     * @return Traders using GOFAI + HoldMode USD.
+     */
     public Trader[] getGOFAITradersUSD() {
         return GOFAITradersUSD;
     }
 
+    /**
+     * Gets a List of Traders with GOFAI strategies with a HoldMode of 
+     * Cryptocurrency.
+     * @return Traders using GOFAI + HoldMode Cryptocurrency.
+     */
     public Trader[] getGOFAITradersHold() {
         return GOFAITradersHold;
     }
     
+    /**
+     * Gets the current historic price collection lap.
+     * @return The current historic price collection lap.
+     */
     public int getLap() {
         return priceCollector.getLap();
     }
     
-    public void startTrading(boolean gofai, int tradeModeIndex, Double startValue, boolean holdUSD, String apiKey) {
+    /**
+     * Initialises the user's Trader.
+     * @param gofai true - GOFAI, false - NeuralNetwork
+     * @param tradeModeNum TradeMode strategy number (array index + 1)
+     * @param startValue The initial Wallet value in USD.
+     * @param holdUSD true - HoldMode.USD, false - HoldMode.CRYPTOCURRENCY
+     * @param apiKey User's GDAX API key to allow REAL trading.
+     */
+    public void startTrading(boolean gofai, int tradeModeNum, Double startValue, boolean holdUSD, String apiKey) {
         TradeMode tradeMode = (gofai ? TradeMode.GOFAI : TradeMode.NEURALNETWORK);
         HoldMode holdMode =  (holdUSD ? HoldMode.USD : HoldMode.CRYPTOCURRENCY);
         System.out.println(apiKey);
-        trader = new Trader("USD", startValue, tradeMode, tradeModeIndex, holdMode);
+        trader = new Trader("USD", startValue, tradeMode, tradeModeNum, holdMode);
     }
     
+    /**
+     * Stops the user's Trader from trading.
+     */
     public void stopTrading() {
         trader.setTradeMode(TradeMode.MANUAL);
     }
 
+    /**
+     * Adds the parameter Observer to the Observer List.
+     * @param o Observer to register.
+     * @return true = registered correctly, false = failed to register.
+     */
     @Override
     public Boolean registerObserver(IObserver o) {
         Boolean blnAdded = false;
@@ -157,6 +225,11 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return blnAdded;
     }
 
+    /**
+     * Remove parameter Observer from the Observer List.
+     * @param o Observer to be removed.
+     * @return true = Observer successfully removed, false = failed to remove.
+     */
     @Override
     public Boolean removeObserver(IObserver o) {
         Boolean blnRemoved = false;
@@ -168,6 +241,9 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         return blnRemoved;
     }
 
+    /**
+     * Notify each Observer to update itself due to a change of situation.
+     */
     @Override
     public void notifyObservers() {
         if (this.observers != null && 0 < this.observers.size()) {
@@ -177,15 +253,18 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         }    
     }
 
+    /**
+     * Updates the CryptocurrencyValuePredictor based on ExchangeRates being 
+     * updated by the PriceCollector. Also notifies the GUI so that it is also
+     * updated.
+     */
     @Override
     public void update() {
         if (priceCollector.getLap() == 3) {
-            setCurrencies(GOFAIPredictor.initialPredictions(getCurrencies()));
-            priceCollector.benchmarkComplete(getCurrencies());
+            priceCollector.benchmarkComplete(GOFAIPredictor.initialPredictions(getCurrencies()));
             initialBenchmark();
         } else if (priceCollector.getLap() == -1) {
             setCurrencies(GOFAIPredictor.singlePrediction(getCurrencies()));
-            priceCollector.setCurrencies(getCurrencies());
             trade();
         }
         notifyObservers();

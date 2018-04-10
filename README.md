@@ -8,4 +8,3 @@ Known Issues:
 PriceCollector
 Need to switch off historic collection after lap 2
 [Database mode] PUT stops GUI visibility
-Both holdUSD and holdCrypto are making the same profit/loss - investigate
