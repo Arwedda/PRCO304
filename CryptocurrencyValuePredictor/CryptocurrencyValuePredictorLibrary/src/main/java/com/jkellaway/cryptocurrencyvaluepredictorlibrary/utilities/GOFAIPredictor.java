@@ -115,6 +115,7 @@ public class GOFAIPredictor {
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             values.add(rates[highestIndex - i].getGrowth());
             predictions[i] = MathsHelper.mean(values.toArray(new Double[values.size()]));
+            predictions[i] = MathsHelper.roundToFourDP(predictions[i]);
         }
         return predictions;
     }

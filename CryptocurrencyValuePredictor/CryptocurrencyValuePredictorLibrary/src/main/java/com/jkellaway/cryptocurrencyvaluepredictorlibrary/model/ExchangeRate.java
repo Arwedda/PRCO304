@@ -7,6 +7,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.model;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.LocalDateTimeHelper;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
 import java.time.LocalDateTime;
 
 /**
@@ -235,6 +236,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     public void calculateGrowth(Double previousValue) {
         try {
             this.growth = ((this.value - previousValue) / previousValue) * 100;
+            this.growth = MathsHelper.roundToFourDP(this.growth);
         } catch (ArithmeticException e){
             System.out.println("[INFO] Growth from 0 to " + getValue() + " can't be calculated.");
             this.growth = null;

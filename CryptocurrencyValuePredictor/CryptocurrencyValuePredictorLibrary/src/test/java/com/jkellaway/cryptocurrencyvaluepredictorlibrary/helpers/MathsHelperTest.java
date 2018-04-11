@@ -64,4 +64,15 @@ public class MathsHelperTest {
     public void testMin() {
         assertEquals(1.1, MathsHelper.min(doubles), TestGlobals.DELTA);
     }
+
+    @Test
+    public void testRoundToFourDP() {
+        Double up = 0.12345;
+        Double down = 6.54321;
+        assertEquals(0.1235, MathsHelper.roundToFourDP(up), TestGlobals.DELTA);
+        assertEquals(6.5432, MathsHelper.roundToFourDP(down), TestGlobals.DELTA);
+        assertNull(MathsHelper.roundToFourDP(null));
+        up = 0.05;
+        assertEquals(0.0500, MathsHelper.roundToFourDP(up), TestGlobals.DELTA);
+    }
 }

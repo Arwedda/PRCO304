@@ -42,6 +42,10 @@ public class PriceCollectorTest implements IObserver {
 
     @Before
     public void setUp() {
+        if (pc.getLap() != 1) {
+            pc = new PriceCollector();
+            pc.initialise(TestGlobals.REQUIREDRATES);
+        }
     }
 
     @After

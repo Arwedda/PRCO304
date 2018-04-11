@@ -15,9 +15,13 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.TableConfigurer
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.TextBoxHelper;
 import java.awt.Desktop;
 import java.net.URI;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Locale;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -30,6 +34,7 @@ import javax.swing.table.DefaultTableModel;
 public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implements IObserver {
     private static CryptocurrencyValuePredictor cryptocurrencyValuePredictor;
     private String previousHold;
+    private long timeDifference;
             
     /**
      * Creates new form CryptocurrencyValuePredictor
@@ -43,6 +48,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         cryptocurrencyValuePredictor = CryptocurrencyValuePredictor.getInstance();
         cryptocurrencyValuePredictor.registerObserver(this);
         
+        LocalDateTime sys = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
+        LocalDateTime utc = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
+        timeDifference = ChronoUnit.HOURS.between(utc, sys);
+        
+        //Interface
         tglbtnTrade.setText("Need Data");
         tglbtnTrade.setEnabled(false);
         lblTradeStartTime.setText("N/A");
@@ -76,14 +86,16 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             String col[] = {"Currency", "Value (USD)", "Change (%)", "GOFAI Worst Prediction (%)", "GOFAI Best Prediction (%)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
-
+            DecimalFormat df = new DecimalFormat("0.0000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+            df.setMaximumFractionDigits(340); // 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
+            
             for (Currency currency : cryptocurrencyValuePredictor.getCurrencies()){
                 String name = currency.getName();
                 ExchangeRate rate = currency.getRate();
                 String value = StringHelper.doubleToCurrencyString(rate.getValue());
-                Double change = rate.getGrowth();
-                Double GOFAIWorst = MathsHelper.min(rate.getGofaiNextGrowth());
-                Double GOFAIBest = MathsHelper.max(rate.getGofaiNextGrowth());
+                String change = df.format(rate.getGrowth());
+                String GOFAIWorst = df.format(MathsHelper.min(rate.getGofaiNextGrowth()));
+                String GOFAIBest = df.format(MathsHelper.max(rate.getGofaiNextGrowth()));
                 Object[] row = {name, value, change, GOFAIWorst, GOFAIBest};
                 tableModel.addRow(row);
             }
@@ -99,10 +111,10 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             Currency[] currencies = cryptocurrencyValuePredictor.getCurrencies();
             Trader[] gofaiTraders = ArrayHelper.merge(cryptocurrencyValuePredictor.getGOFAITradersHold(), cryptocurrencyValuePredictor.getGOFAITradersUSD());
             LocalDateTime startTime = cryptocurrencyValuePredictor.getPriceCollector().getFirstRelevantRate();
-            int maxTrades = (int) ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()) - Globals.NUMBEROFPREDICTIONS;
+            long maxTrades = ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()) - (Globals.NUMBEROFPREDICTIONS + (60 * timeDifference));
             double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(currencies);
             double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(currencies);
-            this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime));
+            this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime.plusHours(timeDifference)));
             this.jlblMaxTrades.setText(String.valueOf(maxTrades));
             this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
             this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst));

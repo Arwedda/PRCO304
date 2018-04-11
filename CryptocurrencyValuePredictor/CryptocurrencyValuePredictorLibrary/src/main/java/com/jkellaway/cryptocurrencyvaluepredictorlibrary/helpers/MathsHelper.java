@@ -5,6 +5,9 @@
  */
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /**
  *
  * @author jkell
@@ -82,6 +85,20 @@ public class MathsHelper {
                 }
             }
             return min;
+        }
+        return null;
+    }
+    
+    /**
+     * Rounds a parameter Double value to 4 decimal places.
+     * @param toRound The number to round to 4DP.
+     * @return The rounded number.
+     */
+    public static Double roundToFourDP(Double toRound) {
+        if (toRound != null) {
+            DecimalFormat df = new DecimalFormat("0.0000");
+            df.setRoundingMode(RoundingMode.HALF_UP);
+            return Double.parseDouble(df.format(toRound));
         }
         return null;
     }

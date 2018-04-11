@@ -6,6 +6,7 @@
 package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
 
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.Globals;
+import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.MathsHelper;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.ExchangeRate;
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.testglobals.TestGlobals;
@@ -118,8 +119,8 @@ public class GOFAIPredictorTest {
                     for (int k = 0; k < Globals.NUMBEROFPREDICTIONS; k++) {
                         decGrowth += decRates.get(j - (k + 1)).getGrowth();
                         groGrowth += groRates.get(j - (k + 1)).getGrowth();
-                        assertEquals(decGrowth / (k + 1), decRates.get(j).getGofaiNextGrowth()[k], TestGlobals.DELTA);
-                        assertEquals(groGrowth / (k + 1), groRates.get(j).getGofaiNextGrowth()[k], TestGlobals.DELTA);
+                        assertEquals(MathsHelper.roundToFourDP(decGrowth / (k + 1)), decRates.get(j).getGofaiNextGrowth()[k], TestGlobals.DELTA);
+                        assertEquals(MathsHelper.roundToFourDP(groGrowth / (k + 1)), groRates.get(j).getGofaiNextGrowth()[k], TestGlobals.DELTA);
                     }
                 }
             }
@@ -143,8 +144,8 @@ public class GOFAIPredictorTest {
             for (int j = 0; j < Globals.NUMBEROFPREDICTIONS; j++) {
                 decGrowth += decRates.get(decRates.size() - (j + 1)).getGrowth();
                 groGrowth += groRates.get(groRates.size() - (j + 1)).getGrowth();
-                assertEquals(decGrowth / (j + 1), decRates.get(decRates.size() - 1).getGofaiNextGrowth()[j], TestGlobals.DELTA);
-                assertEquals(groGrowth / (j + 1), groRates.get(groRates.size() - 1).getGofaiNextGrowth()[j], TestGlobals.DELTA);
+                assertEquals(MathsHelper.roundToFourDP(decGrowth / (j + 1)), decRates.get(decRates.size() - 1).getGofaiNextGrowth()[j], TestGlobals.DELTA);
+                assertEquals(MathsHelper.roundToFourDP(groGrowth / (j + 1)), groRates.get(groRates.size() - 1).getGofaiNextGrowth()[j], TestGlobals.DELTA);
             }
         }
     }

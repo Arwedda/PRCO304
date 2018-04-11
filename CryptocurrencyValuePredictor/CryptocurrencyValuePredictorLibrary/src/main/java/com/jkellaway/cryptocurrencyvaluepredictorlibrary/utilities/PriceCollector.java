@@ -166,8 +166,9 @@ public class PriceCollector implements ISubject {
                 } else {
                     if (gapsFilled()){
                         calculateHistoricGrowth();
+                    } else {
+                        getHistoricPrices();
                     }
-                    getHistoricPrices();
                 }
             }
             
