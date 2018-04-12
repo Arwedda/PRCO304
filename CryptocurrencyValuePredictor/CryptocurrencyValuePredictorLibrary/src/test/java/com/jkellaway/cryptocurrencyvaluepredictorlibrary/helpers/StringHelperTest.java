@@ -18,7 +18,7 @@ import org.junit.Test;
  */
 public class StringHelperTest {
     private static String s1, s2;
-    private static Double d1, d2, d3;
+    private static Double d1, d2, d3, d4, d5, d6;
     
     public StringHelperTest() {
     }
@@ -29,7 +29,10 @@ public class StringHelperTest {
         s2 = "abcdefghijklmnopqrstuvwxyz9876543210";
         d1 = 07.77;
         d2 = 70.07;
-        d3 = 77.70;
+        d3 = 77.701;
+        d4 = 1.0;
+        d5 = 2.0;
+        d6 = 10.0;
     }
 
     @AfterClass
@@ -56,8 +59,19 @@ public class StringHelperTest {
 
     @Test
     public void testDoubleToCurrencyString() {
-        assertEquals("7.77", StringHelper.doubleToCurrencyString(d1));
-        assertEquals("70.07", StringHelper.doubleToCurrencyString(d2));
-        assertEquals("77.70", StringHelper.doubleToCurrencyString(d3));
+        assertEquals("7.77", StringHelper.doubleToCurrencyString(d1, 2));
+        assertEquals("70.07", StringHelper.doubleToCurrencyString(d2, 2));
+        assertEquals("77.70", StringHelper.doubleToCurrencyString(d3, 2));
+        assertEquals("77.701", StringHelper.doubleToCurrencyString(d3, 3));
+    }
+
+    @Test
+    public void testNaturalNumberCompare() {
+        assertEquals(-1, StringHelper.naturalNumberCompare(String.valueOf(d4), String.valueOf(d5)));
+        assertEquals(-1, StringHelper.naturalNumberCompare(String.valueOf(d4), String.valueOf(d6)));
+        assertEquals(-1, StringHelper.naturalNumberCompare(String.valueOf(d5), String.valueOf(d6)));
+        assertEquals(1, StringHelper.naturalNumberCompare(String.valueOf(d5), String.valueOf(d4)));
+        assertEquals(1, StringHelper.naturalNumberCompare(String.valueOf(d6), String.valueOf(d4)));
+        assertEquals(1, StringHelper.naturalNumberCompare(String.valueOf(d6), String.valueOf(d5)));
     }
 }

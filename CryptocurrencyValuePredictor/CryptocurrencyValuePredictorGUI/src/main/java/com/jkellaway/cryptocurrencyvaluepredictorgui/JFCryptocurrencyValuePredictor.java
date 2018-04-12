@@ -15,13 +15,10 @@ import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.TableConfigurer
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers.TextBoxHelper;
 import java.awt.Desktop;
 import java.net.URI;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Locale;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -86,17 +83,15 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             String col[] = {"Currency", "Value (USD)", "Change (%)", "GOFAI Worst Prediction (%)", "GOFAI Best Prediction (%)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
-            DecimalFormat df = new DecimalFormat("0.0000", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-            df.setMaximumFractionDigits(340); // 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
-            
+            Object[] row;
             for (Currency currency : cryptocurrencyValuePredictor.getCurrencies()){
                 String name = currency.getName();
                 ExchangeRate rate = currency.getRate();
-                String value = StringHelper.doubleToCurrencyString(rate.getValue());
-                String change = df.format(rate.getGrowth());
-                String GOFAIWorst = df.format(MathsHelper.min(rate.getGofaiNextGrowth()));
-                String GOFAIBest = df.format(MathsHelper.max(rate.getGofaiNextGrowth()));
-                Object[] row = {name, value, change, GOFAIWorst, GOFAIBest};
+                String value = StringHelper.doubleToCurrencyString(rate.getValue(), 2);
+                String change = (rate.getGrowth() != null) ? StringHelper.doubleToCurrencyString(rate.getGrowth(), 4) : "";
+                String GOFAIWorst = (rate.getGofaiNextGrowth()[0] != null) ? StringHelper.doubleToCurrencyString(MathsHelper.min(rate.getGofaiNextGrowth()), 4) : "";
+                String GOFAIBest = (rate.getGofaiNextGrowth()[0] != null) ? StringHelper.doubleToCurrencyString(MathsHelper.max(rate.getGofaiNextGrowth()), 4) : "";
+                row = new Object[] {name, value, change, GOFAIWorst, GOFAIBest};
                 tableModel.addRow(row);
             }
             this.jtblValues.setModel(table.getModel());
@@ -111,76 +106,79 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             Currency[] currencies = cryptocurrencyValuePredictor.getCurrencies();
             Trader[] gofaiTraders = ArrayHelper.merge(cryptocurrencyValuePredictor.getGOFAITradersHold(), cryptocurrencyValuePredictor.getGOFAITradersUSD());
             LocalDateTime startTime = cryptocurrencyValuePredictor.getPriceCollector().getFirstRelevantRate();
-            long maxTrades = ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()) - (Globals.NUMBEROFPREDICTIONS + (60 * timeDifference));
+            long maxTrades = ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()) - (1 + Globals.NUMBEROFPREDICTIONS + (60 * timeDifference));
             double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(currencies);
             double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(currencies);
-            this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime.plusHours(timeDifference)));
-            this.jlblMaxTrades.setText(String.valueOf(maxTrades));
-            this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best));
-            this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst));
-            
             String col[] = {"Strategy", "Starting", "Final Holding", "Final Value (USD)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
-
+            Wallet wallet;
+            String strategy;
+            String finalValue;
+            String starting;
+            String finalHolding;
+            Object[] row;
             for (Trader trader : cryptocurrencyValuePredictor.getHolders()){
-                Wallet wallet = trader.getWallet();
-                String strategy = "Hold " + trader.getHoldMode();
-                String finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies));
-                String starting;
-                String finalHolding = wallet.getValue() + " " + wallet.getHoldingID();
+                wallet = trader.getWallet();
+                strategy = "Hold " + trader.getHoldMode();
+                finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies), 2);
+                finalHolding = StringHelper.doubleToCurrencyString(wallet.getValue(), 6) + " " + wallet.getHoldingID();
                 switch (wallet.getHoldingID()) {
                     case "BCH":
-                        starting = wallet.getStartingValues()[0] + " BCH";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[0], 6) + " BCH";
                         break;
                     case "BTC":
-                        starting = wallet.getStartingValues()[1] + " BTC";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[1], 6) + " BTC";
                         break;
                     case "ETH":
-                        starting = wallet.getStartingValues()[2] + " ETH";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[2], 6) + " ETH";
                         break;
                     case "LTC":
-                        starting = wallet.getStartingValues()[3] + " LTC";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[3], 6) + " LTC";
                         break;
                     default:
                         starting = "100.00 USD";
+                        finalHolding = StringHelper.doubleToCurrencyString(wallet.getValue(), 2) + " " + wallet.getHoldingID();
                         break;
                 }
-                
-                Object[] row = {strategy, starting, finalHolding, finalValue};
+                row = new Object[] {strategy, starting, finalHolding, finalValue};
                 tableModel.addRow(row);
             }
             
             for (int i = 0; i < gofaiTraders.length; i++) {
-                Wallet wallet = gofaiTraders[i].getWallet();
-                String strategy = "GOFAI " + ((i % 20) + 1) + " & Hold " + gofaiTraders[i].getHoldMode();
-                String finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies));
-                String starting;
-                String finalHolding = wallet.getValue() + " " + wallet.getHoldingID();
+                wallet = gofaiTraders[i].getWallet();
+                strategy = "GOFAI " + ((i % 20) + 1) + " & Hold " + gofaiTraders[i].getHoldMode();
+                finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies), 2);
+                finalHolding = StringHelper.doubleToCurrencyString(wallet.getValue(), 6) + " " + wallet.getHoldingID();
                 switch (wallet.getHoldingID()) {
                     case "BCH":
-                        starting = wallet.getStartingValues()[0] + " BCH";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[0], 6) + " BCH";
                         break;
                     case "BTC":
-                        starting = wallet.getStartingValues()[1] + " BTC";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[1], 6) + " BTC";
                         break;
                     case "ETH":
-                        starting = wallet.getStartingValues()[2] + " ETH";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[2], 6) + " ETH";
                         break;
                     case "LTC":
-                        starting = wallet.getStartingValues()[3] + " LTC";
+                        starting = StringHelper.doubleToCurrencyString(wallet.getStartingValues()[3], 6) + " LTC";
                         break;
                     default:
                         starting = "100.00 USD";
+                        finalHolding = StringHelper.doubleToCurrencyString(wallet.getValue(), 2) + " " + wallet.getHoldingID();
                         break;
                 }
                 
-                Object[] row = {strategy, starting, finalHolding, finalValue};
+                row = new Object[] {strategy, starting, finalHolding, finalValue};
                 tableModel.addRow(row);
             }
             
             this.jtblPredictions.setModel(table.getModel());
             TableConfigurer.configureTable(this.jtblPredictions);
+            this.jlblFirstTradeTime.setText(LocalDateTimeHelper.toString(startTime.plusHours(timeDifference)));
+            this.jlblMaxTrades.setText(String.valueOf(maxTrades));
+            this.jlblBestPerformance.setText(StringHelper.doubleToCurrencyString(best, 2));
+            this.jlblWorstPerformance.setText(StringHelper.doubleToCurrencyString(worst, 2));
         } catch (Exception e) {
             System.out.println("[INFO] Error " + e);
         }
@@ -197,6 +195,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         btngrpTradeMode = new javax.swing.ButtonGroup();
         btngrpHoldMode = new javax.swing.ButtonGroup();
+        jpnlInvestmentProtection = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
         pnlHome = new javax.swing.JPanel();
         jspValues = new javax.swing.JScrollPane();
         jtblValues = new javax.swing.JTable();
@@ -226,8 +226,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblCurrentValue = new javax.swing.JLabel();
         lblCurrentProfit = new javax.swing.JLabel();
         lblProfit = new javax.swing.JLabel();
-        jpnlInvestmentProtection = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
         jpnlGOFAI = new javax.swing.JPanel();
         jspPredictions = new javax.swing.JScrollPane();
         jtblPredictions = new javax.swing.JTable();
@@ -250,6 +248,25 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblContactDetails2 = new javax.swing.JLabel();
         lblContactDetails3 = new javax.swing.JLabel();
         lblContactDetails4 = new javax.swing.JLabel();
+
+        jLabel2.setText("Coming Soon...");
+
+        javax.swing.GroupLayout jpnlInvestmentProtectionLayout = new javax.swing.GroupLayout(jpnlInvestmentProtection);
+        jpnlInvestmentProtection.setLayout(jpnlInvestmentProtectionLayout);
+        jpnlInvestmentProtectionLayout.setHorizontalGroup(
+            jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
+                .addGap(326, 326, 326)
+                .addComponent(jLabel2)
+                .addContainerGap(425, Short.MAX_VALUE))
+        );
+        jpnlInvestmentProtectionLayout.setVerticalGroup(
+            jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
+                .addGap(200, 200, 200)
+                .addComponent(jLabel2)
+                .addContainerGap(252, Short.MAX_VALUE))
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Cryptocurrency Value Predictor");
@@ -536,27 +553,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         jTabbedPane1.addTab("Trading", jpnlTrading);
 
-        jLabel2.setText("Coming Soon...");
-
-        javax.swing.GroupLayout jpnlInvestmentProtectionLayout = new javax.swing.GroupLayout(jpnlInvestmentProtection);
-        jpnlInvestmentProtection.setLayout(jpnlInvestmentProtectionLayout);
-        jpnlInvestmentProtectionLayout.setHorizontalGroup(
-            jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
-                .addGap(326, 326, 326)
-                .addComponent(jLabel2)
-                .addContainerGap(425, Short.MAX_VALUE))
-        );
-        jpnlInvestmentProtectionLayout.setVerticalGroup(
-            jpnlInvestmentProtectionLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jpnlInvestmentProtectionLayout.createSequentialGroup()
-                .addGap(200, 200, 200)
-                .addComponent(jLabel2)
-                .addContainerGap(252, Short.MAX_VALUE))
-        );
-
-        jTabbedPane1.addTab("Investment Protection", jpnlInvestmentProtection);
-
         jtblPredictions.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null}
@@ -822,15 +818,14 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 } else {
                     if (tglbtnTrade.isSelected()){
                         startTrading(tradeAmount);
-                        tradingInterface();
+                        initTradingInterface();
                         JOptionPane.showMessageDialog(this, "Trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
                     } else {
                         cryptocurrencyValuePredictor.stopTrading();
-                        toggleEnabled();
-                        txtStartAmount.setText(StringHelper.doubleToCurrencyString(cryptocurrencyValuePredictor.getTrader().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies())));
-                        tglbtnTrade.setText("Start Trading");
+                        txtStartAmount.setText(StringHelper.doubleToCurrencyString(cryptocurrencyValuePredictor.getTrader().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies()), 2));
                         JOptionPane.showMessageDialog(this, "Stopped trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
                     }
+                    toggleEnabled();
                 }
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Invalid starting trade value", "Invalid Request!", JOptionPane.WARNING_MESSAGE);
@@ -860,37 +855,30 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         cryptocurrencyValuePredictor.startTrading(gofai, tradeModeIndex, tradeAmount, holdUSD, apiKey);
     }
     
-    private void tradingInterface() {
-        toggleEnabled();
+    private void initTradingInterface() {
         Wallet wallet = cryptocurrencyValuePredictor.getTrader().getWallet();
         previousHold = wallet.getHoldingID();
-        Double usdValue = wallet.getUSDValue(cryptocurrencyValuePredictor.getCurrencies());
         String startTime = LocalDateTimeHelper.toString(LocalDateTimeHelper.startOfMinute(LocalDateTime.now()));
         Integer trades = (previousHold.equals("USD")) ? 0 : 1;
-        String currentValue = StringHelper.doubleToCurrencyString(wallet.getValue()) + " " + wallet.getHoldingID();
-        String profit = StringHelper.doubleToCurrencyString(Double.parseDouble(txtStartAmount.getText()) - usdValue) + " USD";
-        if (trades == 1) {
-            currentValue += " || USD " + StringHelper.doubleToCurrencyString(usdValue);
-        }
         lblTradeStartTime.setText(startTime);
         lblTrades.setText(String.valueOf(trades));
-        lblCurrentValue.setText(currentValue);
-        lblProfit.setText(profit);
-        
-        tglbtnTrade.setText("Stop Trading");
+        updateTradingInterface();
     }
     
     private void updateTradingInterface() {
         Wallet wallet = cryptocurrencyValuePredictor.getTrader().getWallet();
-        Integer trades = (previousHold.equals(wallet.getHoldingID())) ? 0 : 1;
+        Integer trades = Integer.valueOf(lblTrades.getText()) + ((previousHold.equals(wallet.getHoldingID())) ? 0 : 1);
         previousHold = wallet.getHoldingID();
         Double usdValue = wallet.getUSDValue(cryptocurrencyValuePredictor.getCurrencies());
-        String currentValue = StringHelper.doubleToCurrencyString(wallet.getValue()) + " " + wallet.getHoldingID();
-        if (!previousHold.equals("USD")) {
-            currentValue += " || USD " + StringHelper.doubleToCurrencyString(usdValue);
+        Double prof = usdValue - Double.parseDouble(txtStartAmount.getText());
+        String profit = StringHelper.doubleToCurrencyString(prof, 2) + " USD";
+        String currentValue;
+        if (previousHold.equals("USD")) {
+            currentValue = StringHelper.doubleToCurrencyString(wallet.getValue(), 2) + " " + wallet.getHoldingID();
+        } else {
+            currentValue = StringHelper.doubleToCurrencyString(wallet.getValue(), 6) + " " + wallet.getHoldingID();
+            currentValue += " || USD " + StringHelper.doubleToCurrencyString(usdValue, 2);
         }
-        trades += Integer.valueOf(lblTrades.getText());
-        String profit = StringHelper.doubleToCurrencyString(usdValue - Double.parseDouble(txtStartAmount.getText())) + " USD";
         lblTrades.setText(String.valueOf(trades));
         lblCurrentValue.setText(currentValue);
         lblProfit.setText(profit);
@@ -903,6 +891,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         cbStrategy.setEnabled(!cbStrategy.isEnabled());
         rdbtnUSD.setEnabled(!rdbtnUSD.isEnabled());
         rdbtnCrypto.setEnabled(!rdbtnCrypto.isEnabled());
+        pwdAPIKey.setEnabled(!pwdAPIKey.isEnabled());
+        tglbtnTrade.setText((tglbtnTrade.getText().equals("Start Trading")) ? "Stop Trading" : "Start Trading");
     }
     
     private void openWebpage(String url) {

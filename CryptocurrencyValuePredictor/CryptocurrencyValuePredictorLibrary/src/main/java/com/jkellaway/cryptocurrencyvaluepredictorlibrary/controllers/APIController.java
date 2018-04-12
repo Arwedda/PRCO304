@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @author jkell
  */
 public abstract class APIController implements IAPIController {
-    final Gson gson;
+    public final Gson gson;
     
     /**
      * APIController constructor. Initialises Gson to be used to parse JSON by
