@@ -56,7 +56,7 @@ public class LocalDateTimeHelper {
      * @param datetime The LocalDateTime timestamp to convert.
      * @return The user-friendly String.
      */
-    public static String toString(LocalDateTime datetime){
+    public static String toString(LocalDateTime datetime) {
         String mins = ":";
         String hours = String.valueOf(datetime.getHour());
         if (hours.length() == 1) {

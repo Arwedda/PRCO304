@@ -36,7 +36,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     /**
      * Default constructor for CryptocurrencyValuePredictor
      */
-    protected CryptocurrencyValuePredictor(){
+    protected CryptocurrencyValuePredictor() {
         priceCollector = new PriceCollector();
         priceCollector.registerObserver(this);
         trader = new Trader();
@@ -60,7 +60,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
      * follow the Singleton Design pattern. 
      * @return Single initiation of CryptocurrencyValuePredictor.
      */
-    public static CryptocurrencyValuePredictor getInstance(){
+    public static CryptocurrencyValuePredictor getInstance() {
         if (instance == null){
             instance = new CryptocurrencyValuePredictor();
         }
@@ -103,7 +103,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
      * Performs initial benchmarking of each Trader strategy. This allows the 
      * end user to see how strategies are performing in the current market.
      */
-    private void initialBenchmark(){
+    private void initialBenchmark() {
         best.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
         worst.tradeBenchmark(getCurrencies(), Globals.READINGSREQUIRED, Globals.NUMBEROFPREDICTIONS + 1);
         for (Trader holder : holders) {
@@ -195,7 +195,7 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
     public void startTrading(boolean gofai, int tradeModeNum, Double startValue, boolean holdUSD, String apiKey) {
         TradeMode tradeMode = (gofai ? TradeMode.GOFAI : TradeMode.NEURALNETWORK);
         HoldMode holdMode =  (holdUSD ? HoldMode.USD : HoldMode.CRYPTOCURRENCY);
-        System.out.println(apiKey);
+        //System.out.println(apiKey);
         trader = new Trader("USD", startValue, tradeMode, tradeModeNum, holdMode);
     }
     

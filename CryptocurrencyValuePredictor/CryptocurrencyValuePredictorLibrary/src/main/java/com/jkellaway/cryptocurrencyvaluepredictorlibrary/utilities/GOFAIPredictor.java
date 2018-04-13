@@ -33,7 +33,7 @@ public class GOFAIPredictor {
      * @param currencies The Currency array to make predictions for.
      * @return The Currency array with newly calculated predictions.
      */
-    public static Currency[] initialPredictions(Currency[] currencies){
+    public static Currency[] initialPredictions(Currency[] currencies) {
         initialise();
         predict(currencies);
         return currencies;
@@ -42,7 +42,7 @@ public class GOFAIPredictor {
     /**
      * Initialises variables used to compare each algorithm's prediction accuracy.
      */
-    private static void initialise(){
+    private static void initialise() {
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] = 0.0;
             predictedChangeNo[i] = 0;
@@ -55,7 +55,7 @@ public class GOFAIPredictor {
      * Cycles each Currency in parameter and makes GOFAI predictions across it.
      * @param currencies The Currency array to make GOFAI predictions for.
      */
-    private static void predict(Currency[] currencies){
+    private static void predict(Currency[] currencies) {
         for (Currency currency : currencies){
             GOFAIPredictions(currency);
         }
@@ -71,7 +71,7 @@ public class GOFAIPredictor {
      * assess algorithm accuracy.
      * @param currency The Currency to make GOFAI predictions for.
      */
-    private static void GOFAIPredictions(Currency currency){
+    private static void GOFAIPredictions(Currency currency) {
         Double[] predictions;
         Double[] deltas;
         ExchangeRate[] allRates = currency.getRates().toArray(new ExchangeRate[currency.getRates().size()]);
@@ -108,14 +108,14 @@ public class GOFAIPredictor {
      * @param rates The ExchangeRates relevant to this prediction array.
      * @return The prediction array.
      */
-    private static Double[] predict(ExchangeRate[] rates){
+    private static Double[] predict(ExchangeRate[] rates) {
         Integer highestIndex = rates.length - 1;
         Double[] predictions = new Double[Globals.NUMBEROFPREDICTIONS];
         List<Double> values = new ArrayList<>();
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             values.add(rates[highestIndex - i].getGrowth());
             predictions[i] = MathsHelper.mean(values.toArray(new Double[values.size()]));
-            predictions[i] = MathsHelper.roundToFourDP(predictions[i]);
+            predictions[i] = MathsHelper.roundDP(predictions[i], 4);
         }
         return predictions;
     }
@@ -124,7 +124,7 @@ public class GOFAIPredictor {
      * Calculates and outputs the mean predictions of each algorithm and then the
      * difference between the prediction and the actual result (error).
      */
-    private static void GOFAIResults(){
+    private static void GOFAIResults() {
         for (int i = 0; i < Globals.NUMBEROFPREDICTIONS; i++){
             meanPredictedChange[i] /= predictedChangeNo[i];
             meanDeltas[i] /= deltaNo[i];

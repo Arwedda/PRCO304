@@ -236,7 +236,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
     public void calculateGrowth(Double previousValue) {
         try {
             this.growth = ((this.value - previousValue) / previousValue) * 100;
-            this.growth = MathsHelper.roundToFourDP(this.growth);
+            this.growth = MathsHelper.roundDP(this.growth, 4);
         } catch (ArithmeticException e){
             System.out.println("[INFO] Growth from 0 to " + getValue() + " can't be calculated.");
             this.growth = null;
@@ -250,7 +250,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
      * @param rate The value to compare with this ExchangeRate.
      * @return true - this is the minute after parameter, false - it is not.
      */
-    public boolean isMinuteAfter(ExchangeRate rate){
+    public boolean isMinuteAfter(ExchangeRate rate) {
         if (ldtTimestamp != null && rate != null && rate.getLDTTimestamp() != null) {
             return ldtTimestamp.minusMinutes(1).isEqual(rate.getLDTTimestamp());
         }
@@ -262,7 +262,7 @@ public class ExchangeRate implements Comparable<ExchangeRate> {
      * @param rate The value to compare with this ExchangeRate.
      * @return true - this is the same minute as parameter, false - it is not.
      */
-    public boolean isSameMinute(ExchangeRate rate){
+    public boolean isSameMinute(ExchangeRate rate) {
         if (ldtTimestamp != null && rate != null && rate.getLDTTimestamp() != null) {
             return ldtTimestamp.isEqual(rate.getLDTTimestamp());
         }

@@ -25,7 +25,7 @@ public class Trader {
     /**
      * Default Trader constructor.
      */
-    public Trader(){
+    public Trader() {
         gdaxAPIController = new GDAXAPIController();
         wallet = new Wallet(Globals.STARTINGUNITS, Globals.STARTINGVALUE);
         this.tradeMode = TradeMode.MANUAL;
@@ -41,7 +41,7 @@ public class Trader {
      * @param tradeModeIndex The TradeMode index selected for this Trader.
      * @param holdMode The HoldMode selected for this Trader.
      */
-    public Trader(String currencyID, Double value, TradeMode tradeMode, int tradeModeIndex, HoldMode holdMode){
+    public Trader(String currencyID, Double value, TradeMode tradeMode, int tradeModeIndex, HoldMode holdMode) {
         wallet = new Wallet(currencyID, value);
         this.tradeMode = tradeMode;
         this.tradeModeIndex = tradeModeIndex;
@@ -111,7 +111,7 @@ public class Trader {
      * convert the Wallet's holding Currency into the desired Currency.
      * @param currencies The Currency data to base the decision on.
      */
-    public void autoTrade(Currency[] currencies){
+    public void autoTrade(Currency[] currencies) {
         ExchangeRate desired = new ExchangeRate();
         Double growth = 0.0;
         Double predictedGrowth;
@@ -163,7 +163,7 @@ public class Trader {
      * @param numberOfReadings The number of prices to iterate over (and number of trades to perform)
      * @param numberOfPredictions The number of predictions made per strategy per price.
      */
-    public void tradeBenchmark(Currency[] currencies, Integer numberOfReadings, Integer numberOfPredictions){
+    public void tradeBenchmark(Currency[] currencies, Integer numberOfReadings, Integer numberOfPredictions) {
         int noOfCurrencies = currencies.length;
         ExchangeRate[] rates = new ExchangeRate[noOfCurrencies];
         ExchangeRate desired = new ExchangeRate();
@@ -332,7 +332,7 @@ public class Trader {
      * @param rates The available ExchangeRates at the time.
      * @return The ExchangeRate with the highest growth available.
      */
-    private ExchangeRate getHighestGrowth(ExchangeRate[] rates){
+    private ExchangeRate getHighestGrowth(ExchangeRate[] rates) {
         ExchangeRate best = new ExchangeRate();
         Double growth = 0.0;
         
@@ -350,7 +350,7 @@ public class Trader {
      * @param rates The available ExchangeRates at the time.
      * @return The ExchangeRate with the lowest growth available.
      */
-    private ExchangeRate getLowestGrowth(ExchangeRate[] rates){
+    private ExchangeRate getLowestGrowth(ExchangeRate[] rates) {
         ExchangeRate worst = new ExchangeRate();
         Double growth = 0.0;
         
@@ -369,7 +369,7 @@ public class Trader {
      * @param rates The available ExchangeRates at the time.
      * @return The ExchangeRate of the Currency desired by HoldMode.
      */
-    private ExchangeRate getRate(ExchangeRate[] rates){
+    private ExchangeRate getRate(ExchangeRate[] rates) {
         ExchangeRate desired = new ExchangeRate();
         
         for (ExchangeRate rate : rates){
@@ -389,7 +389,7 @@ public class Trader {
      * @param desired The desired Currency's current ExchangeRate.
      * @param rates The current ExchangeRates for each Currency.
      */
-    private void trade(ExchangeRate desired, ExchangeRate[] rates){
+    private void trade(ExchangeRate desired, ExchangeRate[] rates) {
         if (holdMode.equals(HoldMode.CRYPTOCURRENCY) && desired.getCurrency_id().equals("Unknown")) {
             return;
         }
@@ -472,7 +472,7 @@ public class Trader {
      * @param current The ExchangeRate of the current Currency held in the Wallet.
      * @param desired The ExchangeRate of the desired Currency.
      */
-    private void makeTrade(ExchangeRate current, ExchangeRate desired){
+    private void makeTrade(ExchangeRate current, ExchangeRate desired) {
         Double value = wallet.getValue();
         if (!current.getCurrency_id().equals(desired.getCurrency_id())) {
             if (!desired.getCurrency_id().equals("Unknown")) {

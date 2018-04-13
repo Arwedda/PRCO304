@@ -10,7 +10,7 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
  * @author jkell
  */
 public interface ISubject {
-    Boolean registerObserver(IObserver o);
-    Boolean removeObserver(IObserver o);
-    void notifyObservers();
+    public Boolean registerObserver(IObserver o);
+    public Boolean removeObserver(IObserver o);
+    public void notifyObservers();
 }

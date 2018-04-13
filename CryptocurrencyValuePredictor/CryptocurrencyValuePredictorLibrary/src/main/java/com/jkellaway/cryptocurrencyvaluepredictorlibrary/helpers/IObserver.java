@@ -10,5 +10,5 @@ package com.jkellaway.cryptocurrencyvaluepredictorlibrary.helpers;
  * @author jkell
  */
 public interface IObserver {
-    void update(); 
+    public void update(); 
 }

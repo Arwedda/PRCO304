@@ -18,7 +18,7 @@ public class Wallet {
     /**
      * Default Wallet constructor.
      */
-    public Wallet(){
+    public Wallet() {
         this.holdingID = "Unknown";
         this.value = null;
         this.startingValues = new Double[4];
@@ -30,7 +30,7 @@ public class Wallet {
      * @param holdingID The identifier for the Currency held in this Wallet.
      * @param value The amount of holdingID Currency held in this Wallet.
      */
-    public Wallet(String holdingID, Double value){
+    public Wallet(String holdingID, Double value) {
         this.holdingID = holdingID;
         this.value = value;
         this.startingValues = new Double[4];

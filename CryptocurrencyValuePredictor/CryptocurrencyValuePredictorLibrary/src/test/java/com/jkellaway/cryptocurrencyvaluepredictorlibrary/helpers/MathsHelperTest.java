@@ -69,10 +69,10 @@ public class MathsHelperTest {
     public void testRoundToFourDP() {
         Double up = 0.12345;
         Double down = 6.54321;
-        assertEquals(0.1235, MathsHelper.roundToFourDP(up), TestGlobals.DELTA);
-        assertEquals(6.5432, MathsHelper.roundToFourDP(down), TestGlobals.DELTA);
-        assertNull(MathsHelper.roundToFourDP(null));
+        assertEquals(0.1235, MathsHelper.roundDP(up, 4), TestGlobals.DELTA);
+        assertEquals(6.5432, MathsHelper.roundDP(down, 4), TestGlobals.DELTA);
+        assertNull(MathsHelper.roundDP(null, 4));
         up = 0.05;
-        assertEquals(0.0500, MathsHelper.roundToFourDP(up), TestGlobals.DELTA);
+        assertEquals(0.0500, MathsHelper.roundDP(up, 4), TestGlobals.DELTA);
     }
 }

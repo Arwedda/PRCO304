@@ -19,7 +19,7 @@ public class MathsHelper {
      * @param values The array of Doubles.
      * @return The mean.
      */
-    public static Double mean(Double[] values){
+    public static Double mean(Double[] values) {
         try {
             Double mean = 0.0;
                 for (Double value : values){
@@ -37,7 +37,7 @@ public class MathsHelper {
      * @param predictions Array of predicted values.
      * @return The differences between the predictions and the actual value.
      */
-    public static Double[] deltas(Double actual, Double[] predictions){
+    public static Double[] deltas(Double actual, Double[] predictions) {
         Double[] deltas = new Double[predictions.length];
         for (int i = 0; i < predictions.length; i++){
             try {
@@ -90,13 +90,18 @@ public class MathsHelper {
     }
     
     /**
-     * Rounds a parameter Double value to 4 decimal places.
-     * @param toRound The number to round to 4DP.
+     * Rounds a parameter Double value to numberOfDP decimal places.
+     * @param toRound The number to round.
+     * @param numberOfDP The number of decimal places to round to.
      * @return The rounded number.
      */
-    public static Double roundToFourDP(Double toRound) {
+    public static Double roundDP(Double toRound, int numberOfDP) {
+        String format = (0 < numberOfDP) ? "0." : "0";
         if (toRound != null) {
-            DecimalFormat df = new DecimalFormat("0.0000");
+            for (int i = 0; i < numberOfDP; i++) {
+                format += "0";
+            }
+            DecimalFormat df = new DecimalFormat(format);
             df.setRoundingMode(RoundingMode.HALF_UP);
             return Double.parseDouble(df.format(toRound));
         }

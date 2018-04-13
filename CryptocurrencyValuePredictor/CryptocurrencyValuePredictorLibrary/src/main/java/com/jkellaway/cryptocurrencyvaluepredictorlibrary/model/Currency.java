@@ -121,7 +121,7 @@ public class Currency {
      * Set the new ExchangeRate value, calculating growth if possible.
      * @param rate The new ExchangeRate.
      */
-    public void setValue(ExchangeRate rate){
+    public void setValue(ExchangeRate rate) {
         try {
             if (rate.getValue() < 0.0000000000000001){
                 rate.setValue(getRate().getValue());
@@ -174,7 +174,7 @@ public class Currency {
      * Get the last added historic ExchangeRate.
      * @return The last added historic ExchangeRate.
      */
-    private ExchangeRate getHistoricRate(){
+    private ExchangeRate getHistoricRate() {
         try {
             return historicRates.get(historicRates.size() - 1);
         } catch (Exception e){
@@ -233,7 +233,7 @@ public class Currency {
      * PriceCollector.
      * @return The list of Gaps to be filled.
      */
-    public List<Gap> getGaps(){
+    public List<Gap> getGaps() {
         return gaps;
     }
     
@@ -241,7 +241,7 @@ public class Currency {
      * The last (most recent) Gap in ExchangeRates that needs to be filled.
      * @return The current Gap to fill.
      */
-    public Gap getLastGap(){
+    public Gap getLastGap() {
         try {
             return gaps.get(gaps.size() - 1);
         } catch (Exception e) {
@@ -254,7 +254,7 @@ public class Currency {
      * placed at the beginning of the list and not sorted. The Gap is adjusted to
      * account for the ExchangeRates being removed from the historic List.
      */
-    public void gradualMerge(){
+    public void gradualMerge() {
         this.rates.addAll(0, historicRates);
         Gap gap = getLastGap();
         if (gap != null) {
@@ -277,7 +277,7 @@ public class Currency {
      * @param passedGap Whether the Gap has been passed or not.
      * @return true - no more useful data to collect, false - data worth harvesting
      */
-    public boolean dumpDuplicates(boolean passedGap){
+    public boolean dumpDuplicates(boolean passedGap) {
         List<ExchangeRate> toRemove = new ArrayList<>();
         for (ExchangeRate rate : rates){
             for (ExchangeRate rate2 : historicRates) {
@@ -348,7 +348,7 @@ public class Currency {
      * A full merge of historic ExchangeRates into current ExchangeRates - sorted
      * chronologically.
      */
-    public void mergeRates(){        
+    public void mergeRates() {        
         this.rates.addAll(0, historicRates);
         Collections.sort(rates);
         historicRates.clear();
@@ -362,7 +362,7 @@ public class Currency {
      * false - do not calculate growth (attempt another collection later)
      * @return Array of updated ExchangeRates.
      */
-    public ExchangeRate[] calculateGrowth(boolean calculateChange){
+    public ExchangeRate[] calculateGrowth(boolean calculateChange) {
         List<ExchangeRate> updatedRates = new ArrayList<>();
         for (int i = 1; i < rates.size(); i++){
             if (rates.get(i).isMinuteAfter(rates.get(i - 1))){
@@ -405,7 +405,7 @@ public class Currency {
      * Get the number of historic ExchangeRates stored for this Currency.
      * @return Integer value of historic ExchangeRates stored for this Currency.
      */
-    public int noOfHistoricRates(){
+    public int noOfHistoricRates() {
         return this.historicRates.size();
     }
 }
