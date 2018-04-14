@@ -8,4 +8,3 @@ Known Issues:
 PriceCollector
 Need to switch off historic collection after lap 2
 [Database mode] PUT stops GUI visibility
-Trading profit seems to not be shown correctly [live trading]
