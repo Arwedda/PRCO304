@@ -361,7 +361,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addContainerGap())
         );
 
-        lblTradeAmount.setText("Start Amount:");
+        lblTradeAmount.setText("Start Amount (USD):");
 
         txtStartAmount.setText("0.00");
         txtStartAmount.setMaximumSize(new java.awt.Dimension(28, 20));
@@ -423,10 +423,13 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             .addGroup(pnlLeftLayout.createSequentialGroup()
                 .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlLeftLayout.createSequentialGroup()
-                        .addGap(96, 96, 96)
-                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(lblAPIKey)
-                            .addComponent(lblTradeAmount))
+                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(pnlLeftLayout.createSequentialGroup()
+                                .addGap(96, 96, 96)
+                                .addComponent(lblAPIKey))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlLeftLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(lblTradeAmount)))
                         .addGap(18, 18, 18)
                         .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)

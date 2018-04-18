@@ -29,7 +29,7 @@ public class Globals {
     //Standard global variables used throughout the project
     public static final Double MINIMUM_INVESTMENT = 0.01;
     public static final int NUMBEROFPREDICTIONS = 20;
-    public static final int READINGSREQUIRED = 10000 + NUMBEROFPREDICTIONS;
+    public static final int READINGSREQUIRED = 20000 + NUMBEROFPREDICTIONS;
     public static final String STARTINGUNITS = "USD";
     public static final Double STARTINGVALUE = 100.00;
 }

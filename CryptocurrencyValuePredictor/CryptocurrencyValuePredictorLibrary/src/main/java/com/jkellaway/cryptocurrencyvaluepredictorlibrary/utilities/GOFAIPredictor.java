@@ -129,8 +129,8 @@ public class GOFAIPredictor {
             meanPredictedChange[i] /= predictedChangeNo[i];
             meanDeltas[i] /= deltaNo[i];
             
-            System.out.println("Mean predicted change using " + (i+1) + " historic prices: " + meanPredictedChange[i]);
-            System.out.println("Mean prediction error using " + (i+1) + " historic prices: " + meanDeltas[i]);
+            System.out.println("Mean predicted change using " + (i+1) + " historic prices: " + meanPredictedChange[i]
+            + " Mean prediction error: " + meanDeltas[i]);
         }
     }
     
