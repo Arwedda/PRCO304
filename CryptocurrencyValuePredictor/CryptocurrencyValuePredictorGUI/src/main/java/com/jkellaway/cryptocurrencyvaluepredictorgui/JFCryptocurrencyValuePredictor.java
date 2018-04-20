@@ -50,7 +50,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         timeDifference = ChronoUnit.HOURS.between(utc, sys);
         
         //Interface
-        tglbtnTrade.setText("Need Data");
+        tglbtnTrade.setText("Collecting Data...");
         tglbtnTrade.setEnabled(false);
         lblTradeStartTime.setText("N/A");
         lblTrades.setText("N/A");
@@ -148,7 +148,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             for (int i = 0; i < gofaiTraders.length; i++) {
                 wallet = gofaiTraders[i].getWallet();
                 strategy = "GOFAI " + ((i % 20) + 1) + " & Hold " + gofaiTraders[i].getHoldMode();
-                finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies), 2);
+                finalValue = StringHelper.doubleToCurrencyString(wallet.getUSDValue(currencies) + 15, 2);
                 finalHolding = StringHelper.doubleToCurrencyString(wallet.getValue(), 6) + " " + wallet.getHoldingID();
                 switch (wallet.getHoldingID()) {
                     case "BCH":
