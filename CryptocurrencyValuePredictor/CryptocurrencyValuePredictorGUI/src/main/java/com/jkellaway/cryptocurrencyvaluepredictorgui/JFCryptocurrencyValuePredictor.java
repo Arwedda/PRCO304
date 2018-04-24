@@ -197,6 +197,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         btngrpHoldMode = new javax.swing.ButtonGroup();
         jpnlInvestmentProtection = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        lblAPIKey = new javax.swing.JLabel();
+        pwdAPIKey = new javax.swing.JPasswordField();
         pnlHome = new javax.swing.JPanel();
         jspValues = new javax.swing.JScrollPane();
         jtblValues = new javax.swing.JTable();
@@ -212,8 +214,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblTradeAmount = new javax.swing.JLabel();
         txtStartAmount = new javax.swing.JTextField();
         tglbtnTrade = new javax.swing.JToggleButton();
-        lblAPIKey = new javax.swing.JLabel();
-        pwdAPIKey = new javax.swing.JPasswordField();
         jpnlHoldMode = new javax.swing.JPanel();
         rdbtnUSD = new javax.swing.JRadioButton();
         rdbtnCrypto = new javax.swing.JRadioButton();
@@ -267,6 +267,12 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addComponent(jLabel2)
                 .addContainerGap(252, Short.MAX_VALUE))
         );
+
+        lblAPIKey.setText("GDAX API Key:");
+
+        pwdAPIKey.setMaximumSize(new java.awt.Dimension(150, 25));
+        pwdAPIKey.setMinimumSize(new java.awt.Dimension(150, 25));
+        pwdAPIKey.setPreferredSize(new java.awt.Dimension(150, 25));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Cryptocurrency Value Predictor");
@@ -379,12 +385,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             }
         });
 
-        lblAPIKey.setText("GDAX API Key:");
-
-        pwdAPIKey.setMaximumSize(new java.awt.Dimension(150, 25));
-        pwdAPIKey.setMinimumSize(new java.awt.Dimension(150, 25));
-        pwdAPIKey.setPreferredSize(new java.awt.Dimension(150, 25));
-
         jpnlHoldMode.setBorder(javax.swing.BorderFactory.createTitledBorder("Hold Mode"));
         jpnlHoldMode.setMaximumSize(new java.awt.Dimension(170, 60));
 
@@ -423,18 +423,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             .addGroup(pnlLeftLayout.createSequentialGroup()
                 .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(pnlLeftLayout.createSequentialGroup()
-                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(pnlLeftLayout.createSequentialGroup()
-                                .addGap(96, 96, 96)
-                                .addComponent(lblAPIKey))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnlLeftLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(lblTradeAmount)))
+                        .addGap(69, 69, 69)
+                        .addComponent(lblTradeAmount)
                         .addGap(18, 18, 18)
-                        .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(pwdAPIKey, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 140, Short.MAX_VALUE))
                     .addGroup(pnlLeftLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -457,11 +450,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                     .addComponent(txtStartAmount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jpnlHoldMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19)
-                .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblAPIKey)
-                    .addComponent(pwdAPIKey, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGap(62, 62, 62)
                 .addComponent(tglbtnTrade)
                 .addContainerGap(177, Short.MAX_VALUE))
         );
@@ -664,7 +653,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblLiability.setText("Users of this program accept that they are doing so at their own risk. The developer and any distributor of this software will");
 
         lblLiability2.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
-        lblLiability2.setText("accept neither responsibility, nor accountability for losses or damages experienced during use.");
+        lblLiability2.setText("accept neither responsibility, nor accountability for losses or damages experienced during use.Please invest responsibly.");
 
         lblCopyright.setFont(new java.awt.Font("SimSun", 0, 11)); // NOI18N
         lblCopyright.setText("Copyright 2018 Joseph Kellaway. All rights reserved.");
