@@ -52,10 +52,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         //Interface
         tglbtnTrade.setText("Collecting Data...");
         tglbtnTrade.setEnabled(false);
-        lblTradeStartTime.setText("N/A");
-        lblTrades.setText("N/A");
-        lblCurrentValue.setText("N/A");
-        lblProfit.setText("N/A");
+        clearTradingInterface();
         Integer[] options = new Integer[Globals.NUMBEROFPREDICTIONS];
         for (int i = 0; i < options.length; i++) {
             options[i] = i + 1;
@@ -199,6 +196,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         jLabel2 = new javax.swing.JLabel();
         lblAPIKey = new javax.swing.JLabel();
         pwdAPIKey = new javax.swing.JPasswordField();
+        rdbtnNeuralNetwork = new javax.swing.JRadioButton();
         pnlHome = new javax.swing.JPanel();
         jspValues = new javax.swing.JScrollPane();
         jtblValues = new javax.swing.JTable();
@@ -208,7 +206,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         jpnlTradeMode = new javax.swing.JPanel();
         rdbtnOff = new javax.swing.JRadioButton();
         rdbtnGOFAI = new javax.swing.JRadioButton();
-        rdbtnNeuralNetwork = new javax.swing.JRadioButton();
         lblStrategy = new javax.swing.JLabel();
         cbStrategy = new javax.swing.JComboBox<>();
         lblTradeAmount = new javax.swing.JLabel();
@@ -274,6 +271,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         pwdAPIKey.setMinimumSize(new java.awt.Dimension(150, 25));
         pwdAPIKey.setPreferredSize(new java.awt.Dimension(150, 25));
 
+        rdbtnNeuralNetwork.setText("Neural Network");
+        rdbtnNeuralNetwork.setEnabled(false);
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Cryptocurrency Value Predictor");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
@@ -326,9 +326,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         btngrpTradeMode.add(rdbtnGOFAI);
         rdbtnGOFAI.setText("GOFAI");
 
-        rdbtnNeuralNetwork.setText("Neural Network");
-        rdbtnNeuralNetwork.setEnabled(false);
-
         lblStrategy.setText("Strategy:");
 
         cbStrategy.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -344,13 +341,11 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addComponent(cbStrategy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(jpnlTradeModeLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addContainerGap()
                 .addComponent(rdbtnOff)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(rdbtnGOFAI)
-                .addGap(53, 53, 53)
-                .addComponent(rdbtnNeuralNetwork)
-                .addGap(17, 17, 17))
+                .addGap(50, 50, 50))
         );
         jpnlTradeModeLayout.setVerticalGroup(
             jpnlTradeModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -358,8 +353,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jpnlTradeModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(rdbtnOff)
-                    .addComponent(rdbtnGOFAI)
-                    .addComponent(rdbtnNeuralNetwork))
+                    .addComponent(rdbtnGOFAI))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jpnlTradeModeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblStrategy)
@@ -431,8 +425,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                     .addGroup(pnlLeftLayout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(pnlLeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jpnlTradeMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jpnlHoldMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(jpnlHoldMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jpnlTradeMode, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
             .addGroup(pnlLeftLayout.createSequentialGroup()
                 .addGap(141, 141, 141)
@@ -815,7 +809,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                     } else {
                         cryptocurrencyValuePredictor.stopTrading();
                         txtStartAmount.setText(StringHelper.doubleToCurrencyString(cryptocurrencyValuePredictor.getTrader().getWallet().getUSDValue(cryptocurrencyValuePredictor.getCurrencies()), 2));
-                        JOptionPane.showMessageDialog(this, "Stopped trading.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
+                        clearTradingInterface();
+                        JOptionPane.showMessageDialog(this, "Stopped trading. Final balance: " + txtStartAmount.getText() + " USD.", "Cryptocurrency Value Predictor", JOptionPane.INFORMATION_MESSAGE);
                     }
                     toggleEnabled();
                 }
@@ -874,6 +869,13 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         lblTrades.setText(String.valueOf(trades));
         lblCurrentValue.setText(currentValue);
         lblProfit.setText(profit);
+    }
+    
+    private void clearTradingInterface() {
+        lblTradeStartTime.setText("N/A");
+        lblTrades.setText("N/A");
+        lblCurrentValue.setText("N/A");
+        lblProfit.setText("N/A");
     }
     
     private void toggleEnabled() {

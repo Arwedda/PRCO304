@@ -54,6 +54,12 @@
         </Property>
       </Properties>
     </Component>
+    <Component class="javax.swing.JRadioButton" name="rdbtnNeuralNetwork">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Neural Network"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+    </Component>
   </NonVisualComponents>
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
@@ -243,8 +249,8 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="jpnlTradeMode" max="32767" attributes="0"/>
                                           <Component id="jpnlHoldMode" max="32767" attributes="0"/>
+                                          <Component id="jpnlTradeMode" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                               </Group>
@@ -300,13 +306,11 @@
                                   <EmptySpace max="32767" attributes="0"/>
                               </Group>
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="rdbtnOff" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace pref="68" max="32767" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
                                   <Component id="rdbtnGOFAI" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="53" max="-2" attributes="0"/>
-                                  <Component id="rdbtnNeuralNetwork" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -317,7 +321,6 @@
                                   <Group type="103" groupAlignment="3" attributes="0">
                                       <Component id="rdbtnOff" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="rdbtnGOFAI" alignment="3" min="-2" max="-2" attributes="0"/>
-                                      <Component id="rdbtnNeuralNetwork" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="3" attributes="0">
@@ -345,12 +348,6 @@
                               <ComponentRef name="btngrpTradeMode"/>
                             </Property>
                             <Property name="text" type="java.lang.String" value="GOFAI"/>
-                          </Properties>
-                        </Component>
-                        <Component class="javax.swing.JRadioButton" name="rdbtnNeuralNetwork">
-                          <Properties>
-                            <Property name="text" type="java.lang.String" value="Neural Network"/>
-                            <Property name="enabled" type="boolean" value="false"/>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JLabel" name="lblStrategy">
