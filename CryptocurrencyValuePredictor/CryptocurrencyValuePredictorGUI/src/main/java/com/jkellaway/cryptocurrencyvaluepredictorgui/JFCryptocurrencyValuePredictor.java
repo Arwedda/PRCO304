@@ -18,7 +18,6 @@ import java.net.URI;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -77,7 +76,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     
     private void loadCurrencies() {
         try {
-            String col[] = {"Currency", "Value (USD)", "Change (%)", "GOFAI Worst Prediction (%)", "GOFAI Best Prediction (%)"};
+            String col[] = {"Currency", "Value (USD)", "Change (%)", "Worst Prediction (%)", "Best Prediction (%)"};
             DefaultTableModel tableModel = new DefaultTableModel(col, 0);
             JTable table = new JTable(tableModel);
             Object[] row;
@@ -294,7 +293,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                 {null, null, null, null, null}
             },
             new String [] {
-                "Currency", "Value ($)", "Change (%)", "GOFAI Worst Prediction (%)", "GOFAI Best Prediction (%)"
+                "Currency", "Value (USD)", "Change (%)", "Worst Prediction (%)", "Best Prediction (%)"
             }
         ) {
             Class[] types = new Class [] {
@@ -564,7 +563,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         });
         jspPredictions.setViewportView(jtblPredictions);
 
-        jlblFirst.setText("First Trade Time:");
+        jlblFirst.setText("Benchmarking Began:");
 
         jlblFirstTradeTime.setText("jlblFirstTradeTime");
 
@@ -572,9 +571,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
 
         jlblMaxTrades.setText("jlblMaxTrades");
 
-        jlblBest.setText("Best Performance:");
+        jlblBest.setText("Highest Possible Value:");
 
-        jlblWorst.setText("Worst Performance:");
+        jlblWorst.setText("Lowest Possible Value:");
 
         jlblWorstPerformance.setText("jlblWorstPerformance");
 
@@ -595,7 +594,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlblFirstTradeTime)
                             .addComponent(jlblMaxTrades))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 335, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 303, Short.MAX_VALUE)
                         .addGroup(jpnlGOFAILayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jlblBest)
                             .addComponent(jlblWorst))
@@ -838,7 +837,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         boolean gofai = rdbtnGOFAI.isSelected();
         int tradeModeIndex = cbStrategy.getSelectedIndex() + 1;
         boolean holdUSD = rdbtnUSD.isSelected();
-        String apiKey = Arrays.toString(pwdAPIKey.getPassword());
+        String apiKey = ""; //Arrays.toString(pwdAPIKey.getPassword());
         cryptocurrencyValuePredictor.startTrading(gofai, tradeModeIndex, tradeAmount, holdUSD, apiKey);
     }
     

@@ -183,18 +183,19 @@ public class PriceCollector implements ISubject {
                 System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
                 try {
                     GDAXTrade[] trades;
+                    Double previousPrice;
                     Double meanPrice;
                     int tradeID;
                     ExchangeRate rate;
                     for (Currency currency : currencies){
                         trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
                         trades = getRelevantTrades(trades, postTime);
-                        
+                        previousPrice = currency.getRate().getValue();
                         if (0 < trades.length){
                             meanPrice = calculateMeanPrice(trades);
                             tradeID = trades[trades.length - 1].getTrade_id();
                         } else {
-                            meanPrice = currency.getRate().getValue();
+                            meanPrice = previousPrice;
                             tradeID = currency.getRate().getLastTrade();
                         }
                         
@@ -207,6 +208,10 @@ public class PriceCollector implements ISubject {
                                     currency.getLastGap().setPaginationStart(trades[trades.length - 1].getTrade_id());
                                     currency.getLastGap().setStartTime(currency.getLastGap().getStartTime().minusMinutes(1));
                                 }
+                            }
+                            if (lap == 3) {
+                                currency.getRate().calculateGrowth(previousPrice);
+                                exchangeRateAPIController.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
                             }
                         }
                     }
