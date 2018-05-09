@@ -31,7 +31,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     private static CryptocurrencyValuePredictor cryptocurrencyValuePredictor;
     private String previousHold;
     private long timeDifference;
-            
+    private long maxTrades;
+    
     /**
      * Creates new form CryptocurrencyValuePredictor
      */
@@ -47,6 +48,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         LocalDateTime sys = LocalDateTimeHelper.startOfMinute(LocalDateTime.now());
         LocalDateTime utc = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()));
         timeDifference = ChronoUnit.HOURS.between(utc, sys);
+        maxTrades = Globals.READINGSREQUIRED - 21;
         
         //Interface
         tglbtnTrade.setText("Collecting Data...");
@@ -102,7 +104,6 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             Currency[] currencies = cryptocurrencyValuePredictor.getCurrencies();
             Trader[] gofaiTraders = ArrayHelper.merge(cryptocurrencyValuePredictor.getGOFAITradersHold(), cryptocurrencyValuePredictor.getGOFAITradersUSD());
             LocalDateTime startTime = cryptocurrencyValuePredictor.getPriceCollector().getFirstRelevantRate();
-            long maxTrades = ChronoUnit.MINUTES.between(startTime, LocalDateTime.now()) - (1 + Globals.NUMBEROFPREDICTIONS + (60 * timeDifference));
             double best = cryptocurrencyValuePredictor.getBest().getWallet().getUSDValue(currencies);
             double worst = cryptocurrencyValuePredictor.getWorst().getWallet().getUSDValue(currencies);
             String col[] = {"Strategy", "Starting", "Final Holding", "Final Value (USD)"};
@@ -114,6 +115,9 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
             String starting;
             String finalHolding;
             Object[] row;
+            if (cryptocurrencyValuePredictor.getLap() == -1) {
+                maxTrades++;
+            }
             for (Trader trader : cryptocurrencyValuePredictor.getHolders()){
                 wallet = trader.getWallet();
                 strategy = "Hold " + trader.getHoldMode();

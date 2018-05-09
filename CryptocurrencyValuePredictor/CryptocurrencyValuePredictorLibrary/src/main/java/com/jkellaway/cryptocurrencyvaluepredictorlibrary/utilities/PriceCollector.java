@@ -183,14 +183,21 @@ public class PriceCollector implements ISubject {
                 System.out.println("[INFO] Fetching resource from: " + Globals.GDAX_ENDPOINT + "/products/.../trades");
                 try {
                     GDAXTrade[] trades;
-                    Double previousPrice;
+                    Double previousPrice = null;
                     Double meanPrice;
                     int tradeID;
                     ExchangeRate rate;
+                    ExchangeRate previousRate;
                     for (Currency currency : currencies){
+                        rate = new ExchangeRate(currency.getID(), postTime, null, null, null, null, null);
                         trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
                         trades = getRelevantTrades(trades, postTime);
-                        previousPrice = currency.getRate().getValue();
+                        previousRate = currency.getRate();
+                        if (previousRate != null) {
+                            if (rate.isMinuteAfter(previousRate)) {
+                                previousPrice = previousRate.getValue();
+                            }
+                        }
                         if (0 < trades.length){
                             meanPrice = calculateMeanPrice(trades);
                             tradeID = trades[trades.length - 1].getTrade_id();
@@ -198,8 +205,8 @@ public class PriceCollector implements ISubject {
                             meanPrice = previousPrice;
                             tradeID = currency.getRate().getLastTrade();
                         }
-                        
-                        rate = new ExchangeRate(currency.getID(), postTime, meanPrice, null, null, null, tradeID);
+                        rate.setValue(meanPrice);
+                        rate.setLastTrade(tradeID);
                         currency.setValue(rate);
                         if (connectedToDatabase){
                             exchangeRateAPIController.post(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
@@ -209,7 +216,7 @@ public class PriceCollector implements ISubject {
                                     currency.getLastGap().setStartTime(currency.getLastGap().getStartTime().minusMinutes(1));
                                 }
                             }
-                            if (lap == 3) {
+                            if (lap == 3 || lap == -1) {
                                 currency.getRate().calculateGrowth(previousPrice);
                                 exchangeRateAPIController.put(Globals.API_ENDPOINT + Globals.EXCHANGERATE_EXTENSION, rate);
                             }
