@@ -188,7 +188,7 @@ public class PriceCollector implements ISubject {
                     int tradeID;
                     ExchangeRate rate;
                     ExchangeRate previousRate;
-                    for (Currency currency : currencies){
+                    for (Currency currency : currencies) {
                         rate = new ExchangeRate(currency.getID(), postTime, null, null, null, null, null);
                         trades = gdaxAPIController.getGDAXTrades(currency.getGDAXEndpoint());
                         trades = getRelevantTrades(trades, postTime);
@@ -203,7 +203,7 @@ public class PriceCollector implements ISubject {
                             tradeID = trades[trades.length - 1].getTrade_id();
                         } else {
                             meanPrice = previousPrice;
-                            tradeID = currency.getRate().getLastTrade();
+                            tradeID = previousRate.getLastTrade();
                         }
                         rate.setValue(meanPrice);
                         rate.setLastTrade(tradeID);
@@ -242,9 +242,15 @@ public class PriceCollector implements ISubject {
                     if (trade.getTime().equals(postTime.minusMinutes(1))) {
                     relevantTrades.add(trade);
                     foundStart = true;
-                    } else if (foundStart) break;
+                    } else if (foundStart) { 
+                        break;
+                    }
                 }
-                return relevantTrades.toArray(new GDAXTrade[relevantTrades.size()]);
+                if (0 < relevantTrades.size()) {
+                    return relevantTrades.toArray(new GDAXTrade[relevantTrades.size()]);
+                } else {
+                    return getRelevantTrades(trades, postTime.minusMinutes(1));
+                }
             }
             
             /**
