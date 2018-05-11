@@ -21,7 +21,12 @@ import javax.websocket.WebSocketContainer;
  */
 //@ClientEndpoint
 public class WebsocketListener {
-/*    public Session session = null;
+/*    
+    Remnants of a research into implementing a Websock Listener rather than
+    constantly sending API get requests.
+    
+    
+    public Session session = null;
     private MessageHandler messageHandler;
     
     public WebsocketListener(URI endpointURI) {
@@ -66,7 +71,10 @@ public class WebsocketListener {
 }
 
 
-/*  instantiating class
+/*  
+    Instantiation in the PriceCollector class.
+
+
     private void initialiseWebsocketListener(){
         try {
             wsListener = new WebsocketListener(new URI("wss://ws-feed.gdax.com"));

@@ -3,8 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.jkellaway.cryptocurrencyvaluepredictorlibrary.utilities;
-
+package com.jkellaway.unused;
+/*
 import com.jkellaway.cryptocurrencyvaluepredictorlibrary.model.Currency;
 import java.util.List;
 
@@ -13,7 +13,14 @@ import java.util.List;
  * @author jkell
  */
 public class NeuralNetwork {
+    /*
+    Remnants of an initial delve into planning out Neural Network behaviour.
+    Written prior to researching as per project report.
+    
     private List<Double[]> weights;
+    private Double trainingMultiplier = 0.7;
+    private Double testingMultiplier = (1.0 - trainingMultiplier) / 2;
+    private Double validationMultiplier = (1.0 - trainingMultiplier) / 2;
     
     public NeuralNetwork() {
         
@@ -44,6 +51,14 @@ public class NeuralNetwork {
         
     }
     
+    private void validateNeuralNetwork() {
+    
+    }
+    
+    private void testNeuralNetwork() {
+    
+    }
+    
     private void neuralNetworkCalculations(Currency currency) {
         
     }
@@ -55,4 +70,5 @@ public class NeuralNetwork {
     private static void neuralNetworkCalculation(Currency currency) {
         
     }
+*/
 }
