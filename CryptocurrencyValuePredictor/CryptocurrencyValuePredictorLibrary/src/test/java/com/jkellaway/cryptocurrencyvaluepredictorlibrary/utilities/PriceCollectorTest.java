@@ -25,6 +25,7 @@ import org.junit.Test;
 public class PriceCollectorTest implements IObserver {
     private static PriceCollector pc;
     private static boolean observerWorks;
+    private static LocalDateTime expectedTime;
     
     public PriceCollectorTest() {
     }
@@ -34,6 +35,7 @@ public class PriceCollectorTest implements IObserver {
         pc = new PriceCollector();
         pc.initialise(TestGlobals.REQUIREDRATES);
         observerWorks = false;
+        expectedTime = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()).minusMinutes(TestGlobals.REQUIREDRATES));
     }
 
     @AfterClass
@@ -54,8 +56,7 @@ public class PriceCollectorTest implements IObserver {
 
     @Test
     public void testGetFirstRelevantRate() {
-        LocalDateTime expected = LocalDateTimeHelper.startOfMinute(LocalDateTime.now(Clock.systemUTC()).minusMinutes(TestGlobals.REQUIREDRATES));
-        assertEquals(expected, pc.getFirstRelevantRate());
+        assertEquals(expectedTime, pc.getFirstRelevantRate());
     }
 
     @Test
