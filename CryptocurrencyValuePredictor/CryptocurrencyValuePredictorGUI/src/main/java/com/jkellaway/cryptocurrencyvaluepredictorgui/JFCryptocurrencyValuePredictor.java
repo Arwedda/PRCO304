@@ -839,7 +839,7 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
     
     private void startTrading(Double tradeAmount) {
         boolean gofai = rdbtnGOFAI.isSelected();
-        int tradeModeIndex = cbStrategy.getSelectedIndex() + 1;
+        int tradeModeIndex = cbStrategy.getSelectedIndex();
         boolean holdUSD = rdbtnUSD.isSelected();
         String apiKey = ""; //Arrays.toString(pwdAPIKey.getPassword());
         cryptocurrencyValuePredictor.startTrading(gofai, tradeModeIndex, tradeAmount, holdUSD, apiKey);
