@@ -197,8 +197,6 @@ public class CryptocurrencyValuePredictor implements IObserver, ISubject {
         HoldMode holdMode =  (holdUSD ? HoldMode.USD : HoldMode.CRYPTOCURRENCY);
         //System.out.println(apiKey);
         trader = new Trader("USD", startValue, tradeMode, tradeModeNum, holdMode);
-        trader.autoTrade(getCurrencies());
-        notifyObservers();
     }
     
     /**

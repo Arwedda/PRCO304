@@ -843,6 +843,8 @@ public class JFCryptocurrencyValuePredictor extends javax.swing.JFrame implement
         boolean holdUSD = rdbtnUSD.isSelected();
         String apiKey = ""; //Arrays.toString(pwdAPIKey.getPassword());
         cryptocurrencyValuePredictor.startTrading(gofai, tradeModeIndex, tradeAmount, holdUSD, apiKey);
+        cryptocurrencyValuePredictor.getTrader().autoTrade(cryptocurrencyValuePredictor.getCurrencies());
+        cryptocurrencyValuePredictor.notifyObservers();
     }
     
     private void initTradingInterface() {
